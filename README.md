@@ -122,6 +122,37 @@ This forces the client-side router to wake up, fetch the context (`wXbhsf`), and
 *   **Backend Success $\neq$ UI Success:** In modern SPAs, simply hitting the API endpoint is not enough. You must understand how the frontend router and state management system react to those changes.
 *   **Internal APIs are Stable:** While undocumented, internal RPCs (like `batchexecute`) are often more stable than DOM structures because the backend relies on them.
 
+## 🚀 Installation & Usage
+
+### 1. Clone & Build
+1.  Clone this repository.
+2.  Install the build dependency (used to generate icons):
+    ```bash
+    pip install pillow
+    ```
+3.  Run the build script:
+    ```bash
+    python3 build.py
+    ```
+    This will generate the necessary icons and a `notebooklm_extension.zip` file.
+
+### 2. Install in Chrome
+1.  Open Chrome and go to `chrome://extensions`.
+2.  Enable **Developer mode** (top right).
+3.  Click **Load unpacked**.
+4.  Select the root folder of this repository.
+
+### 3. Usage
+1.  Open any YouTube video.
+2.  You will see a "✨ Infographic" button in the top buttons bar (near Like/Share).
+3.  Click it! The extension will:
+    *   Open NotebookLM in the background.
+    *   Create a notebook.
+    *   Add the video source.
+    *   Generate the infographic.
+    *   Display the result directly on the YouTube page.
+
+
 ## 🎓 Git changes in systamatic development
 <img width="354" height="460" alt="image" src="https://github.com/user-attachments/assets/00b1ab10-2a43-4118-89c1-a2b9949e2c95" />
 
