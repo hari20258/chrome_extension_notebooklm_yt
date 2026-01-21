@@ -1,7 +1,8 @@
 /*
- * Background Service Worker - COMPLETE EDITION
- * 1. Persists job state (with full logging).
- * 2. Detects URL redirects to Google Sign-in.
+ * Background Service Worker - AUTO CLOSE EDITION
+ * 1. Persists job state.
+ * 2. Detects Login.
+ * 3. CLOSES TAB ON COMPLETION.
  */
 
 // Helper to save job state
@@ -19,20 +20,17 @@ async function getJob(tabId) {
 async function handleInitGeneration(youtubeTabId, videoUrl) {
   console.log("[Background] Starting new generation flow...");
 
-  // 1. Open NotebookLM
   const notebookTab = await chrome.tabs.create({
     url: 'https://notebooklm.google.com/',
     active: false
   });
 
-  // 2. Save Job to Storage (Persistent)
   await saveJob(notebookTab.id, {
     youtubeTabId: youtubeTabId,
     videoUrl: videoUrl,
     status: 'WAITING_FOR_CREATION'
   });
 
-  // 3. Notify YouTube
   chrome.tabs.sendMessage(youtubeTabId, {
     type: 'UPDATE_STATUS',
     status: 'Initializing... Opening NotebookLM'
@@ -52,13 +50,11 @@ async function handleNotebookReady(notebookTabId, senderUrl) {
   console.log(`[Background] Current Job Status: ${job.status}`);
 
   const urlObj = new URL(senderUrl);
-  // Check if we are on the main list page (not inside a specific notebook yet)
   const isDashboard = !urlObj.pathname.includes('/notebook/');
 
   if (job.status === 'WAITING_FOR_CREATION' && isDashboard) {
     console.log("[Background] ✅ Condition met. Sending CREATE command.");
 
-    // Update status to prevent double-firing
     job.status = 'CREATING';
     await saveJob(notebookTabId, job);
 
@@ -72,7 +68,6 @@ async function handleNotebookReady(notebookTabId, senderUrl) {
     });
   }
   else if (senderUrl.includes('/notebook/') && job.status !== 'GENERATING') {
-    // We are inside the new notebook!
     console.log("[Background] ✅ Inside Notebook. Sending PROCESS command.");
 
     job.status = 'GENERATING';
@@ -91,7 +86,6 @@ async function handleNotebookReady(notebookTabId, senderUrl) {
 }
 
 function handleGenerationUpdate(notebookTabId, status, payload) {
-  // We need to use an async wrapper since getJob is async
   (async () => {
     const job = await getJob(notebookTabId);
     if (!job) return;
@@ -102,7 +96,6 @@ function handleGenerationUpdate(notebookTabId, status, payload) {
 
       console.log(`[Background] Navigating to new notebook: ${newId}`);
 
-      // Update Job State
       job.status = 'NAVIGATING';
       await saveJob(notebookTabId, job);
 
@@ -117,25 +110,27 @@ function handleGenerationUpdate(notebookTabId, status, payload) {
       payload: payload
     });
 
+    // --- 🔥 FIX 2: AUTO CLOSE TAB ---
     if (status === 'COMPLETED' || status === 'ERROR') {
-      console.log("[Background] Job Finished. Cleaning up.");
+      console.log("[Background] Job Finished. Closing Tab.");
       chrome.storage.local.remove(notebookTabId.toString());
+      
+      try {
+          chrome.tabs.remove(notebookTabId);
+      } catch (e) {
+          console.log("Tab already closed.");
+      }
     }
   })();
 }
 
-// --- NEW: DETECT LOGIN REDIRECTS (Needed for Incognito Fix) ---
+// Detect Login Redirects
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  // Only check if URL changed
   if (changeInfo.url) {
-    // Check if this tab is a "worker" tab we are tracking
     const job = await getJob(tabId);
-
     if (job) {
-      // If the URL redirects to Google Accounts, we know they are logged out
       if (changeInfo.url.includes('accounts.google.com') || changeInfo.url.includes('ServiceLogin')) {
         console.log(`[Background] Tab ${tabId} redirected to Login Page. Signaling UI.`);
-
         chrome.tabs.sendMessage(job.youtubeTabId, {
           type: 'UPDATE_STATUS',
           status: 'LOGIN_REQUIRED'
@@ -145,9 +140,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 });
 
-// Listeners
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Return true to indicate we might respond asynchronously
   if (message.type === 'INIT_GENERATION') {
     handleInitGeneration(sender.tab.id, message.videoUrl);
   }
@@ -157,6 +150,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   else if (message.type === 'GENERATION_UPDATE') {
     handleGenerationUpdate(sender.tab.id, message.status, message.payload);
   }
-
   return true;
 });

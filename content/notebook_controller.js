@@ -1,9 +1,7 @@
 /*
- * NotebookLM Controller - ROBUST ERROR HANDLING EDITION
- * 1. Triggers generation (R7cb6c)
- * 2. Polls (gArtLc) every 20s for result.
- * 3. Sends status updates to YouTube UI.
- * 4. **NEW: Checks for source addition errors.**
+ * NotebookLM Controller - INCOGNITO FIX + AUTO CLOSE SUPPORT
+ * 1. Robust Source Upload Check.
+ * 2. Authenticated Image Fetch (Fixes Incognito Broken Image).
  */
 
 const RPC_CREATE_NOTEBOOK = "CCqFvf";
@@ -16,26 +14,16 @@ let isProxyReady = false;
 
 function init() {
     console.log("NotebookController: Waiting for Proxy...");
-    chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Initializing...' });
 }
 
 window.addEventListener("message", (event) => {
     if (event.source !== window) return;
-
     if (event.data.type === "EXTENSION_PROXY_READY") {
         if (!isProxyReady) {
             console.log("NotebookController: ✅ Proxy is Ready.");
             isProxyReady = true;
             chrome.runtime.sendMessage({ type: 'NOTEBOOK_READY' });
         }
-    }
-    else if (event.data.type === "EXTENSION_LOGIN_REQUIRED") {
-        console.warn("NotebookController: User is not logged in.");
-        chrome.runtime.sendMessage({
-            type: 'GENERATION_UPDATE',
-            status: 'LOGIN_REQUIRED',
-            payload: {}
-        });
     }
 });
 
@@ -98,13 +86,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function performCreation() {
     try {
-        chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Creating notebook...' });
         console.log("NotebookController: Creating new notebook...");
-        
         const payload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_CREATE_NOTEBOOK, payload);
         
-        if (!response || !response[0]) throw new Error("No response from Google.");
+        if (!response || !response[0]) throw new Error("No response");
         const innerJsonString = response[0][2];
         const innerResponse = JSON.parse(innerJsonString);
         const id = innerResponse[2]; 
@@ -123,7 +109,7 @@ async function performCreation() {
         chrome.runtime.sendMessage({
             type: 'GENERATION_UPDATE',
             status: 'ERROR',
-            payload: { error: "Failed to create notebook. " + e.message }
+            payload: { error: e.toString() }
         });
     }
 }
@@ -132,36 +118,28 @@ async function startFlow(videoUrl) {
     try {
         const match = location.pathname.match(/\/notebook\/([a-zA-Z0-9-]+)/);
         const notebookId = match ? match[1] : null;
-        if (!notebookId) throw new Error("No Notebook ID found in URL.");
+        if (!notebookId) throw new Error("No Notebook ID found");
 
-        chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Adding source...' });
         console.log("NotebookController: Adding source to", notebookId);
-        
         const payload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_ADD_SOURCE, payload);
         
-        if (!response || !response[0] || typeof response[0][2] !== 'string') {
-             throw new Error("Invalid response from Google when adding source.");
-        }
-
         const innerResponse = JSON.parse(response[0][2]);
         const sourceId = findSourceID(innerResponse); 
-
-        // --- 🔥 THE FIX: CRITICAL CHECK ---
-        if (!sourceId) {
-            console.error("Google rejected the source. Response:", innerResponse);
-            // Throwing an error here stops the process and triggers the catch block below.
-            throw new Error("Google rejected this video. It likely has no transcripts available.");
-        }
-        // ----------------------------------
-
         console.log("NotebookController: Source Added", sourceId);
+
+        if (!sourceId) {
+            console.error("Source upload failed. Google response:", innerResponse);
+            throw new Error("Video has no transcript or cannot be imported.");
+        }
+
+        // Wait a moment for processing before triggering
+        await new Promise(r => setTimeout(r, 2000));
 
         await generateInfographic(notebookId, sourceId);
 
     } catch (e) {
         console.error("Flow Failed", e);
-        // This catch block will now correctly update the UI with the error
         chrome.runtime.sendMessage({
             type: 'GENERATION_UPDATE',
             status: 'ERROR',
@@ -173,32 +151,61 @@ async function startFlow(videoUrl) {
 async function generateInfographic(notebookId, sourceId) {
     chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Generating infographic (this may take a few minutes)...' });
 
-    // 1. TRIGGER GENERATION
     const triggerPayload = [
         [2], notebookId, 
         [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]
     ];
     console.log("NotebookController: 🚀 Triggering Generation...");
-    // We don't await this, fire and forget.
-    callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload).catch(e => console.warn("Trigger warning:", e));
     
-    // 2. POLL FOR ARTIFACTS
+    try {
+        await callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
+        console.log("NotebookController: ✅ Trigger acknowledged.");
+    } catch (e) {
+        console.error("Trigger Failed", e);
+        chrome.runtime.sendMessage({
+            type: 'GENERATION_UPDATE',
+            status: 'ERROR',
+            payload: { error: "Failed to start generation." }
+        });
+        return;
+    }
+    
     pollForArtifacts(notebookId);
+}
+
+// --- 🔥 FIX 1: AUTHENTICATED FETCH ---
+async function urlToBase64(url) {
+    try {
+        console.log("NotebookController: Fetching image for Incognito...");
+        // IMPORTANT: credentials: 'include' sends cookies to googleusercontent.com
+        const response = await fetch(url, { 
+            credentials: 'include',
+            mode: 'cors' 
+        });
+        
+        if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+        
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (e) {
+        console.error("Base64 conversion failed:", e);
+        return url; // Fallback
+    }
 }
 
 async function pollForArtifacts(notebookId) {
     let attempts = 0;
-    const maxAttempts = 30; // 30 * 20s = 10 minutes max
+    const maxAttempts = 30; 
 
     const poll = setInterval(async () => {
         attempts++;
         if (attempts > maxAttempts) {
             clearInterval(poll);
-            chrome.runtime.sendMessage({
-                type: 'GENERATION_UPDATE',
-                status: 'ERROR',
-                payload: { error: "Generation timed out. Please try again." }
-            });
             return;
         }
 
@@ -216,23 +223,21 @@ async function pollForArtifacts(notebookId) {
                     if (imageUrl) {
                         console.log("NotebookController: 📸 Found Image URL!", imageUrl);
                         clearInterval(poll);
+                        
+                        // Convert to Base64
+                        const base64Image = await urlToBase64(imageUrl);
+
                         chrome.runtime.sendMessage({
                             type: 'GENERATION_UPDATE',
                             status: 'COMPLETED',
-                            payload: { imageUrl: imageUrl }
+                            payload: { imageUrl: base64Image } 
                         });
                         return;
                     }
-                } catch(e) {
-                    console.log("Could not parse inner artifact data, continuing...");
-                }
+                } catch(e) {}
             }
-            console.log("NotebookController: No image found yet...");
-
-        } catch (e) {
-            console.error("Poll error (ignoring)", e);
-        }
-    }, 20000); // 20 Seconds Interval
+        } catch (e) {}
+    }, 20000); 
 }
 
 function findSourceID(obj) {
