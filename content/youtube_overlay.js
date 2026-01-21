@@ -1,6 +1,8 @@
 /*
- * YouTube content script - CORNER POPUP EDITION
- * Non-intrusive UI that stays out of the way.
+ * YouTube content script - PREMIUM GLASS EDITION
+ * 1. Draggable Panel
+ * 2. Subtle "Premium" Colors (No more bright blue)
+ * 3. Perfect Centering & Spacing
  */
 
 console.log("[NotebookLM] YouTube overlay script loaded");
@@ -12,6 +14,9 @@ console.log("[NotebookLM] YouTube overlay script loaded");
     let overlay = null;
     let generateBtn = null;
     let observer = null;
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
     const TARGET_SELECTORS = [
         '#top-level-buttons-computed',
@@ -42,11 +47,11 @@ console.log("[NotebookLM] YouTube overlay script loaded");
         generateBtn.id = 'notebooklm-gen-btn';
         generateBtn.innerText = '✨ Infographic';
 
-        // YouTube Native-ish styling
+        // Subtle Header Button Style
         Object.assign(generateBtn.style, {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            backgroundColor: 'rgba(255, 255, 255, 0.08)', // Very subtle grey
+            color: '#f1f1f1',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             padding: '0 16px',
             height: '36px',
             fontSize: '14px',
@@ -56,18 +61,19 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             marginLeft: '8px',
             display: 'flex',
             alignItems: 'center',
-            transition: 'background-color 0.2s'
+            transition: 'all 0.2s ease'
         });
 
-        generateBtn.onmouseover = () => generateBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-        generateBtn.onmouseout = () => generateBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        generateBtn.onmouseover = () => {
+            generateBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+            generateBtn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+        };
+        generateBtn.onmouseout = () => {
+            generateBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+            generateBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        };
+        generateBtn.onclick = startGeneration;
 
-        if (container.id === 'top-level-buttons-computed') {
-            generateBtn.style.marginLeft = '8px';
-            generateBtn.style.marginRight = '8px';
-        }
-
-        generateBtn.addEventListener('click', startGeneration);
         container.appendChild(generateBtn);
     }
 
@@ -83,17 +89,21 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             bottom: '20px',
             right: '20px',
             zIndex: '9999',
-            padding: '10px 20px',
-            backgroundColor: '#3ea6ff',
+            padding: '12px 24px',
+            backgroundColor: '#222', // Dark instead of blue
             color: 'white',
-            border: 'none',
+            border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: '24px',
-            fontWeight: 'bold',
+            fontWeight: '600',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+            transition: 'transform 0.2s'
         });
+        
+        generateBtn.onmouseover = () => generateBtn.style.transform = 'scale(1.05)';
+        generateBtn.onmouseout = () => generateBtn.style.transform = 'scale(1)';
 
-        generateBtn.addEventListener('click', startGeneration);
+        generateBtn.onclick = startGeneration;
         document.body.appendChild(generateBtn);
     }
 
@@ -113,66 +123,104 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             overlay = document.createElement('div');
             overlay.id = 'notebooklm-overlay';
 
-            // --- CORNER POPUP STYLING ---
+            // --- PREMIUM CARD STYLING ---
             Object.assign(overlay.style, {
                 position: 'fixed',
-                bottom: '24px',
+                bottom: '80px',
                 right: '24px',
-                width: '320px',             // Fixed small width
-                backgroundColor: '#1f1f1f', // YouTube Dark Grey
+                width: '320px',
+                backgroundColor: 'rgba(20, 20, 20, 0.98)', // Deep Matte Black
+                backdropFilter: 'blur(12px)',
                 color: 'white',
                 zIndex: '10000',
-                borderRadius: '12px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.7)', // Deeper shadow
                 border: '1px solid rgba(255,255,255,0.1)',
                 fontFamily: 'Roboto, Arial, sans-serif',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                transition: 'opacity 0.3s ease'
+                transition: 'opacity 0.3s ease',
+                opacity: '0'
             });
 
-            // Header Bar
             overlay.innerHTML = `
-                <div style="
-                    padding: 12px 16px; 
-                    background: rgba(255,255,255,0.05); 
-                    border-bottom: 1px solid rgba(255,255,255,0.1);
+                <div id="nlm-header" style="
+                    padding: 16px 20px; 
+                    background: rgba(255,255,255,0.03); 
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    cursor: grab;
+                    user-select: none;
                 ">
-                    <span style="font-size: 14px; font-weight: 500; color: #aaa;">NotebookLM Generator</span>
-                    <button id="nlm-close" style="background:none; border:none; color:#fff; font-size: 18px; cursor:pointer;">&times;</button>
+                    <span style="font-size: 12px; font-weight: 600; color: #888; letter-spacing: 1px; text-transform: uppercase;">NotebookLM Generator</span>
+                    <button id="nlm-close" style="background:none; border:none; color:#666; font-size: 20px; cursor:pointer; padding:0; line-height:1; transition: color 0.2s;">&times;</button>
                 </div>
                 
-                <div id="nlm-content" style="padding: 20px; text-align: center;">
-                    <h3 id="nlm-status" style="margin: 0 0 15px 0; font-size: 15px; font-weight: 400;">Initializing...</h3>
+                <div id="nlm-content" style="padding: 24px 20px 28px 20px; text-align: center;">
+                    <h3 id="nlm-status" style="margin: 0 0 16px 0; font-size: 14px; font-weight: 400; color: #ccc;">Initializing...</h3>
                     
                     <div class="nlm-loader" style="
-                        border: 3px solid rgba(255,255,255,0.1); 
-                        border-top: 3px solid #3ea6ff; 
+                        border: 2px solid rgba(255,255,255,0.1); 
+                        border-top: 2px solid #fff; 
                         border-radius: 50%; 
                         width: 24px; 
                         height: 24px; 
-                        animation: spin 1s linear infinite;
+                        animation: spin 0.8s linear infinite;
                         margin: 0 auto;
                     "></div>
                     
-                    <div id="nlm-preview" style="display:none; margin-top:15px;"></div>
+                    <div id="nlm-preview" style="display:none; margin-top:16px; animation: fadeIn 0.4s ease-out;"></div>
                 </div>
-                <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+                    #nlm-close:hover { color: #fff !important; }
+                </style>
             `;
 
             document.body.appendChild(overlay);
-            document.getElementById('nlm-close').addEventListener('click', () => overlay.style.display = 'none');
+
+            // Drag Logic
+            const header = document.getElementById('nlm-header');
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                header.style.cursor = 'grabbing';
+                dragOffsetX = e.clientX - overlay.getBoundingClientRect().left;
+                dragOffsetY = e.clientY - overlay.getBoundingClientRect().top;
+                
+                const rect = overlay.getBoundingClientRect();
+                overlay.style.bottom = 'auto';
+                overlay.style.right = 'auto';
+                overlay.style.left = rect.left + 'px';
+                overlay.style.top = rect.top + 'px';
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                overlay.style.left = (e.clientX - dragOffsetX) + 'px';
+                overlay.style.top = (e.clientY - dragOffsetY) + 'px';
+            });
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    header.style.cursor = 'grab';
+                }
+            });
+            document.getElementById('nlm-close').addEventListener('click', () => {
+                overlay.style.display = 'none';
+            });
         }
 
-        // Reset state on show
         overlay.style.display = 'flex';
+        requestAnimationFrame(() => overlay.style.opacity = '1');
+        
         document.querySelector('.nlm-loader').style.display = 'block';
         document.getElementById('nlm-preview').style.display = 'none';
         document.getElementById('nlm-status').innerText = 'Initializing...';
+        document.getElementById('nlm-status').style.color = '#ccc';
     }
 
     function updateOverlay(text, payload) {
@@ -187,35 +235,55 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             loader.style.display = 'none';
             preview.style.display = 'block';
 
-            // Compact Success View
+            // --- PREMIUM SUCCESS UI ---
             preview.innerHTML = `
                 <div style="
                     width: 100%; 
                     height: 180px; 
-                    background-image: url('${payload.imageUrl}'); 
-                    background-size: cover; 
-                    background-position: top center;
+                    background-color: #111;
                     border-radius: 8px;
-                    margin-bottom: 12px;
-                    border: 1px solid rgba(255,255,255,0.1);
-                "></div>
+                    margin-bottom: 20px;
+                    overflow: hidden;
+                    position: relative;
+                    border: 1px solid rgba(255,255,255,0.08);
+                ">
+                    <img src="${payload.imageUrl}" style="
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain; 
+                        opacity: 0.9;
+                    " />
+                </div>
                 
                 <a href="${payload.imageUrl}" target="_blank" style="
-                    display: block;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 8px;
                     width: 100%;
-                    background: #3ea6ff; 
-                    color: white; 
+                    background: rgba(255, 255, 255, 0.08); /* Subtle Glass */
+                    color: #fff; 
                     text-decoration: none; 
-                    padding: 8px 0; 
-                    border-radius: 18px; 
+                    padding: 12px 0; 
+                    border-radius: 8px; 
                     font-weight: 500; 
                     font-size: 13px;
                     text-align: center;
-                ">View Full Infographic ↗</a>
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.3)'" 
+                  onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='rgba(255,255,255,0.1)'">
+                   <span>View Full Infographic</span>
+                   <span style="font-size: 16px; line-height: 1;">↗</span>
+                </a>
             `;
 
-            statusEl.innerText = "Generation Complete!";
-            statusEl.style.color = "#4caf50"; // Green for success
+            statusEl.innerText = "Generation Complete";
+            statusEl.style.color = "#fff"; // Clean White
+        } else if (text.includes("Error") || text.includes("rejected")) {
+             statusEl.style.color = "#ff6b6b"; // Soft Red
+        } else if (text.includes("sign in")) {
+             statusEl.style.color = "#ff9f43"; // Soft Orange
         }
     }
 
@@ -227,16 +295,13 @@ console.log("[NotebookLM] YouTube overlay script loaded");
                 updateOverlay("Error: " + (message.payload?.error || "Unknown"));
                 document.querySelector('.nlm-loader').style.display = 'none';
             } else if (message.status === 'LOGIN_REQUIRED') {
-                // --- CUSTOM LOGIN MESSAGE ---
-                updateOverlay("Please sign in to your Google account.");
+                updateOverlay("Please sign in to Google.");
                 document.querySelector('.nlm-loader').style.display = 'none';
-
-                // Optional: Add a link to help them sign in
                 const preview = document.getElementById('nlm-preview');
                 preview.style.display = 'block';
                 preview.innerHTML = `
                     <a href="https://notebooklm.google.com" target="_blank" style="
-                        display: block; margin-top: 10px; color: #3ea6ff; text-decoration: none; font-size: 13px;
+                        display: block; margin-top: 10px; color: #fff; text-decoration: underline; font-size: 13px; opacity: 0.7;
                     ">Open NotebookLM to Sign In ↗</a>
                 `;
             } else {

@@ -1,6 +1,7 @@
 /*
- * Background Service Worker - PERSISTENT EDITION
- * Uses chrome.storage.local to survive Service Worker restarts.
+ * Background Service Worker - COMPLETE EDITION
+ * 1. Persists job state (with full logging).
+ * 2. Detects URL redirects to Google Sign-in.
  */
 
 // Helper to save job state
@@ -52,7 +53,6 @@ async function handleNotebookReady(notebookTabId, senderUrl) {
 
   const urlObj = new URL(senderUrl);
   // Check if we are on the main list page (not inside a specific notebook yet)
-  // We allow paths like "/" or "/u/0/" or empty
   const isDashboard = !urlObj.pathname.includes('/notebook/');
 
   if (job.status === 'WAITING_FOR_CREATION' && isDashboard) {
@@ -124,10 +124,30 @@ function handleGenerationUpdate(notebookTabId, status, payload) {
   })();
 }
 
+// --- NEW: DETECT LOGIN REDIRECTS (Needed for Incognito Fix) ---
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  // Only check if URL changed
+  if (changeInfo.url) {
+    // Check if this tab is a "worker" tab we are tracking
+    const job = await getJob(tabId);
+
+    if (job) {
+      // If the URL redirects to Google Accounts, we know they are logged out
+      if (changeInfo.url.includes('accounts.google.com') || changeInfo.url.includes('ServiceLogin')) {
+        console.log(`[Background] Tab ${tabId} redirected to Login Page. Signaling UI.`);
+
+        chrome.tabs.sendMessage(job.youtubeTabId, {
+          type: 'UPDATE_STATUS',
+          status: 'LOGIN_REQUIRED'
+        });
+      }
+    }
+  }
+});
+
 // Listeners
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Return true to indicate we might respond asynchronously (standard practice)
-
+  // Return true to indicate we might respond asynchronously
   if (message.type === 'INIT_GENERATION') {
     handleInitGeneration(sender.tab.id, message.videoUrl);
   }

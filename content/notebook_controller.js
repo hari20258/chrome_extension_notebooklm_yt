@@ -1,8 +1,9 @@
 /*
- * NotebookLM Controller - PATIENT POLLING + UI UPDATES
+ * NotebookLM Controller - ROBUST ERROR HANDLING EDITION
  * 1. Triggers generation (R7cb6c)
  * 2. Polls (gArtLc) every 20s for result.
  * 3. Sends status updates to YouTube UI.
+ * 4. **NEW: Checks for source addition errors.**
  */
 
 const RPC_CREATE_NOTEBOOK = "CCqFvf";
@@ -15,7 +16,6 @@ let isProxyReady = false;
 
 function init() {
     console.log("NotebookController: Waiting for Proxy...");
-    // FEATURE: Initial Status
     chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Initializing...' });
 }
 
@@ -29,7 +29,6 @@ window.addEventListener("message", (event) => {
             chrome.runtime.sendMessage({ type: 'NOTEBOOK_READY' });
         }
     }
-    // FEATURE: Login Check Handler
     else if (event.data.type === "EXTENSION_LOGIN_REQUIRED") {
         console.warn("NotebookController: User is not logged in.");
         chrome.runtime.sendMessage({
@@ -99,14 +98,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function performCreation() {
     try {
-        // FEATURE: Status Update
         chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Creating notebook...' });
         console.log("NotebookController: Creating new notebook...");
         
         const payload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_CREATE_NOTEBOOK, payload);
         
-        if (!response || !response[0]) throw new Error("No response");
+        if (!response || !response[0]) throw new Error("No response from Google.");
         const innerJsonString = response[0][2];
         const innerResponse = JSON.parse(innerJsonString);
         const id = innerResponse[2]; 
@@ -125,7 +123,7 @@ async function performCreation() {
         chrome.runtime.sendMessage({
             type: 'GENERATION_UPDATE',
             status: 'ERROR',
-            payload: { error: e.toString() }
+            payload: { error: "Failed to create notebook. " + e.message }
         });
     }
 }
@@ -134,28 +132,45 @@ async function startFlow(videoUrl) {
     try {
         const match = location.pathname.match(/\/notebook\/([a-zA-Z0-9-]+)/);
         const notebookId = match ? match[1] : null;
-        if (!notebookId) throw new Error("No Notebook ID found");
+        if (!notebookId) throw new Error("No Notebook ID found in URL.");
 
-        // FEATURE: Status Update
         chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Adding source...' });
         console.log("NotebookController: Adding source to", notebookId);
         
         const payload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_ADD_SOURCE, payload);
         
+        if (!response || !response[0] || typeof response[0][2] !== 'string') {
+             throw new Error("Invalid response from Google when adding source.");
+        }
+
         const innerResponse = JSON.parse(response[0][2]);
         const sourceId = findSourceID(innerResponse); 
+
+        // --- 🔥 THE FIX: CRITICAL CHECK ---
+        if (!sourceId) {
+            console.error("Google rejected the source. Response:", innerResponse);
+            // Throwing an error here stops the process and triggers the catch block below.
+            throw new Error("Google rejected this video. It likely has no transcripts available.");
+        }
+        // ----------------------------------
+
         console.log("NotebookController: Source Added", sourceId);
 
         await generateInfographic(notebookId, sourceId);
 
     } catch (e) {
         console.error("Flow Failed", e);
+        // This catch block will now correctly update the UI with the error
+        chrome.runtime.sendMessage({
+            type: 'GENERATION_UPDATE',
+            status: 'ERROR',
+            payload: { error: e.message || e.toString() }
+        });
     }
 }
 
 async function generateInfographic(notebookId, sourceId) {
-    // FEATURE: Status Update for long wait
     chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Generating infographic (this may take a few minutes)...' });
 
     // 1. TRIGGER GENERATION
@@ -164,7 +179,8 @@ async function generateInfographic(notebookId, sourceId) {
         [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]
     ];
     console.log("NotebookController: 🚀 Triggering Generation...");
-    await callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
+    // We don't await this, fire and forget.
+    callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload).catch(e => console.warn("Trigger warning:", e));
     
     // 2. POLL FOR ARTIFACTS
     pollForArtifacts(notebookId);
@@ -178,6 +194,11 @@ async function pollForArtifacts(notebookId) {
         attempts++;
         if (attempts > maxAttempts) {
             clearInterval(poll);
+            chrome.runtime.sendMessage({
+                type: 'GENERATION_UPDATE',
+                status: 'ERROR',
+                payload: { error: "Generation timed out. Please try again." }
+            });
             return;
         }
 
