@@ -1,7 +1,8 @@
 /*
- * Token Extractor & RPC Proxy - FINAL FIX
+ * Token Extractor & RPC Proxy - LOGIN CHECK EDITION
  * 1. Scans for Version Info.
- * 2. Wraps payload in the CORRECT TRIPLE ARRAY structure.
+ * 2. Checks if user is Logged In (4s timeout).
+ * 3. Executes RPC requests.
  */
 (function () {
     console.log("NotebookSpy: Proxy Loaded.");
@@ -9,6 +10,7 @@
     let cachedBL = null;
     let cachedFSID = null;
     let cachedToken = null;
+    let hasReportedStatus = false;
 
     function scanContext() {
         try {
@@ -20,13 +22,22 @@
             const blMatch = html.match(/(boq_labs-tailwind-[a-zA-Z0-9_.-]+)/);
             if (blMatch) cachedBL = blMatch[0];
 
-            if (cachedToken && cachedBL) {
+            if (cachedToken && cachedBL && !hasReportedStatus) {
+                hasReportedStatus = true;
                 window.postMessage({ type: "EXTENSION_PROXY_READY" }, "*");
             }
         } catch (e) {
             console.error("Context Scan Error", e);
         }
     }
+
+    // --- LOGIN CHECK ---
+    setTimeout(() => {
+        if (!cachedToken) {
+            console.warn("NotebookSpy: No Token found. User likely logged out.");
+            window.postMessage({ type: "EXTENSION_LOGIN_REQUIRED" }, "*");
+        }
+    }, 4000); // Wait 4 seconds for page load
 
     window.addEventListener("message", async (event) => {
         if (event.source !== window || !event.data.type) return;
@@ -38,24 +49,30 @@
 
     async function executeRPC(rpcId, payload, reqId) {
         if (!cachedToken || !cachedBL) scanContext();
+        if (!cachedToken) {
+             window.postMessage({
+                type: "EXTENSION_RPC_RESULT",
+                status: "ERROR",
+                error: "Not Signed In",
+                rpcId: rpcId
+            }, "*");
+            return;
+        }
 
         const baseUrl = "https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute";
         const url = new URL(baseUrl);
-
+        
         url.searchParams.append("rpcids", rpcId);
         url.searchParams.append("source-path", "/");
         url.searchParams.append("bl", cachedBL);
-        url.searchParams.append("f.sid", cachedFSID || "");
-        url.searchParams.append("hl", "en"); // Added language param from your log
+        url.searchParams.append("f.sid", cachedFSID || ""); 
+        url.searchParams.append("hl", "en"); 
         url.searchParams.append("rt", "c");
         url.searchParams.append("_reqid", reqId);
 
         const innerPayload = JSON.stringify(payload);
-
-        // 🔥 THE FIX: TRIPLE ARRAY WRAPPER [[["ID", ...]]] 
-        // Your log showed: [[["CCqFvf", ... ]]]
         const envelope = JSON.stringify([[[rpcId, innerPayload, null, "generic"]]]);
-
+        
         const body = new URLSearchParams();
         body.append("f.req", envelope);
         body.append("at", cachedToken);
@@ -71,12 +88,9 @@
                 body: body
             });
 
-            if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
             const text = await response.text();
-
+            
             window.postMessage({
                 type: "EXTENSION_RPC_RESULT",
                 status: "SUCCESS",
@@ -96,5 +110,5 @@
     }
 
     scanContext();
-    setTimeout(scanContext, 1000);
+    setInterval(scanContext, 1000); 
 })();

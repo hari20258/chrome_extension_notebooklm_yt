@@ -226,6 +226,19 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             } else if (message.status === 'ERROR') {
                 updateOverlay("Error: " + (message.payload?.error || "Unknown"));
                 document.querySelector('.nlm-loader').style.display = 'none';
+            } else if (message.status === 'LOGIN_REQUIRED') {
+                // --- CUSTOM LOGIN MESSAGE ---
+                updateOverlay("Please sign in to your Google account.");
+                document.querySelector('.nlm-loader').style.display = 'none';
+
+                // Optional: Add a link to help them sign in
+                const preview = document.getElementById('nlm-preview');
+                preview.style.display = 'block';
+                preview.innerHTML = `
+                    <a href="https://notebooklm.google.com" target="_blank" style="
+                        display: block; margin-top: 10px; color: #3ea6ff; text-decoration: none; font-size: 13px;
+                    ">Open NotebookLM to Sign In ↗</a>
+                `;
             } else {
                 updateOverlay(message.status);
             }

@@ -1,29 +1,42 @@
 /*
- * NotebookLM Controller - DOUBLE PARSE EDITION
+ * NotebookLM Controller - PATIENT POLLING + UI UPDATES
  * 1. Triggers generation (R7cb6c)
- * 2. Polls (gArtLc) and UNPACKS the inner JSON string to find the image.
+ * 2. Polls (gArtLc) every 20s for result.
+ * 3. Sends status updates to YouTube UI.
  */
 
 const RPC_CREATE_NOTEBOOK = "CCqFvf";
 const RPC_REFRESH_LIST = "ub2Bae";
 const RPC_ADD_SOURCE = "izAoDd";
 const RPC_GENERATE_INFOGRAPHIC = "R7cb6c";
-const RPC_LIST_ARTIFACTS = "gArtLc";
+const RPC_LIST_ARTIFACTS = "gArtLc"; 
 
 let isProxyReady = false;
 
 function init() {
     console.log("NotebookController: Waiting for Proxy...");
+    // FEATURE: Initial Status
+    chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Initializing...' });
 }
 
 window.addEventListener("message", (event) => {
     if (event.source !== window) return;
+
     if (event.data.type === "EXTENSION_PROXY_READY") {
         if (!isProxyReady) {
             console.log("NotebookController: ✅ Proxy is Ready.");
             isProxyReady = true;
             chrome.runtime.sendMessage({ type: 'NOTEBOOK_READY' });
         }
+    }
+    // FEATURE: Login Check Handler
+    else if (event.data.type === "EXTENSION_LOGIN_REQUIRED") {
+        console.warn("NotebookController: User is not logged in.");
+        chrome.runtime.sendMessage({
+            type: 'GENERATION_UPDATE',
+            status: 'LOGIN_REQUIRED',
+            payload: {}
+        });
     }
 });
 
@@ -32,16 +45,15 @@ function callProxy(rpcId, payload) {
         if (!isProxyReady) return reject("Proxy not ready");
 
         const reqId = Math.floor(Math.random() * 100000) + 100000;
-
+        
         const listener = (event) => {
             if (event.source !== window) return;
             if (event.data.type === "EXTENSION_RPC_RESULT" && event.data.rpcId === rpcId) {
                 window.removeEventListener("message", listener);
-
+                
                 if (event.data.status === "SUCCESS") {
                     const rawText = event.data.data;
                     try {
-                        // STREAM PARSER: Handle )]}' prefix and multiple chunks
                         const lines = rawText.split('\n');
                         let parsedData = null;
                         for (const line of lines) {
@@ -53,10 +65,10 @@ function callProxy(rpcId, payload) {
                                         parsedData = json;
                                         break;
                                     }
-                                } catch (e) { }
+                                } catch (e) {}
                             }
                         }
-                        resolve(parsedData || []);
+                        resolve(parsedData || []); 
                     } catch (e) {
                         reject("JSON Parse Error");
                     }
@@ -87,14 +99,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function performCreation() {
     try {
+        // FEATURE: Status Update
+        chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Creating notebook...' });
         console.log("NotebookController: Creating new notebook...");
+        
         const payload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_CREATE_NOTEBOOK, payload);
-
+        
         if (!response || !response[0]) throw new Error("No response");
         const innerJsonString = response[0][2];
         const innerResponse = JSON.parse(innerJsonString);
-        const id = innerResponse[2];
+        const id = innerResponse[2]; 
 
         console.log("NotebookController: ✅ Created ID:", id);
         await callProxy(RPC_REFRESH_LIST, [[2]]);
@@ -121,12 +136,15 @@ async function startFlow(videoUrl) {
         const notebookId = match ? match[1] : null;
         if (!notebookId) throw new Error("No Notebook ID found");
 
+        // FEATURE: Status Update
+        chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Adding source...' });
         console.log("NotebookController: Adding source to", notebookId);
+        
         const payload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const response = await callProxy(RPC_ADD_SOURCE, payload);
-
+        
         const innerResponse = JSON.parse(response[0][2]);
-        const sourceId = findSourceID(innerResponse);
+        const sourceId = findSourceID(innerResponse); 
         console.log("NotebookController: Source Added", sourceId);
 
         await generateInfographic(notebookId, sourceId);
@@ -137,21 +155,24 @@ async function startFlow(videoUrl) {
 }
 
 async function generateInfographic(notebookId, sourceId) {
+    // FEATURE: Status Update for long wait
+    chrome.runtime.sendMessage({ type: 'GENERATION_UPDATE', status: 'Generating infographic (this may take a few minutes)...' });
+
     // 1. TRIGGER GENERATION
     const triggerPayload = [
-        [2], notebookId,
+        [2], notebookId, 
         [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]
     ];
     console.log("NotebookController: 🚀 Triggering Generation...");
     await callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
-
+    
     // 2. POLL FOR ARTIFACTS
     pollForArtifacts(notebookId);
 }
 
 async function pollForArtifacts(notebookId) {
     let attempts = 0;
-    const maxAttempts = 20;
+    const maxAttempts = 30; // 30 * 20s = 10 minutes max
 
     const poll = setInterval(async () => {
         attempts++;
@@ -162,20 +183,15 @@ async function pollForArtifacts(notebookId) {
 
         try {
             console.log(`NotebookController: Polling Artifacts #${attempts}...`);
-
+            
             const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
             const response = await callProxy(RPC_LIST_ARTIFACTS, payload);
-
-            // 🔥 DOUBLE PARSE FIX:
-            // The response matches: [["wrb.fr", "gArtLc", "INNER_JSON_STRING", ...]]
+            
             if (response && response[0] && typeof response[0][2] === 'string') {
                 try {
-                    // Unpack the inner string where the image is hiding
                     const innerData = JSON.parse(response[0][2]);
-
-                    // Now search inside the unpacked data
                     const imageUrl = findImageUrl(innerData);
-
+                    
                     if (imageUrl) {
                         console.log("NotebookController: 📸 Found Image URL!", imageUrl);
                         clearInterval(poll);
@@ -186,17 +202,16 @@ async function pollForArtifacts(notebookId) {
                         });
                         return;
                     }
-                } catch (e) {
+                } catch(e) {
                     console.log("Could not parse inner artifact data, continuing...");
                 }
             }
-
             console.log("NotebookController: No image found yet...");
 
         } catch (e) {
             console.error("Poll error (ignoring)", e);
         }
-    }, 20000);
+    }, 20000); // 20 Seconds Interval
 }
 
 function findSourceID(obj) {
@@ -212,8 +227,6 @@ function findSourceID(obj) {
 
 function findImageUrl(obj) {
     if (typeof obj === 'string') {
-        // Look for googleusercontent URLs
-        // REMOVED the "profile/picture" filter because your logs show that IS the image URL.
         if (obj.includes('googleusercontent.com') || obj.startsWith('data:image/')) {
             return obj;
         }
