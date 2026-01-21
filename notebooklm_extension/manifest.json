@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "NotebookLM Infographic Generator",
     "version": "1.0.0",
-    "description": "Generates NotebookLM infographics from YouTube videos via internal RPCs",
+    "description": "Generates NotebookLM infographics from YouTube videos",
     "permissions": [
         "activeTab",
         "tabs",
@@ -34,15 +34,19 @@
                 "https://notebooklm.google.com/*"
             ],
             "js": [
-                "lib/rpc_client.js",
+                "content/token_extractor.js"
+            ],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
+        {
+            "matches": [
+                "https://notebooklm.google.com/*"
+            ],
+            "js": [
                 "content/notebook_controller.js"
             ],
             "run_at": "document_idle"
         }
-    ],
-    "icons": {
-        "16": "icons/icon16.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
-    }
+    ]
 }

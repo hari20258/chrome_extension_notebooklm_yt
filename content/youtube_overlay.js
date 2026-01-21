@@ -91,13 +91,23 @@ console.log("[NotebookLM] YouTube overlay script loaded");
     function startGeneration() {
         const videoUrl = window.location.href;
         console.log("[NotebookLM] Starting generation for", videoUrl);
-        chrome.runtime.sendMessage({
-            type: 'INIT_GENERATION',
-            videoUrl: videoUrl
-        });
 
-        showOverlay();
-        updateOverlay("Initializing...");
+        try {
+            chrome.runtime.sendMessage({
+                type: 'INIT_GENERATION',
+                videoUrl: videoUrl
+            });
+
+            showOverlay();
+            updateOverlay("Initializing...");
+        } catch (error) {
+            console.error("[NotebookLM] Message error:", error);
+            if (error.message.includes("Extension context invalidated")) {
+                alert("Please refresh this YouTube page.\n\nThe extension has been updated, so the current page script is stale.");
+            } else {
+                alert("Error initializing extension: " + error.message);
+            }
+        }
     }
 
     function showOverlay() {

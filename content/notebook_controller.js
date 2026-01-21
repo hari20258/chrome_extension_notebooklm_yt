@@ -1,248 +1,205 @@
 /*
- * NotebookLM Controller
- * Executes operations inside the NotebookLM context
+ * NotebookLM Controller - DOUBLE PARSE EDITION
+ * 1. Triggers generation (R7cb6c)
+ * 2. Polls (gArtLc) and UNPACKS the inner JSON string to find the image.
  */
 
-// Constants from Prompt
-const RPC_CREATE_NOTEBOOK = "wXbhsf";
+const RPC_CREATE_NOTEBOOK = "CCqFvf";
+const RPC_REFRESH_LIST = "ub2Bae";
 const RPC_ADD_SOURCE = "izAoDd";
 const RPC_GENERATE_INFOGRAPHIC = "R7cb6c";
-// Placeholder/Common value. If failing, check network logs.
-const RPC_GET_NOTEBOOK = "uN5Y8d";
+const RPC_LIST_ARTIFACTS = "gArtLc";
 
-let rpcClient = null;
-let foundXsrfToken = null;
+let isProxyReady = false;
 
-// Initialize
 function init() {
-    console.log("NotebookController: Initializing interceptors...");
+    console.log("NotebookController: Waiting for Proxy...");
+}
 
-    // Monkey-patch window.fetch to capture XSRF token from legitimate requests
-    const originalFetch = window.fetch;
-    window.fetch = async function (...args) {
-        const [resource, config] = args;
-
-        // Check if this is a batchexecute call which contains the 'at' token
-        if (typeof resource === 'string' && resource.includes('batchexecute')) {
-            // Try to parse 'at' from URL params
-            try {
-                const url = new URL(resource, window.location.origin); // Ensure absolute URL
-                const at = url.searchParams.get('at');
-                if (at && !foundXsrfToken) {
-                    console.log("NotebookController: Captured XSRF token from fetch URL");
-                    foundXsrfToken = at;
-                    initializeRpc();
-                }
-            } catch (e) {
-                // ignore url parse errors
-            }
-
-            // Also check body if it's form data (sometimes passed there)
-            if (!foundXsrfToken && config && config.body instanceof URLSearchParams) {
-                const at = config.body.get('at');
-                if (at) {
-                    console.log("NotebookController: Captured XSRF token from fetch body");
-                    foundXsrfToken = at;
-                    initializeRpc();
-                }
-            }
+window.addEventListener("message", (event) => {
+    if (event.source !== window) return;
+    if (event.data.type === "EXTENSION_PROXY_READY") {
+        if (!isProxyReady) {
+            console.log("NotebookController: ✅ Proxy is Ready.");
+            isProxyReady = true;
+            chrome.runtime.sendMessage({ type: 'NOTEBOOK_READY' });
         }
+    }
+});
 
-        return originalFetch.apply(this, args);
-    };
+function callProxy(rpcId, payload) {
+    return new Promise((resolve, reject) => {
+        if (!isProxyReady) return reject("Proxy not ready");
 
-    // Wait for readiness
-    waitForNotebookReady();
+        const reqId = Math.floor(Math.random() * 100000) + 100000;
+
+        const listener = (event) => {
+            if (event.source !== window) return;
+            if (event.data.type === "EXTENSION_RPC_RESULT" && event.data.rpcId === rpcId) {
+                window.removeEventListener("message", listener);
+
+                if (event.data.status === "SUCCESS") {
+                    const rawText = event.data.data;
+                    try {
+                        // STREAM PARSER: Handle )]}' prefix and multiple chunks
+                        const lines = rawText.split('\n');
+                        let parsedData = null;
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (trimmed.startsWith('[[')) {
+                                try {
+                                    const json = JSON.parse(trimmed);
+                                    if (json[0] && json[0][0] === 'wrb.fr') {
+                                        parsedData = json;
+                                        break;
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+                        resolve(parsedData || []);
+                    } catch (e) {
+                        reject("JSON Parse Error");
+                    }
+                } else {
+                    reject(event.data.error);
+                }
+            }
+        };
+
+        window.addEventListener("message", listener);
+
+        window.postMessage({
+            type: "EXTENSION_CMD_EXECUTE",
+            rpcId: rpcId,
+            payload: payload,
+            reqId: reqId
+        }, "*");
+    });
 }
 
-function initializeRpc() {
-    if (rpcClient) return; // already done
-    rpcClient = new NotebookRPC(foundXsrfToken);
-    console.log("NotebookController: RPC Client Ready with captured token.");
-    chrome.runtime.sendMessage({ type: 'NOTEBOOK_READY' });
-}
-
-function waitForNotebookReady() {
-    // We simply wait until we have captured the token, which implies valid network activity.
-    // The 'fetch' monkeypatch above does the work.
-    // We can also log periodically.
-    const interval = setInterval(() => {
-        if (foundXsrfToken) {
-            clearInterval(interval);
-            // Done.
-        } else {
-            console.log("NotebookController: Waiting for network activity to capture token...");
-        }
-    }, 2000);
-}
-
-// Message Listener
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if (msg.type === 'START_RPC_FLOW') {
+    if (msg.type === 'CMD_CREATE_NOTEBOOK') {
+        performCreation();
+    } else if (msg.type === 'CMD_PROCESS_VIDEO') {
         startFlow(msg.videoUrl);
     }
 });
 
-async function startFlow(videoUrl) {
-    if (!rpcClient) {
-        reportStatus("ERROR", { error: "RPC Client not ready (no token captured yet)" });
-        return;
-    }
-
+async function performCreation() {
     try {
-        reportStatus("Creating Notebook...");
-        const notebookId = await createNotebook();
-        reportStatus(`Notebook Created: ${notebookId}. Adding Source...`);
+        console.log("NotebookController: Creating new notebook...");
+        const payload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
+        const response = await callProxy(RPC_CREATE_NOTEBOOK, payload);
 
-        const sourceId = await addSource(notebookId, videoUrl);
-        reportStatus(`Source Added: ${sourceId}. Requesting Infographic...`);
+        if (!response || !response[0]) throw new Error("No response");
+        const innerJsonString = response[0][2];
+        const innerResponse = JSON.parse(innerJsonString);
+        const id = innerResponse[2];
 
-        // Add short delay for server consistency
-        await new Promise(r => setTimeout(r, 1000));
+        console.log("NotebookController: ✅ Created ID:", id);
+        await callProxy(RPC_REFRESH_LIST, [[2]]);
 
-        await generateInfographic(notebookId, sourceId);
-        reportStatus("Generation Triggered. Polling for results...");
-
-        // Start Polling
-        pollUntilComplete(notebookId, sourceId);
+        chrome.runtime.sendMessage({
+            type: 'GENERATION_UPDATE',
+            status: 'NOTEBOOK_CREATED_ID',
+            payload: { notebookId: id }
+        });
 
     } catch (e) {
-        console.error("Flow Error:", e);
-        reportStatus("ERROR", { error: e.toString() });
+        console.error("Creation Failed", e);
+        chrome.runtime.sendMessage({
+            type: 'GENERATION_UPDATE',
+            status: 'ERROR',
+            payload: { error: e.toString() }
+        });
     }
 }
 
-function reportStatus(status, payload) {
-    chrome.runtime.sendMessage({
-        type: 'GENERATION_UPDATE',
-        status: status,
-        payload: payload
-    });
-}
+async function startFlow(videoUrl) {
+    try {
+        const match = location.pathname.match(/\/notebook\/([a-zA-Z0-9-]+)/);
+        const notebookId = match ? match[1] : null;
+        if (!notebookId) throw new Error("No Notebook ID found");
 
-// --------------- RPC IMPLEMENTATIONS ---------------- //
+        console.log("NotebookController: Adding source to", notebookId);
+        const payload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
+        const response = await callProxy(RPC_ADD_SOURCE, payload);
 
-async function createNotebook() {
-    // Payload: [ [ "wXbhsf", [null, 1, null, [2]], null, "generic" ] ]
-    // The execute wrapper wraps the inner payload. 
-    // We need to look at what 'payload' argument to pass to NotebookRPC.execute.
-    // The NotebookRPC.execute does: JSON.stringify([[ RPCID, PAYLOAD, ... ]])
-    // Wait, batchexecute expects a list of envelopes. 
-    // Our RPC class simplifies this but we need to match the prompt's exact structure if it matters.
-    // Prompt: Payload (f.req) format: [ [ "wXbhsf", [null, 1, null, [2]], null, "generic" ] ]
-    // So the inner data for wXbhsf is `[null, 1, null, [2]]`.
+        const innerResponse = JSON.parse(response[0][2]);
+        const sourceId = findSourceID(innerResponse);
+        console.log("NotebookController: Source Added", sourceId);
 
-    const rawData = [null, 1, null, [2]];
-    const response = await rpcClient.execute(RPC_CREATE_NOTEBOOK, rawData);
+        await generateInfographic(notebookId, sourceId);
 
-    // Extract Notebook ID from response
-    // Structure is typically deeply nested.
-    // We'll log it to be safe, but we need to try to find the UUID.
-    // Response looks like: [["wrb.fr", "wXbhsf", "[\"wrb.fr\",null,null,null,null,[[[\"NOTEBOOK_ID\"]]]]", ...]]
-    // We must parse the inner JSON string.
-
-    const innerResponse = JSON.parse(response[0][2]);
-    // Access pattern strictly depends on the response proto. 
-    // We'll try to find the canonical UUID format string.
-
-    const id = findUUID(innerResponse);
-    if (!id) throw new Error("Could not extract Notebook ID");
-    return id;
-}
-
-async function addSource(notebookId, videoUrl) {
-    // RPC: izAoDd
-    // Payload must include URL and Notebook ID.
-    // Reverse engineered structure (hypothetical based on Prompt constraints):
-    // [notebookId, videoUrl, 2] or similar.
-    // We will assume a structure like: [notebookId, [[videoUrl]]]
-
-    const payload = [notebookId, [[videoUrl]]];
-    const response = await rpcClient.execute(RPC_ADD_SOURCE, payload);
-
-    const innerResponse = JSON.parse(response[0][2]);
-    const sourceId = findSourceID(innerResponse);
-    if (!sourceId) throw new Error("Could not extract Source ID");
-    return sourceId;
+    } catch (e) {
+        console.error("Flow Failed", e);
+    }
 }
 
 async function generateInfographic(notebookId, sourceId) {
-    // RPC: R7cb6c
-    // Enum: 7
-    // Single source.
-    // Payload guess: [notebookId, sourceId, 7]
+    // 1. TRIGGER GENERATION
+    const triggerPayload = [
+        [2], notebookId,
+        [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]
+    ];
+    console.log("NotebookController: 🚀 Triggering Generation...");
+    await callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
 
-    const payload = [notebookId, sourceId, 7];
-    await rpcClient.execute(RPC_GENERATE_INFOGRAPHIC, payload);
-    // This likely controls a trigger, returns void or ack.
+    // 2. POLL FOR ARTIFACTS
+    pollForArtifacts(notebookId);
 }
 
-async function pollUntilComplete(notebookId, sourceId) {
+async function pollForArtifacts(notebookId) {
     let attempts = 0;
-    const maxAttempts = 60; // 2 minutes approx
+    const maxAttempts = 20;
 
     const poll = setInterval(async () => {
         attempts++;
         if (attempts > maxAttempts) {
             clearInterval(poll);
-            reportStatus("ERROR", { error: "Timeout waiting for generation" });
             return;
         }
 
         try {
-            // We use the "Poll" strategy. 
-            // If we don't have a read RPC, we re-fetch the notebook context used by creating the page or ListArtifacts.
-            // Let's assume standard google ListArtifacts RPC structure.
-            // Or we can try to re-call createNotebook with different params if it was an idempotent getter? Unlikely.
+            console.log(`NotebookController: Polling Artifacts #${attempts}...`);
 
-            // We will try a "Get Notebook" payload.
-            // [notebookId]
-            const payload = [notebookId];
-            // Note: We are using a generic RPC ID for 'get'. This is the riskiest part without exact RE data.
-            // However, we can look for specific artifact status "COMPLETED".
+            const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
+            const response = await callProxy(RPC_LIST_ARTIFACTS, payload);
 
-            // For this implementation, I will treat the 'poll' as a "Check result" step.
-            // If real RE data is missing, I will simulate completion for the sake of the Deliverable structure,
-            // but the code handles the RPC call mechanics.
+            // 🔥 DOUBLE PARSE FIX:
+            // The response matches: [["wrb.fr", "gArtLc", "INNER_JSON_STRING", ...]]
+            if (response && response[0] && typeof response[0][2] === 'string') {
+                try {
+                    // Unpack the inner string where the image is hiding
+                    const innerData = JSON.parse(response[0][2]);
 
-            // NOTE: In a real scenario, I would dump the `window.WIZ` or `yt` config to find the RPC list.
-            // Here, I will assume a successful 'Get' returns the artifacts list.
+                    // Now search inside the unpacked data
+                    const imageUrl = findImageUrl(innerData);
 
-            // const response = await rpcClient.execute(RPC_GET_NOTEBOOK, payload);
-            // const status = parseArtifactStatus(response);
+                    if (imageUrl) {
+                        console.log("NotebookController: 📸 Found Image URL!", imageUrl);
+                        clearInterval(poll);
+                        chrome.runtime.sendMessage({
+                            type: 'GENERATION_UPDATE',
+                            status: 'COMPLETED',
+                            payload: { imageUrl: imageUrl }
+                        });
+                        return;
+                    }
+                } catch (e) {
+                    console.log("Could not parse inner artifact data, continuing...");
+                }
+            }
 
-            // if (status === 'COMPLETED') { ... }
-
-            // Since I can't guarantee the ID `RPC_GET_NOTEBOOK` is valid without RE, 
-            // I will put a placeholder logic.
-            console.log("Polling notebook status...");
+            console.log("NotebookController: No image found yet...");
 
         } catch (e) {
-            console.error("Poll error", e);
+            console.error("Poll error (ignoring)", e);
         }
-
-    }, 2000);
-}
-
-// Utilities
-
-function findUUID(obj) {
-    // Depth-first search for a string looking like a Notebook ID (UUID-ish)
-    // Usually 10-30 chars, maybe hex or base64. 
-    // NotebookLM IDs are usually long strings.
-    if (typeof obj === 'string' && obj.length > 20 && !obj.includes(' ')) return obj;
-
-    if (Array.isArray(obj)) {
-        for (let item of obj) {
-            const found = findUUID(item);
-            if (found) return found;
-        }
-    }
-    return null;
+    }, 20000);
 }
 
 function findSourceID(obj) {
-    // Similar to UUID but for Source.
     if (typeof obj === 'string' && obj.length > 10 && !obj.includes(' ')) return obj;
     if (Array.isArray(obj)) {
         for (let item of obj) {
@@ -253,5 +210,21 @@ function findSourceID(obj) {
     return null;
 }
 
-// Start
+function findImageUrl(obj) {
+    if (typeof obj === 'string') {
+        // Look for googleusercontent URLs
+        // REMOVED the "profile/picture" filter because your logs show that IS the image URL.
+        if (obj.includes('googleusercontent.com') || obj.startsWith('data:image/')) {
+            return obj;
+        }
+    }
+    if (Array.isArray(obj)) {
+        for (let item of obj) {
+            const result = findImageUrl(item);
+            if (result) return result;
+        }
+    }
+    return null;
+}
+
 init();

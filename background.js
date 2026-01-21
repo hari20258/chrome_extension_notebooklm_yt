@@ -1,73 +1,142 @@
 /*
- * Background Service Worker
- * Orchestrates communication between YouTube and NotebookLM content scripts
+ * Background Service Worker - PERSISTENT EDITION
+ * Uses chrome.storage.local to survive Service Worker restarts.
  */
 
-// Store state locally to map youtube tabs to their worker notebook tabs
-let activeJobs = {}; // { youtubeTabId: { notebookTabId: number, videoUrl: string } }
+// Helper to save job state
+async function saveJob(tabId, jobData) {
+  await chrome.storage.local.set({ [tabId]: jobData });
+  console.log(`[Background] Job saved for Tab ${tabId}:`, jobData);
+}
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'INIT_GENERATION') {
-    handleInitGeneration(sender.tab.id, message.videoUrl);
-  } else if (message.type === 'NOTEBOOK_READY') {
-    handleNotebookReady(sender.tab.id);
-  } else if (message.type === 'GENERATION_UPDATE') {
-    handleGenerationUpdate(sender.tab.id, message.status, message.payload);
-  }
-});
+// Helper to get job state
+async function getJob(tabId) {
+  const data = await chrome.storage.local.get(tabId.toString());
+  return data[tabId];
+}
 
 async function handleInitGeneration(youtubeTabId, videoUrl) {
-  // 1. Create a new tab for NotebookLM (hidden if possible, but usually needs to be active for some execution, let's keep it inactive but open)
-  // Note: 'active: false' opens it in background.
+  console.log("[Background] Starting new generation flow...");
+
+  // 1. Open NotebookLM
   const notebookTab = await chrome.tabs.create({
     url: 'https://notebooklm.google.com/',
     active: false
   });
 
-  // 2. Store job mapping
-  activeJobs[notebookTab.id] = {
+  // 2. Save Job to Storage (Persistent)
+  await saveJob(notebookTab.id, {
     youtubeTabId: youtubeTabId,
     videoUrl: videoUrl,
-    status: 'STARTING'
-  };
+    status: 'WAITING_FOR_CREATION'
+  });
 
-  // 3. Notify YouTube we started
+  // 3. Notify YouTube
   chrome.tabs.sendMessage(youtubeTabId, {
     type: 'UPDATE_STATUS',
-    status: 'Initializing NotebookLM...'
+    status: 'Initializing... Opening NotebookLM'
   });
 }
 
-function handleNotebookReady(notebookTabId) {
-  const job = activeJobs[notebookTabId];
-  if (!job) return;
+async function handleNotebookReady(notebookTabId, senderUrl) {
+  console.log(`[Background] Received READY signal from Tab ${notebookTabId}`);
 
-  // Send the START command to the NotebookLM tab
-  chrome.tabs.sendMessage(notebookTabId, {
-    type: 'START_RPC_FLOW',
-    videoUrl: job.videoUrl
-  });
+  const job = await getJob(notebookTabId);
 
-  chrome.tabs.sendMessage(job.youtubeTabId, {
-    type: 'UPDATE_STATUS',
-    status: 'Connected to NotebookLM. Creating Notebook...'
-  });
+  if (!job) {
+    console.warn(`[Background] ⚠️ No active job found for Tab ${notebookTabId}. ignoring.`);
+    return;
+  }
+
+  console.log(`[Background] Current Job Status: ${job.status}`);
+
+  const urlObj = new URL(senderUrl);
+  // Check if we are on the main list page (not inside a specific notebook yet)
+  // We allow paths like "/" or "/u/0/" or empty
+  const isDashboard = !urlObj.pathname.includes('/notebook/');
+
+  if (job.status === 'WAITING_FOR_CREATION' && isDashboard) {
+    console.log("[Background] ✅ Condition met. Sending CREATE command.");
+
+    // Update status to prevent double-firing
+    job.status = 'CREATING';
+    await saveJob(notebookTabId, job);
+
+    chrome.tabs.sendMessage(notebookTabId, {
+      type: 'CMD_CREATE_NOTEBOOK'
+    });
+
+    chrome.tabs.sendMessage(job.youtubeTabId, {
+      type: 'UPDATE_STATUS',
+      status: 'Creating specific notebook...'
+    });
+  }
+  else if (senderUrl.includes('/notebook/') && job.status !== 'GENERATING') {
+    // We are inside the new notebook!
+    console.log("[Background] ✅ Inside Notebook. Sending PROCESS command.");
+
+    job.status = 'GENERATING';
+    await saveJob(notebookTabId, job);
+
+    chrome.tabs.sendMessage(notebookTabId, {
+      type: 'CMD_PROCESS_VIDEO',
+      videoUrl: job.videoUrl
+    });
+
+    chrome.tabs.sendMessage(job.youtubeTabId, {
+      type: 'UPDATE_STATUS',
+      status: 'Notebook Ready. Adding Source...'
+    });
+  }
 }
 
 function handleGenerationUpdate(notebookTabId, status, payload) {
-  const job = activeJobs[notebookTabId];
-  if (!job) return;
+  // We need to use an async wrapper since getJob is async
+  (async () => {
+    const job = await getJob(notebookTabId);
+    if (!job) return;
 
-  // Forward update to YouTube
-  chrome.tabs.sendMessage(job.youtubeTabId, {
-    type: 'UPDATE_STATUS',
-    status: status,
-    payload: payload
-  });
+    if (status === 'NOTEBOOK_CREATED_ID') {
+      const newId = payload.notebookId;
+      const newUrl = `https://notebooklm.google.com/notebook/${newId}?addSource=true`;
 
-  if (status === 'COMPLETED' || status === 'ERROR') {
-    // Cleanup
-    chrome.tabs.remove(notebookTabId);
-    delete activeJobs[notebookTabId];
-  }
+      console.log(`[Background] Navigating to new notebook: ${newId}`);
+
+      // Update Job State
+      job.status = 'NAVIGATING';
+      await saveJob(notebookTabId, job);
+
+      chrome.tabs.update(notebookTabId, { url: newUrl });
+      return;
+    }
+
+    // Forward to YouTube
+    chrome.tabs.sendMessage(job.youtubeTabId, {
+      type: 'UPDATE_STATUS',
+      status: status,
+      payload: payload
+    });
+
+    if (status === 'COMPLETED' || status === 'ERROR') {
+      console.log("[Background] Job Finished. Cleaning up.");
+      chrome.storage.local.remove(notebookTabId.toString());
+    }
+  })();
 }
+
+// Listeners
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Return true to indicate we might respond asynchronously (standard practice)
+
+  if (message.type === 'INIT_GENERATION') {
+    handleInitGeneration(sender.tab.id, message.videoUrl);
+  }
+  else if (message.type === 'NOTEBOOK_READY') {
+    handleNotebookReady(sender.tab.id, sender.tab.url);
+  }
+  else if (message.type === 'GENERATION_UPDATE') {
+    handleGenerationUpdate(sender.tab.id, message.status, message.payload);
+  }
+
+  return true;
+});
