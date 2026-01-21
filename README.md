@@ -121,3 +121,7 @@ This forces the client-side router to wake up, fetch the context (`wXbhsf`), and
 
 *   **Backend Success $\neq$ UI Success:** In modern SPAs, simply hitting the API endpoint is not enough. You must understand how the frontend router and state management system react to those changes.
 *   **Internal APIs are Stable:** While undocumented, internal RPCs (like `batchexecute`) are often more stable than DOM structures because the backend relies on them.
+
+## 🎓 Git changes in systamatic development
+<img width="354" height="460" alt="image" src="https://github.com/user-attachments/assets/00b1ab10-2a43-4118-89c1-a2b9949e2c95" />
+
