@@ -12,16 +12,24 @@
     "host_permissions": [
         "https://www.youtube.com/*",
         "https://notebooklm.google.com/*",
-        "https://*.googleusercontent.com/*"
+        "https://*.googleusercontent.com/*",
+        "https://accounts.google.com/*",
+        "https://*.google.com/*"
     ],
     "background": {
         "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": ["https://www.youtube.com/*"],
-            "js": ["content/youtube_overlay.js"],
-            "css": ["content/styles.css"],
+            "matches": [
+                "https://www.youtube.com/*"
+            ],
+            "js": [
+                "content/youtube_overlay.js"
+            ],
+            "css": [
+                "content/styles.css"
+            ],
             "run_at": "document_idle"
         }
     ]

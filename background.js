@@ -15,7 +15,7 @@ const RPC = {
     ADD_SOURCE: "izAoDd",
     GENERATE_INFOGRAPHIC: "R7cb6c",
     LIST_ARTIFACTS: "gArtLc",
-    DELETE_NOTEBOOK: "f61S6e" 
+    DELETE_NOTEBOOK: "f61S6e"
 };
 
 // State
@@ -82,11 +82,11 @@ async function executeRPC(rpcId, payload) {
             "X-Same-Domain": "1"
         },
         body: body,
-        credentials: "include" 
+        credentials: "include"
     });
 
     if (!response.ok) throw new Error(`RPC ${rpcId} failed: ${response.status}`);
-    
+
     const text = await response.text();
     return parseRPCResponse(text);
 }
@@ -99,9 +99,9 @@ function parseRPCResponse(text) {
             try {
                 const json = JSON.parse(trimmed);
                 if (json[0] && json[0][0] === 'wrb.fr') {
-                    return json; 
+                    return json;
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
     }
     return null;
@@ -122,7 +122,7 @@ async function runGenerationPipeline(youtubeTabId, videoUrl) {
         notifyUI(youtubeTabId, "Creating Notebook...");
         const createPayload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const createRes = await executeRPC(RPC.CREATE_NOTEBOOK, createPayload);
-        
+
         const innerCreate = JSON.parse(createRes[0][2]);
         const notebookId = innerCreate[2];
         console.log("[Headless] Notebook Created:", notebookId);
@@ -131,24 +131,24 @@ async function runGenerationPipeline(youtubeTabId, videoUrl) {
         notifyUI(youtubeTabId, "Adding Source...");
         const sourcePayload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
         const sourceRes = await executeRPC(RPC.ADD_SOURCE, sourcePayload);
-        
+
         const innerSource = JSON.parse(sourceRes[0][2]);
         const sourceId = findSourceID(innerSource);
-        
+
         if (!sourceId) throw new Error("Google rejected video (No Transcript?)");
         console.log("[Headless] Source Added:", sourceId);
 
         // Step D: Wait & Trigger
         notifyUI(youtubeTabId, "Processing Transcript (10s)...");
-        console.log("[Headless] ⏳ Pausing 10s for transcript processing..."); 
+        console.log("[Headless] ⏳ Pausing 10s for transcript processing...");
         await new Promise(r => setTimeout(r, 10000));
 
         notifyUI(youtubeTabId, "Triggering Generation...");
-        console.log("[Headless] 🚀 Triggering Generation RPC..."); 
-        
+        console.log("[Headless] 🚀 Triggering Generation RPC...");
+
         const triggerPayload = [[2], notebookId, [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]];
         await executeRPC(RPC.GENERATE_INFOGRAPHIC, triggerPayload);
-        console.log("[Headless] ✅ Trigger Sent."); 
+        console.log("[Headless] ✅ Trigger Sent.");
 
         // Step E: Poll
         notifyUI(youtubeTabId, "Generating Infographic...");
@@ -174,37 +174,30 @@ async function pollForArtifacts(tabId, notebookId, sourceId) {
 
         try {
             console.log(`[Headless] Polling #${attempts}...`);
-            
-            // Retry Trigger Logic
-            if (attempts === 2 || attempts === 5) {
-                 console.log("[Headless] 🔄 Re-triggering generation...");
-                 const triggerPayload = [[2], notebookId, [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]];
-                 executeRPC(RPC.GENERATE_INFOGRAPHIC, triggerPayload).catch(console.warn);
-            }
 
             const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
             const response = await executeRPC(RPC.LIST_ARTIFACTS, payload);
-            
+
             if (response && response[0] && typeof response[0][2] === 'string') {
                 const innerData = JSON.parse(response[0][2]);
                 const imageUrl = findImageUrl(innerData);
-                
+
                 if (imageUrl) {
                     console.log("[Headless] 📸 Image Found:", imageUrl);
                     clearInterval(interval);
-                    
+
                     // --- CHANGED: Fallback Logic ---
                     let finalImage = imageUrl;
                     try {
                         const base64 = await urlToBase64(imageUrl);
                         finalImage = base64;
                         console.log("[Headless] ✅ Base64 Conversion Success");
-                    } catch(e) {
-                         console.warn("[Headless] ⚠️ Base64 failed (CORS?), sending URL directly.", e);
+                    } catch (e) {
+                        console.warn("[Headless] ⚠️ Base64 failed (CORS?), sending URL directly.", e);
                     }
 
                     notifyUI(tabId, "COMPLETED", { imageUrl: finalImage });
-                    
+
                     // Optional: Clean up notebook after success?
                     // executeRPC(RPC.DELETE_NOTEBOOK, ...);
                 }
@@ -217,7 +210,7 @@ async function pollForArtifacts(tabId, notebookId, sourceId) {
 
 // --- HELPERS ---
 function notifyUI(tabId, status, payload = {}) {
-    chrome.tabs.sendMessage(tabId, { type: 'UPDATE_STATUS', status, payload }).catch(() => {});
+    chrome.tabs.sendMessage(tabId, { type: 'UPDATE_STATUS', status, payload }).catch(() => { });
 }
 
 function findSourceID(obj) {
