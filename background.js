@@ -1,154 +1,263 @@
 /*
- * Background Service Worker - AUTO CLOSE EDITION
- * 1. Persists job state.
- * 2. Detects Login.
- * 3. CLOSES TAB ON COMPLETION.
+ * Background Service Worker - CORS FIX EDITION
+ * 1. Fetches Auth Tokens directly.
+ * 2. Executes RPCs directly.
+ * 3. Robost Base64 with Error Fallback.
  */
 
-// Helper to save job state
-async function saveJob(tabId, jobData) {
-  await chrome.storage.local.set({ [tabId]: jobData });
-  console.log(`[Background] Job saved for Tab ${tabId}:`, jobData);
-}
+// --- CONFIGURATION ---
+const BASE_URL = "https://notebooklm.google.com";
+const RPC_ENDPOINT = `${BASE_URL}/_/LabsTailwindUi/data/batchexecute`;
 
-// Helper to get job state
-async function getJob(tabId) {
-  const data = await chrome.storage.local.get(tabId.toString());
-  return data[tabId];
-}
+// RPC IDs
+const RPC = {
+    CREATE_NOTEBOOK: "CCqFvf",
+    ADD_SOURCE: "izAoDd",
+    GENERATE_INFOGRAPHIC: "R7cb6c",
+    LIST_ARTIFACTS: "gArtLc",
+    DELETE_NOTEBOOK: "f61S6e" 
+};
 
-async function handleInitGeneration(youtubeTabId, videoUrl) {
-  console.log("[Background] Starting new generation flow...");
+// State
+let sessionTokens = { at: null, bl: null, fsid: null };
 
-  const notebookTab = await chrome.tabs.create({
-    url: 'https://notebooklm.google.com/',
-    active: false
-  });
-
-  await saveJob(notebookTab.id, {
-    youtubeTabId: youtubeTabId,
-    videoUrl: videoUrl,
-    status: 'WAITING_FOR_CREATION'
-  });
-
-  chrome.tabs.sendMessage(youtubeTabId, {
-    type: 'UPDATE_STATUS',
-    status: 'Initializing... Opening NotebookLM'
-  });
-}
-
-async function handleNotebookReady(notebookTabId, senderUrl) {
-  console.log(`[Background] Received READY signal from Tab ${notebookTabId}`);
-
-  const job = await getJob(notebookTabId);
-
-  if (!job) {
-    console.warn(`[Background] ⚠️ No active job found for Tab ${notebookTabId}. ignoring.`);
-    return;
-  }
-
-  console.log(`[Background] Current Job Status: ${job.status}`);
-
-  const urlObj = new URL(senderUrl);
-  const isDashboard = !urlObj.pathname.includes('/notebook/');
-
-  if (job.status === 'WAITING_FOR_CREATION' && isDashboard) {
-    console.log("[Background] ✅ Condition met. Sending CREATE command.");
-
-    job.status = 'CREATING';
-    await saveJob(notebookTabId, job);
-
-    chrome.tabs.sendMessage(notebookTabId, {
-      type: 'CMD_CREATE_NOTEBOOK'
-    });
-
-    chrome.tabs.sendMessage(job.youtubeTabId, {
-      type: 'UPDATE_STATUS',
-      status: 'Creating specific notebook...'
-    });
-  }
-  else if (senderUrl.includes('/notebook/') && job.status !== 'GENERATING') {
-    console.log("[Background] ✅ Inside Notebook. Sending PROCESS command.");
-
-    job.status = 'GENERATING';
-    await saveJob(notebookTabId, job);
-
-    chrome.tabs.sendMessage(notebookTabId, {
-      type: 'CMD_PROCESS_VIDEO',
-      videoUrl: job.videoUrl
-    });
-
-    chrome.tabs.sendMessage(job.youtubeTabId, {
-      type: 'UPDATE_STATUS',
-      status: 'Notebook Ready. Adding Source...'
-    });
-  }
-}
-
-function handleGenerationUpdate(notebookTabId, status, payload) {
-  (async () => {
-    const job = await getJob(notebookTabId);
-    if (!job) return;
-
-    if (status === 'NOTEBOOK_CREATED_ID') {
-      const newId = payload.notebookId;
-      const newUrl = `https://notebooklm.google.com/notebook/${newId}?addSource=true`;
-
-      console.log(`[Background] Navigating to new notebook: ${newId}`);
-
-      job.status = 'NAVIGATING';
-      await saveJob(notebookTabId, job);
-
-      chrome.tabs.update(notebookTabId, { url: newUrl });
-      return;
-    }
-
-    // Forward to YouTube
-    chrome.tabs.sendMessage(job.youtubeTabId, {
-      type: 'UPDATE_STATUS',
-      status: status,
-      payload: payload
-    });
-
-    // --- 🔥 FIX 2: AUTO CLOSE TAB ---
-    if (status === 'COMPLETED' || status === 'ERROR') {
-      console.log("[Background] Job Finished. Closing Tab.");
-      chrome.storage.local.remove(notebookTabId.toString());
-      
-      try {
-          chrome.tabs.remove(notebookTabId);
-      } catch (e) {
-          console.log("Tab already closed.");
-      }
-    }
-  })();
-}
-
-// Detect Login Redirects
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.url) {
-    const job = await getJob(tabId);
-    if (job) {
-      if (changeInfo.url.includes('accounts.google.com') || changeInfo.url.includes('ServiceLogin')) {
-        console.log(`[Background] Tab ${tabId} redirected to Login Page. Signaling UI.`);
-        chrome.tabs.sendMessage(job.youtubeTabId, {
-          type: 'UPDATE_STATUS',
-          status: 'LOGIN_REQUIRED'
+// --- 1. TOKEN SCRAPER ---
+async function refreshTokens() {
+    console.log("[Headless] 🔄 Fetching new auth tokens...");
+    try {
+        const response = await fetch(BASE_URL, {
+            method: "GET",
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
         });
-      }
-    }
-  }
-});
+        const html = await response.text();
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'INIT_GENERATION') {
-    handleInitGeneration(sender.tab.id, message.videoUrl);
-  }
-  else if (message.type === 'NOTEBOOK_READY') {
-    handleNotebookReady(sender.tab.id, sender.tab.url);
-  }
-  else if (message.type === 'GENERATION_UPDATE') {
-    handleGenerationUpdate(sender.tab.id, message.status, message.payload);
-  }
-  return true;
+        const atMatch = html.match(/"SNlM0e":"([^"]+)"/);
+        const blMatch = html.match(/"(boq_labs-tailwind-[^"]+)"/);
+        const fsidMatch = html.match(/"FdrFJe":"([^"]+)"/);
+
+        if (!atMatch || !blMatch) throw new Error("Could not scrape tokens. User might be logged out.");
+
+        sessionTokens = {
+            at: atMatch[1],
+            bl: blMatch[1],
+            fsid: fsidMatch ? fsidMatch[1] : ""
+        };
+        console.log("[Headless] ✅ Tokens acquired:", sessionTokens.bl);
+        return true;
+
+    } catch (e) {
+        console.error("[Headless] Token Error:", e);
+        return false;
+    }
+}
+
+// --- 2. RPC EXECUTOR ---
+async function executeRPC(rpcId, payload) {
+    if (!sessionTokens.at) await refreshTokens();
+
+    const reqId = Math.floor(Math.random() * 100000) + 100000;
+    const innerPayload = JSON.stringify(payload);
+    const envelope = JSON.stringify([[[rpcId, innerPayload, null, "generic"]]]);
+
+    const params = new URLSearchParams({
+        "rpcids": rpcId,
+        "source-path": "/",
+        "bl": sessionTokens.bl,
+        "f.sid": sessionTokens.fsid,
+        "hl": "en",
+        "rt": "c",
+        "_reqid": reqId
+    });
+
+    const body = new URLSearchParams();
+    body.append("f.req", envelope);
+    body.append("at", sessionTokens.at);
+
+    const response = await fetch(`${RPC_ENDPOINT}?${params.toString()}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "X-Same-Domain": "1"
+        },
+        body: body,
+        credentials: "include" 
+    });
+
+    if (!response.ok) throw new Error(`RPC ${rpcId} failed: ${response.status}`);
+    
+    const text = await response.text();
+    return parseRPCResponse(text);
+}
+
+function parseRPCResponse(text) {
+    const lines = text.split('\n');
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('[[')) {
+            try {
+                const json = JSON.parse(trimmed);
+                if (json[0] && json[0][0] === 'wrb.fr') {
+                    return json; 
+                }
+            } catch (e) {}
+        }
+    }
+    return null;
+}
+
+// --- 3. CORE LOGIC FLOW ---
+async function runGenerationPipeline(youtubeTabId, videoUrl) {
+    try {
+        notifyUI(youtubeTabId, "Initializing (Headless Mode)...");
+
+        // Step A: Refresh Tokens
+        if (!await refreshTokens()) {
+            notifyUI(youtubeTabId, "LOGIN_REQUIRED");
+            return;
+        }
+
+        // Step B: Create Notebook
+        notifyUI(youtubeTabId, "Creating Notebook...");
+        const createPayload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
+        const createRes = await executeRPC(RPC.CREATE_NOTEBOOK, createPayload);
+        
+        const innerCreate = JSON.parse(createRes[0][2]);
+        const notebookId = innerCreate[2];
+        console.log("[Headless] Notebook Created:", notebookId);
+
+        // Step C: Add Source
+        notifyUI(youtubeTabId, "Adding Source...");
+        const sourcePayload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
+        const sourceRes = await executeRPC(RPC.ADD_SOURCE, sourcePayload);
+        
+        const innerSource = JSON.parse(sourceRes[0][2]);
+        const sourceId = findSourceID(innerSource);
+        
+        if (!sourceId) throw new Error("Google rejected video (No Transcript?)");
+        console.log("[Headless] Source Added:", sourceId);
+
+        // Step D: Wait & Trigger
+        notifyUI(youtubeTabId, "Processing Transcript (10s)...");
+        console.log("[Headless] ⏳ Pausing 10s for transcript processing..."); 
+        await new Promise(r => setTimeout(r, 10000));
+
+        notifyUI(youtubeTabId, "Triggering Generation...");
+        console.log("[Headless] 🚀 Triggering Generation RPC..."); 
+        
+        const triggerPayload = [[2], notebookId, [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]];
+        await executeRPC(RPC.GENERATE_INFOGRAPHIC, triggerPayload);
+        console.log("[Headless] ✅ Trigger Sent."); 
+
+        // Step E: Poll
+        notifyUI(youtubeTabId, "Generating Infographic...");
+        await pollForArtifacts(youtubeTabId, notebookId, sourceId);
+
+    } catch (e) {
+        console.error("[Headless] Pipeline Failed:", e);
+        notifyUI(youtubeTabId, "ERROR", { error: e.message });
+    }
+}
+
+async function pollForArtifacts(tabId, notebookId, sourceId) {
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const interval = setInterval(async () => {
+        attempts++;
+        if (attempts > maxAttempts) {
+            clearInterval(interval);
+            notifyUI(tabId, "ERROR", { error: "Timeout" });
+            return;
+        }
+
+        try {
+            console.log(`[Headless] Polling #${attempts}...`);
+            
+            // Retry Trigger Logic
+            if (attempts === 2 || attempts === 5) {
+                 console.log("[Headless] 🔄 Re-triggering generation...");
+                 const triggerPayload = [[2], notebookId, [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]];
+                 executeRPC(RPC.GENERATE_INFOGRAPHIC, triggerPayload).catch(console.warn);
+            }
+
+            const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
+            const response = await executeRPC(RPC.LIST_ARTIFACTS, payload);
+            
+            if (response && response[0] && typeof response[0][2] === 'string') {
+                const innerData = JSON.parse(response[0][2]);
+                const imageUrl = findImageUrl(innerData);
+                
+                if (imageUrl) {
+                    console.log("[Headless] 📸 Image Found:", imageUrl);
+                    clearInterval(interval);
+                    
+                    // --- CHANGED: Fallback Logic ---
+                    let finalImage = imageUrl;
+                    try {
+                        const base64 = await urlToBase64(imageUrl);
+                        finalImage = base64;
+                        console.log("[Headless] ✅ Base64 Conversion Success");
+                    } catch(e) {
+                         console.warn("[Headless] ⚠️ Base64 failed (CORS?), sending URL directly.", e);
+                    }
+
+                    notifyUI(tabId, "COMPLETED", { imageUrl: finalImage });
+                    
+                    // Optional: Clean up notebook after success?
+                    // executeRPC(RPC.DELETE_NOTEBOOK, ...);
+                }
+            }
+        } catch (e) {
+            console.warn("Poll failed, retrying...", e);
+        }
+    }, 20000);
+}
+
+// --- HELPERS ---
+function notifyUI(tabId, status, payload = {}) {
+    chrome.tabs.sendMessage(tabId, { type: 'UPDATE_STATUS', status, payload }).catch(() => {});
+}
+
+function findSourceID(obj) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (typeof obj === 'string' && uuidRegex.test(obj)) return obj;
+    if (Array.isArray(obj)) {
+        for (let item of obj) {
+            const found = findSourceID(item);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+function findImageUrl(obj) {
+    if (typeof obj === 'string' && (obj.includes('googleusercontent.com') || obj.startsWith('data:image/'))) return obj;
+    if (Array.isArray(obj)) {
+        for (let item of obj) {
+            const res = findImageUrl(item);
+            if (res) return res;
+        }
+    }
+    return null;
+}
+
+async function urlToBase64(url) {
+    // IMPORTANT: 'no-cors' mode would make the response opaque (unreadable), so we cannot use it to get data.
+    // We MUST use standard fetch. The 'host_permissions' in manifest.json is what allows this to work.
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
+}
+
+// --- ENTRY POINT ---
+chrome.runtime.onMessage.addListener((msg, sender) => {
+    if (msg.type === 'INIT_GENERATION') {
+        runGenerationPipeline(sender.tab.id, msg.videoUrl);
+    }
 });
