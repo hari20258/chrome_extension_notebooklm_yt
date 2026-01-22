@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "NotebookLM Infographic Generator",
-    "version": "1.0.0",
-    "description": "Generates NotebookLM infographics from YouTube videos",
+    "name": "NotebookLM Headless Generator",
+    "version": "2.0.0",
+    "description": "Generates NotebookLM infographics directly from the background",
     "permissions": [
         "activeTab",
         "tabs",
@@ -11,41 +11,17 @@
     ],
     "host_permissions": [
         "https://www.youtube.com/*",
-        "https://notebooklm.google.com/*"
+        "https://notebooklm.google.com/*",
+        "https://*.googleusercontent.com/*"
     ],
     "background": {
         "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": [
-                "https://www.youtube.com/*"
-            ],
-            "js": [
-                "content/youtube_overlay.js"
-            ],
-            "css": [
-                "content/styles.css"
-            ],
-            "run_at": "document_idle"
-        },
-        {
-            "matches": [
-                "https://notebooklm.google.com/*"
-            ],
-            "js": [
-                "content/token_extractor.js"
-            ],
-            "run_at": "document_start",
-            "world": "MAIN"
-        },
-        {
-            "matches": [
-                "https://notebooklm.google.com/*"
-            ],
-            "js": [
-                "content/notebook_controller.js"
-            ],
+            "matches": ["https://www.youtube.com/*"],
+            "js": ["content/youtube_overlay.js"],
+            "css": ["content/styles.css"],
             "run_at": "document_idle"
         }
     ]
