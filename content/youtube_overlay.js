@@ -99,7 +99,7 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
             transition: 'transform 0.2s'
         });
-        
+
         generateBtn.onmouseover = () => generateBtn.style.transform = 'scale(1.05)';
         generateBtn.onmouseout = () => generateBtn.style.transform = 'scale(1)';
 
@@ -190,7 +190,7 @@ console.log("[NotebookLM] YouTube overlay script loaded");
                 header.style.cursor = 'grabbing';
                 dragOffsetX = e.clientX - overlay.getBoundingClientRect().left;
                 dragOffsetY = e.clientY - overlay.getBoundingClientRect().top;
-                
+
                 const rect = overlay.getBoundingClientRect();
                 overlay.style.bottom = 'auto';
                 overlay.style.right = 'auto';
@@ -216,7 +216,7 @@ console.log("[NotebookLM] YouTube overlay script loaded");
 
         overlay.style.display = 'flex';
         requestAnimationFrame(() => overlay.style.opacity = '1');
-        
+
         document.querySelector('.nlm-loader').style.display = 'block';
         document.getElementById('nlm-preview').style.display = 'none';
         document.getElementById('nlm-status').innerText = 'Initializing...';
@@ -281,9 +281,9 @@ console.log("[NotebookLM] YouTube overlay script loaded");
             statusEl.innerText = "Generation Complete";
             statusEl.style.color = "#fff"; // Clean White
         } else if (text.includes("Error") || text.includes("rejected")) {
-             statusEl.style.color = "#ff6b6b"; // Soft Red
+            statusEl.style.color = "#ff6b6b"; // Soft Red
         } else if (text.includes("sign in")) {
-             statusEl.style.color = "#ff9f43"; // Soft Orange
+            statusEl.style.color = "#ff9f43"; // Soft Orange
         }
     }
 

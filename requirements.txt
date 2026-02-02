@@ -1,2 +1,5 @@
 requests==2.31.0
 pillow
+mcp>=1.0.0
+# aiohttp>=3.9.0 # Not strictly needed if we use playwright's evaluate/fetch
+playwright>=1.41.0
