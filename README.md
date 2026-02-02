@@ -1,158 +1,81 @@
-# 🕵️‍♂️ Reverse Engineering NotebookLM: The Journey
+# NotebookLM Infographic MCP Server
 
-This project is a Chrome Extension that automates Google's NotebookLM to generate beautiful infographics from YouTube videos.
+This project allows Claude Desktop to interact with **Google NotebookLM** to automatically generate and retrieve infographics from YouTube videos. It functions as a Model Context Protocol (MCP) server, bridging the gap between Claude's interface and Google's internal APIs.
 
-This document explains how I reverse-engineered the private API behind NotebookLM, deciphered the cryptic RPC protocol, and built a stable automation tool that works even in Incognito mode.
+## 🛠️ How It Works
 
-## ⚡ The Challenge
+The system operates as a **headless browser automation agent** (using Playwright) wrapped in an **MCP Server**.
 
-Google does not provide a public API for NotebookLM. To automate the "YouTube-to-Infographic" flow, I had to:
-1.  Intercept the traffic between the browser and Google's servers.
-2.  Decipher the `batchexecute` protocol (Google's internal RPC mechanism).
-3.  Replay those requests programmatically from a Chrome Extension.
+1.  **User Request**: You ask Claude to "Generate an infographic for [YouTube URL]".
+2.  **MCP Server (`server.py`)**: Receives the tool call and delegates it to the `NotebookLMClient`.
+3.  **Automation Client (`notebooklm_client.py`)**:
+    *   Launches a headless Chrome instance with persistent user data (cookies).
+    *   Navigates to NotebookLM and acquires session tokens (`at`, `bl`, `fsid`).
+    *   **RPC Execution**: Instead of clicking buttons, it reverse-engineered Google's internal RPC (Remote Procedure Call) endpoints (`batchexecute`) to programmatically create notebooks, add sources, and trigger generation.
+4.  **Polling**: The client polls the "List Artifacts" RPC until the specific "Infographic" artifact appears.
+5.  **Retrieval**: The tool downloads the generated image and returns it directly to Claude.
 
-## 🛠 Phase 1: The Network Tab Investigation
+---
 
-I started by opening the Chrome DevTools Network Tab (`Cmd+Option+I` -> Network) while performing actions manually in NotebookLM.
+## 🏗️ System Architecture
 
-### 1. Finding the Endpoint
-I filtered for Fetch/XHR requests and noticed that almost every action (creating a notebook, adding a source) hit the same URL:
-`https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute`
+*   **`server.py`**: The entry point. Uses `FastMCP` to expose two tools:
+    *   `generate_infographic(video_url)`: The main driver.
+    *   `fetch_infographic(notebook_id)`: Helper to retrieve an image if the initial generation timed out or failed.
+*   **`notebooklm_client.py`**: A robust wrapper around Playwright.
+    *   Handles Google Authentication (via `user_data` directory).
+    *   Manages the complex RPC payload structures required to talk to NotebookLM.
+    *   Handles authenticated file downloads.
 
-### 2. Identifying the Actions (RPC IDs)
-The payload was a mess of nested arrays, but I noticed a query parameter `rpcids`. By clearing the logs and performing one action at a time, I mapped the IDs:
+---
 
-| Action | RPC ID | Discovery Process |
-| :--- | :--- | :--- |
-| **Create Notebook** | `CCqFvf` | Clicked "New Notebook" -> Saw request with this ID. |
-| **Add Source** | `izAoDd` | Pasted a YouTube URL -> This ID appeared. |
-| **Generate Infographic** | `R7cb6c` | Clicked the "Infographic" button -> This ID triggered. |
-| **List Artifacts** | `gArtLc` | Watched for polling requests that returned the image URL. |
+## 🐛 The Debugging Journey & Solutions
 
-## 🔓 Phase 2: Cracking Authentication
+Getting the infographic to actually render in Claude was a significant engineering challenge involving three major hurdles.
 
-Simply copying the `fetch` request didn't work because of missing tokens. I analyzed the request headers and body params:
+### 1. The Authentication Wall
+*   **Problem**: Initially, we tried descending the image URL using the standard Python `requests` library.
+*   **Symptom**: The download would return a 200 OK, but the content was a Google Login HTML page (hidden redirect), not an image.
+*   **Reason**: The image URLs (`lh3.googleusercontent.com/...`) require specific session cookies to access. `requests` does not share the browser's authenticated state.
+*   **Fix**: We switched to using the **Playwright Browser Context**. This allows us to "borrow" the active session cookies from the headless browser window.
 
-### 1. The `f.req` Envelope
-Google wraps the payload in a specific format:
-```json
-[[["RPC_ID", "[JSON_PAYLOAD]", null, "generic"]]]
-```
-I realized I had to stringify my payload *twice* to match this envelope.
+### 2. The CORS Trap
+*   **Problem**: We tried to download the image using JavaScript execution inside the page (`page.evaluate(fetch(url))`).
+*   **Symptom**: `TypeError: Failed to fetch`.
+*   **Reason**: **CORS (Cross-Origin Resource Sharing)**. The script running on `notebooklm.google.com` is not allowed to fetch data from `googleusercontent.com` via XHR/Fetch due to browser security policies.
+*   **Fix**: We switched to **Playwright's APIRequestContext** (`context.request.get()`). This interacts with the network layer *outside* the page's sandbox but *inside* the browser's cookie jar. It bypasses CORS completely while maintaining authentication.
 
-### 2. The Hidden Tokens (`at` and `bl`)
-Every request required two crucial parameters:
-*   `at`: The XSRF token.
-*   `bl`: The backend version/build label.
+### 3. The "Silent Crash" (Payload Size)
+*   **Problem**: After fixing the download, the tool would run successfully, but Claude would show a generic "Tool execution failed" or "Disconnected" error.
+*   **Symptom**: The server logs showed the image was downloaded and encoded... and then silence.
+*   **Reason**: The original images from NotebookLM are massive (approx. **10MB** PNGs). This exceeded the payload size limits for the MCP connection or triggered timeouts in Claude's processing.
+*   **Fix**: We implemented an optimization pipeline in `server.py`:
+    1.  **Resize**: Any image wider than 1024px is resized (using High-Quality Lanczos resampling).
+    2.  **Compress**: The image is converted from PNG to **JPEG** (Quality 85).
+    *   **Result**: Payload reduced from ~10MB to **~300KB**.
 
-I searched the DOM (Elements tab) for these values and found them exposed in a global `window` object:
+## 🔐 Authentication Workflow
 
-```javascript
-// Found in the HTML source
-window.WIZ_global_data = {
-  "SNlM0e": "APEu...", // This is the 'at' token!
-  "FdrFJe": "..."      // This is the 'f.sid' (session ID)
-};
-```
-I wrote `token_extractor.js` to inject into the page, steal these values from `window`, and pass them to my extension.
+Since NotebookLM does not have a public API, this tool relies on **browser cookies**.
 
-## 🧩 Phase 3: Deciphering the Payloads
+### What happens if I am not logged in?
+1.  **Server Check**: When you make a request, the server launches a **headless** browser.
+2.  **Redirect Detection**: If Google redirects to a login page (`accounts.google.com`), the server detects this.
+3.  **Error**: Since the server is headless (invisible), it cannot let you type your password. It will fail and return an error:
+    > *"Authentication required. Please run with headless=False first to login."*
 
-This was the hardest part. The payloads are "proto-json"—arrays of arrays with no keys.
+### How to Authenticate (First Time Setup)
+To fix this, we provided a dedicated script: `setup_auth.py`.
 
-**Example - Adding a Source:**
-I diffed multiple requests to see what changed.
-
-```javascript
-// My Reverse Engineered Map:
-[
-  [
-    [null, null, null, null, null, null, null, ["YOUTUBE_URL"], ...], // URL is at index 7
-  ],
-  "NOTEBOOK_ID", // The notebook ID goes here
-  [2]
-]
-```
-I had to write specific parsers to extract the Notebook ID (created in step 1) and the Source ID (returned in step 2) so I could chain them together.
-
-## 🚧 Phase 4: Overcoming Challenges
-
-### Handling "No Transcript" Errors
-**Issue:** Google sometimes returns "Success" (HTTP 200) even if it rejects the video (e.g., no captions). This caused the script to poll forever.
-**Fix:** I added a strict validation step. After adding a source, I regex-scan the response for a UUID.
-
-```javascript
-// If no UUID is found in the response, we know Google rejected it.
-if (!uuidRegex.test(responseSourceId)) throw new Error("Video rejected");
-```
-
-### The SPA Routing Pitfall (The "Aha!" Moment)
-**The Problem:** I could successfully create a notebook via RPC (getting a 200 OK and a valid ID), but when I navigated the browser to that ID, the notebook wouldn't load. The backend knew it existed, but the frontend didn't.
-**The Reason:** NotebookLM is a complex Single Page Application (SPA). It maintains an in-memory store. A standard navigation or RPC call doesn't automatically "hydrate" this store.
-**The Fix:**
-❌ Don't rely solely on URL changes.
-✅ Do trigger the internal router manually:
-
-```javascript
-window.history.pushState({}, "", `/notebook/${id}?addSource=true`);
-window.dispatchEvent(new PopStateEvent("popstate"));
-```
-This forces the client-side router to wake up, fetch the context (`wXbhsf`), and hydrate the UI state.
-
-### Incognito Mode & Image Cookies
-**The Problem:** In Incognito, the generated infographic (hosted on `googleusercontent.com`) appeared broken in the YouTube overlay. This is because Chrome blocks third-party cookies, so the request for the image failed authentication.
-**The Fix:** Internal Proxying. Instead of passing the Image URL to the UI, the extension's content script (which runs inside the NotebookLM origin) downloads the image using an authenticated fetch. It converts the blob to a Base64 string and passes the raw data to the YouTube overlay.
-*(Note: This implementation is partial/in-progress)*
-
-## ⚡ Final Automated Flow
-
-1.  User Clicks "Infographic" on YouTube.
-2.  Background Script spawns an off-screen "Ghost Window" of NotebookLM.
-3.  Token Extractor grabs the `at` token.
-4.  RPC `CCqFvf` creates a new notebook.
-5.  SPA Navigation moves the Ghost Window to the new notebook context.
-6.  RPC `izAoDd` adds the YouTube video as a source.
-7.  RPC `R7cb6c` triggers generation (with retry logic).
-8.  Polling Loop (`gArtLc`) waits for the image.
-9.  Download & Convert fetches the image as Base64.
-10. Cleanup closes the Window and displays the result on YouTube.
-
-## 🎓 Key Takeaways
-
-*   **Backend Success $\neq$ UI Success:** In modern SPAs, simply hitting the API endpoint is not enough. You must understand how the frontend router and state management system react to those changes.
-*   **Internal APIs are Stable:** While undocumented, internal RPCs (like `batchexecute`) are often more stable than DOM structures because the backend relies on them.
-
-## 🚀 Installation & Usage
-
-### 1. Clone & Build
-1.  Clone this repository.
-2.  Install the build dependency (used to generate icons):
+1.  Stop the MCP server.
+2.  Run the setup script:
     ```bash
-    pip install pillow
+    python3 setup_auth.py
     ```
-3.  Run the build script:
-    ```bash
-    python3 build.py
-    ```
-    This will generate the necessary icons and a `notebooklm_extension.zip` file.
+3.  **Manual Login**: A visible Chrome window will open. Log in to your Google Account manually.
+4.  **Token Capture**: Once you reach the NotebookLM dashboard, the script captures the session cookies and saves them to the `user_data/` directory.
+5.  **Restart**: Close the window and restart the MCP server. The server now has the "key" (cookies) to work headlessly.
 
-### 2. Install in Chrome
-1.  Open Chrome and go to `chrome://extensions`.
-2.  Enable **Developer mode** (top right).
-3.  Click **Load unpacked**.
-4.  Select the root folder of this repository.
-
-### 3. Usage
-1.  Open any YouTube video.
-2.  You will see a "✨ Infographic" button in the top buttons bar (near Like/Share).
-3.  Click it! The extension will:
-    *   Open NotebookLM in the background.
-    *   Create a notebook.
-    *   Add the video source.
-    *   Generate the infographic.
-    *   Display the result directly on the YouTube page.
-
-
-## 🎓 Git changes in systamatic development
-<img width="354" height="460" alt="image" src="https://github.com/user-attachments/assets/00b1ab10-2a43-4118-89c1-a2b9949e2c95" />
-
+## ✅ Final Solution
+The robust pipeline is now:
+`RPC Trigger` -> `Poll Loop` -> `Playwright API Download (Auth+CORS safe)` -> `Pillow Resize/Compress` -> `Base64 Return`.
