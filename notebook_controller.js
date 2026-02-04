@@ -157,6 +157,7 @@ async function generateInfographic(notebookId, sourceId) {
     ];
     console.log("NotebookController: 🚀 Triggering Generation...");
     
+    
     try {
         await callProxy(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
         console.log("NotebookController: ✅ Trigger acknowledged.");

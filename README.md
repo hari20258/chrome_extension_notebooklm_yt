@@ -79,3 +79,49 @@ To fix this, we provided a dedicated script: `setup_auth.py`.
 ## ✅ Final Solution
 The robust pipeline is now:
 `RPC Trigger` -> `Poll Loop` -> `Playwright API Download (Auth+CORS safe)` -> `Pillow Resize/Compress` -> `Base64 Return`.
+
+---
+
+## 📝 Feature: Video Summary Tool
+
+We have added a powerful new tool: `generate_summary(video_url)`.
+This tool automatically:
+1.  Creates a notebook for the YouTube video.
+2.  Triggers the internal "Summarize" chat action.
+3.  Streams the response and extracts the **Final, Clean Summary** with citations.
+
+### 🐛 Debugging the Summary Tool (Complex Stream Parsing)
+
+Extracting a clean text summary from Google's internal `GenerateFreeFormStreamed` endpoint was significantly harder than the image generation.
+
+#### 1. The "Stream of Thought" Problem
+*   **Challenge**: The API streams the response in multiple chunks. Early chunks contain "Chain of Thought" reasoning (e.g., "Thinking...", "Reading transcript...").
+*   **Refinement**: Later chunks *overwrite* previous ones with more polished text.
+*   **Solution**: We implemented a **"Last Write Wins"** strategy. Instead of appending every chunk (which resulted in a messy log of the AI's internal monologue), we continuously parse the stream and overwrite our buffer. The final chunk always contains the complete, polished answer.
+
+#### 2. The "Nested JSON" Nightmare
+*   **Challenge**: The stream format is a "JSON Miner's" worst nightmare. It consists of:
+    *   Length-prefixed raw bytes.
+    *   Multiple JSON objects concatenated together.
+    *   Deeply nested arrays (often 5-6 levels deep).
+    *   JSON strings *inside* JSON strings (double-encoded).
+*   **Solution**: We built a robust **recursive parser (`walk` function)**. It traverses the arbitrary JSON structure, identifies specific keys (`wrb.fr`), and recursively decodes inner JSON strings until it finds the actual payload.
+
+#### 3. The "Artifact" Invasion (UUIDs & Transcripts)
+*   **Challenge**: Even after extracting the final answer, the output contained garbage:
+    *   **Citation IDs**: Random 36-character UUIDs (`d53235fd-...`) interspersed in the text.
+    *   **Raw Transcripts**: Huge blocks of timestamped transcript text (`[StartMs, EndMs, ["Text"]]`) leaking into the summary.
+*   **Solution**: We implemented strict **Heuristic Filters**:
+    *   **UUID Filter**: Any text string exactly 36 characters long is aggressively removed.
+    *   **Anti-Transcript Heuristic**: The recursive walker detects JSON lists that start with integer timestamps (e.g., `[4000, 5000, ...]`) and **blocks** them entirely. This ensures we only extract the AI's generated summary, not the raw source text.
+
+#### 4. The "Read-Only" Error
+*   **Challenge**: The tool worked in local tests but crashed in the MCP server with `[Errno 30] Read-only file system`.
+*   **Reason**: We left a debug flag on that tried to write a 100MB `payload_dump.txt` file to disk. The MCP server runs in a restricted environment.
+*   **Solution**: Removed file logging.
+
+### 🏗️ Implementation Details
+The core logic resides in `notebooklm_client.py`:
+*   `_parse_streamed_response`: Handles the raw byte stream and "JSON Mining".
+*   `_extract_wrb_text`: The recursive extraction engine with the Heuristic Filters.
+*   `generate_summary`: Orchestrates the RPC call and returns the final clean string.
