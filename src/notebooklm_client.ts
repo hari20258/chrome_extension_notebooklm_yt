@@ -3,7 +3,23 @@ import { chromium, BrowserContext, Page, APIRequestContext } from 'playwright';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { fileURLToPath } from 'url';
 
+// ESM __dirname polyfill
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// --- Logging ---
+const LOG_FILE = path.resolve(__dirname, "../server.log");
+function logToFile(msg: string) {
+    const timestamp = new Date().toLocaleString();
+    const formattedMsg = `[${timestamp}] ${msg}`;
+    try {
+        fs.appendFileSync(LOG_FILE, formattedMsg + "\n");
+    } catch { }
+    // Also print to stderr for Claude Desktop visibility
+    process.stderr.write(formattedMsg + "\n");
+}
 // --- CONFIGURATION ---
 const BASE_URL = "https://notebooklm.google.com";
 const RPC_ENDPOINT = `${BASE_URL}/_/LabsTailwindUi/data/batchexecute`;
@@ -15,6 +31,7 @@ const RPC_ADD_SOURCE = "izAoDd";
 const RPC_GENERATE_INFOGRAPHIC = "R7cb6c";
 const RPC_LIST_ARTIFACTS = "gArtLc";
 const RPC_DELETE_NOTEBOOK = "f61S6e";
+const RPC_LOAD_NOTEBOOK = "rLM1Ne";
 
 interface SessionTokens {
     at: string | null;
@@ -33,10 +50,10 @@ export class NotebookLMClient {
     }
 
     async start(): Promise<void> {
-        // use /tmp to avoid CWD/Permission issues in Claude Desktop
-        const userDataDir = "/tmp/notebooklm_user_data";
+        // Use local user_data folder for persistence across reboots
+        const userDataDir = path.resolve(__dirname, "../user_data");
 
-        console.error(`[NotebookLM] Launching browser (Headless: ${this.headless})...`);
+        logToFile(`[NotebookLM] Launching browser (Headless: ${this.headless})...`);
         this.context = await chromium.launchPersistentContext(userDataDir, {
             headless: this.headless,
             args: [
@@ -54,11 +71,49 @@ export class NotebookLMClient {
     async stop(): Promise<void> {
         if (this.context) {
             await this.context.close();
+            this.context = null;
+            this.page = null;
+        }
+    }
+
+    /**
+     * Ensure browser is ready for operations. Restarts if crashed/closed.
+     */
+    async ensureBrowserReady(): Promise<void> {
+        let needsRestart = false;
+
+        // Check if context/page exist
+        if (!this.context || !this.page) {
+            logToFile("[NotebookLM] ⚠️ Browser context/page is null, restarting...");
+            needsRestart = true;
+        } else {
+            // Try a simple operation to verify page is alive
+            try {
+                await this.page.evaluate(() => document.readyState);
+            } catch (e: any) {
+                logToFile(`[NotebookLM] ⚠️ Browser health check failed: ${e.message}, restarting...`);
+                needsRestart = true;
+            }
+        }
+
+        if (needsRestart) {
+            // Clean up old context if exists
+            if (this.context) {
+                try {
+                    await this.context.close();
+                } catch { }
+                this.context = null;
+                this.page = null;
+            }
+
+            // Restart browser
+            await this.start();
+            logToFile("[NotebookLM] ✅ Browser restarted successfully");
         }
     }
 
     async openLoginWindow(): Promise<void> {
-        console.error("[NotebookLM] 🔓 Launching Interactive Login Window...");
+        logToFile("[NotebookLM] 🔓 Launching Interactive Login Window...");
         await this.stop(); // Release lock
 
         // Temporarily act as not-headless
@@ -67,15 +122,15 @@ export class NotebookLMClient {
 
         if (this.page) {
             await this.page.goto("https://notebooklm.google.com");
-            console.error("[NotebookLM] Login Window Opened. Waiting for user to log in...");
+            logToFile("[NotebookLM] Login Window Opened. Waiting for user to log in...");
 
             try {
                 // Wait for the 'Create new' button which indicates we are on the dashboard (logged in)
                 await this.page.waitForSelector('text="Create new"', { timeout: 300000 });
-                console.error("[NotebookLM] ✅ Login detected! Closing window in 2 seconds...");
+                logToFile("[NotebookLM] ✅ Login detected! Closing window in 2 seconds...");
                 await this.page.waitForTimeout(2000);
             } catch (error) {
-                console.error("[NotebookLM] ⚠️ Login verification timed out or failed. Closing window.");
+                logToFile("[NotebookLM] ⚠️ Login verification timed out or failed. Closing window.");
             }
 
             await this.stop();
@@ -85,7 +140,7 @@ export class NotebookLMClient {
     }
 
     async _refreshTokens(): Promise<boolean> {
-        console.error("[NotebookLM] 🔄 Navigating to scrape tokens...");
+        logToFile("[NotebookLM] 🔄 Navigating to scrape tokens...");
         if (!this.page) throw new Error("Page not initialized");
 
         await this.page.goto(BASE_URL);
@@ -98,7 +153,7 @@ export class NotebookLMClient {
             }
             // Wait for user login
             await this.page.waitForURL("https://notebooklm.google.com/**", { timeout: 0 });
-            console.error("[NotebookLM] Login detected.");
+            logToFile("[NotebookLM] Login detected.");
         }
 
         let content = await this.page.content();
@@ -127,8 +182,145 @@ export class NotebookLMClient {
             fsid: fsidV || null
         };
 
-        console.error(`[NotebookLM] ✅ Tokens acquired. bl: ${this.sessionTokens.bl}`);
+        logToFile(`[NotebookLM] ✅ Tokens acquired. bl: ${this.sessionTokens.bl}`);
+        logToFile(`[NotebookLM] ✅ Tokens acquired. bl: ${this.sessionTokens.bl}`);
         return true;
+    }
+
+    _parseNotebookUrl(url: string): string | null {
+        const match = url.match(/notebook\/([0-9a-fA-F-]{36})/);
+        return match ? match[1] : null;
+    }
+
+    async listSources(url: string): Promise<any[]> {
+        const notebookId = this._parseNotebookUrl(url) || url;
+        logToFile(`[NotebookLM] Listing sources for: ${notebookId}...`);
+
+        const payload = [notebookId, null, [2], null, 0];
+
+        try {
+            logToFile(`[Debug] calling _executeRpc for sources...`);
+            const response = await this._executeRpc(RPC_LOAD_NOTEBOOK, payload);
+            logToFile(`[Debug] _executeRpc returned: ${response ? 'Object' : 'Null'}`);
+            logToFile(`[Debug] Full response: ${JSON.stringify(response)}`);
+
+            if (response && response[0]) {
+                logToFile(`[Debug] response[0][1]: ${response[0][1]} (Expected: ${RPC_LOAD_NOTEBOOK})`);
+                logToFile(`[Debug] response[0][2] type: ${typeof response[0][2]}`);
+            }
+
+            if (response && response[0] && response[0][1] === RPC_LOAD_NOTEBOOK && typeof response[0][2] === 'string') {
+                const innerJson = response[0][2];
+                const data = JSON.parse(innerJson);
+
+                // Trace shows structure: [ ["Title", [SourceList]], "NotebookID", ... ]
+                // So sources are at data[0][1]
+                const sourcesRaw = data[0]?.[1];
+
+                if (Array.isArray(sourcesRaw)) {
+                    const results = [];
+                    for (const s of sourcesRaw) {
+                        if (!Array.isArray(s)) continue;
+
+                        // Trace source item: [ ["ID"], "Title", [Meta...] ]
+                        // ID is nested in array at index 0
+                        const sourceId = Array.isArray(s[0]) ? s[0][0] : s[0];
+                        const title = s[1];
+                        let type = "unknown";
+                        let originalUrl = null;
+
+                        // Check index 5 for external data (YouTube/Web)
+                        // Trace: ["id", "title", [...], [...], 9, ["url", ...], 1]
+                        // Wait, trace shows meta is at s[2].
+                        // And inside meta (s[2]), index 5 has URL.
+                        const meta = s[2];
+                        if (meta && Array.isArray(meta)) {
+                            const externalData = meta[5];
+                            if (Array.isArray(externalData)) {
+                                originalUrl = externalData[0];
+                            }
+                        }
+
+                        if (originalUrl && typeof originalUrl === 'string') {
+                            if (originalUrl.includes("youtube.com") || originalUrl.includes("youtu.be")) type = "youtube";
+                            else if (originalUrl.startsWith("http")) type = "web";
+                        }
+
+                        if (!originalUrl && sourceId) type = "file_or_pasted";
+                        results.push({ sourceId, title, type, originalUrl });
+                    }
+
+                    logToFile(`[NotebookLM] Found ${results.length} sources via RPC.`);
+                    if (results.length > 0) return results;
+                }
+            } else {
+                logToFile(`[Debug] RPC response invalid or empty.`);
+            }
+        } catch (e: any) {
+            logToFile(`[NotebookLM] List Sources RPC Failed: ${e.message}`);
+        }
+
+        // --- FALLBACK: DOM SCRAPING ---
+        logToFile("[NotebookLM] RPC method failed to find sources. Falling back to DOM scraping...");
+        try {
+            if (!this.page) throw new Error("Page not initialized for scraping fallback.");
+            const targetUrl = `https://notebooklm.google.com/notebook/${notebookId}`;
+            if (this.page.url() !== targetUrl) {
+                logToFile(`[NotebookLM] Navigating to ${targetUrl} for scraping...`);
+                await this.page.goto(targetUrl);
+                // Wait for source list to populate
+                await this.page.waitForSelector('[data-source-id]', { timeout: 10000 }).catch(() => logToFile("[Warn] Timeout waiting for sources"));
+            }
+
+            const scrapedSources = await this.page.evaluate(() => {
+                const results: any[] = [];
+                const seen = new Set();
+                document.querySelectorAll('[data-source-id]').forEach((el) => {
+                    const id = el.getAttribute('data-source-id');
+                    const title = el.textContent?.trim() || "Unknown Source";
+                    if (id && !seen.has(id)) {
+                        seen.add(id);
+                        results.push({ sourceId: id, title, type: 'scraped', originalUrl: null });
+                    }
+                });
+                return results;
+            });
+
+            logToFile(`[NotebookLM] Scraped ${scrapedSources.length} sources from DOM.`);
+            return scrapedSources;
+
+        } catch (e: any) {
+            logToFile(`[NotebookLM] Scraping fallback failed: ${e.message}`);
+        }
+
+        return [];
+    }
+
+    async _fetchSourceId(notebookId: string): Promise<string> {
+        const sources = await this.listSources(notebookId);
+        if (sources.length > 0) {
+            logToFile(`[NotebookLM] ✅ Using first source: ${sources[0].sourceId}`);
+            return sources[0].sourceId;
+        }
+        throw new Error("No sources found in this notebook.");
+    }
+
+    _extractAllUuids(obj: any): string[] {
+        const uuids: string[] = [];
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        const walk = (o: any) => {
+            if (typeof o === 'string') {
+                if (uuidRegex.test(o)) uuids.push(o);
+            } else if (Array.isArray(o)) {
+                o.forEach(walk);
+            } else if (typeof o === 'object' && o !== null) {
+                Object.values(o).forEach(walk);
+            }
+        };
+
+        walk(obj);
+        return uuids;
     }
 
     async _executeRpc(rpcId: string, payload: any): Promise<any> {
@@ -172,6 +364,7 @@ export class NotebookLMClient {
     }
 
     _parseRpcResponse(text: string): any {
+        // logToFile(`[Debug] RPC Raw Response: ${text.substring(0, 100)}...`);
         const lines = text.split('\n');
         for (const line of lines) {
             const trimmed = line.trim();
@@ -179,11 +372,13 @@ export class NotebookLMClient {
                 try {
                     const data = JSON.parse(trimmed);
                     if (data && data[0] && data[0][0] === 'wrb.fr') {
+                        logToFile("[Debug] Parsed 'wrb.fr' frame successfully.");
                         return data;
                     }
                 } catch (e) { }
             }
         }
+        logToFile("[Debug] Failed to parse RPC response. No 'wrb.fr' frame found.");
         return null;
     }
 
@@ -202,7 +397,7 @@ export class NotebookLMClient {
         });
 
         const url = `${RPC_GENERATE_STREAMED}?${params.toString()}`;
-        console.error(`[NotebookLM] Executing Streamed RPC to ${url}`);
+        logToFile(`[NotebookLM] Executing Streamed RPC to ${url}`);
 
         const response = await this.context.request.post(url, {
             form: {
@@ -346,7 +541,7 @@ export class NotebookLMClient {
     }
 
     async downloadResource(url: string): Promise<Buffer> {
-        console.error(`[NotebookLM] Downloading resource: ${url.substring(0, 50)}...`);
+        logToFile(`[NotebookLM] Downloading resource: ${url.substring(0, 50)}...`);
         if (!this.context) await this.start();
         if (!this.context) throw new Error("Context failed to start");
 
@@ -388,10 +583,10 @@ export class NotebookLMClient {
         return null;
     }
 
-    async prepareNotebook(videoUrl: string): Promise<{ notebookId: string, sourceId: string }> {
+    async prepareNotebook(url: string): Promise<{ notebookId: string, sourceId: string }> {
         if (!this.sessionTokens.at) await this.start();
 
-        const cacheFile = "/Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/cache.json";
+        const cacheFile = path.resolve(__dirname, "../cache.json");
         let cache: any = {};
         if (fs.existsSync(cacheFile)) {
             try {
@@ -402,30 +597,68 @@ export class NotebookLMClient {
         let notebookId: string | null = null;
         let sourceId: string | null = null;
 
-        if (cache[videoUrl]) {
-            const entry = cache[videoUrl];
+
+
+        // Check if input is a direct Notebook URL
+        const parsedNotebookId = this._parseNotebookUrl(url);
+        if (parsedNotebookId) {
+            notebookId = parsedNotebookId;
+            logToFile(`[NotebookLM] Direct Notebook URL detected: ${notebookId}`);
+
+            // Check cache for this notebook's source
+            if (cache[url]) {
+                sourceId = typeof cache[url] === 'object' ? (cache[url].sourceId || cache[url].source_id) : null;
+            }
+
+            // If not in cache, we MUST fetch it via RPC
+            if (!sourceId) {
+                // Remove stale cache entry if exists partially
+                delete cache[url];
+
+                logToFile("[NotebookLM] Source ID unknown for this notebook. Fetching via RPC...");
+                try {
+                    sourceId = await this._fetchSourceId(notebookId);
+
+                    // Cache it
+                    cache[url] = { notebookId, sourceId };
+                    fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2));
+                } catch (e) {
+                    logToFile(`[NotebookLM] ❌ Failed to fetch source: ${e}`);
+                    throw e;
+                }
+            } else {
+                logToFile(`[NotebookLM] ⚡ Using Cached Source ID: ${sourceId}`);
+            }
+
+            return { notebookId, sourceId };
+        }
+
+        // --- Logic for YouTube URLs (Create/Reuse Notebook) ---
+
+        if (cache[url]) {
+            const entry = cache[url];
             if (typeof entry === 'object') {
                 notebookId = entry.notebookId || entry.notebook_id; // handle both
                 sourceId = entry.sourceId || entry.source_id;
             } else {
                 notebookId = entry;
             }
-            if (notebookId) console.error(`[NotebookLM] ⚡ Cache Hit! Reusing notebook: ${notebookId}`);
+            if (notebookId) logToFile(`[NotebookLM] ⚡ Cache Hit! Reusing notebook: ${notebookId}`);
         }
 
         if (!notebookId) {
-            console.error("[NotebookLM] Creating Notebook...");
+            logToFile("[NotebookLM] Creating Notebook...");
             const createPayload = ["", null, null, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
             const createRes = await this._executeRpc(RPC_CREATE_NOTEBOOK, createPayload);
             const innerCreate = JSON.parse(createRes[0][2]);
             notebookId = innerCreate[2];
-            console.error(`[NotebookLM] Notebook Created: ${notebookId}`);
+            logToFile(`[NotebookLM] Notebook Created: ${notebookId}`);
         }
 
         if (!sourceId) {
-            console.error(`[NotebookLM] Adding Source: ${videoUrl}...`);
+            logToFile(`[NotebookLM] Adding Source: ${url}...`);
             // NOTE: Python used 'None' which became 'null' in JSON. JS 'null' matches.
-            const sourcePayload = [[[null, null, null, null, null, null, null, [videoUrl], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
+            const sourcePayload = [[[null, null, null, null, null, null, null, [url], null, null, 1]], notebookId, [2], [1, null, null, null, null, null, null, null, null, null, [1]]];
             const sourceRes = await this._executeRpc(RPC_ADD_SOURCE, sourcePayload);
 
             if (!sourceRes || !sourceRes[0]) throw new Error("Invalid Add Source Response");
@@ -434,21 +667,24 @@ export class NotebookLMClient {
             const innerSource = JSON.parse(rawInner);
             sourceId = this._findSourceId(innerSource);
 
-            if (!sourceId) throw new Error("Failed to add source (No ID found)");
+            if (!sourceId) {
+                logToFile("[NotebookLM] ❌ Failed to find Source ID in response: " + JSON.stringify(innerSource, null, 2));
+                throw new Error("Failed to add source (No ID found)");
+            }
 
-            console.error(`[NotebookLM] Source Added: ${sourceId}`);
+            logToFile(`[NotebookLM] Source Added: ${sourceId}`);
 
-            cache[videoUrl] = { notebookId, sourceId };
+            cache[url] = { notebookId, sourceId };
             fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2));
         } else {
-            console.error(`[NotebookLM] ⚡ Using Cached Source ID: ${sourceId}`);
+            logToFile(`[NotebookLM] ⚡ Using Cached Source ID: ${sourceId}`);
         }
 
         return { notebookId: notebookId!, sourceId: sourceId! };
     }
 
     async pollForArtifacts(notebookId: string): Promise<string> {
-        console.error("[NotebookLM] Polling for artifacts...");
+        logToFile("[NotebookLM] Polling for artifacts...");
         for (let i = 0; i < 30; i++) {
             try {
                 const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
@@ -457,23 +693,23 @@ export class NotebookLMClient {
                     const innerData = JSON.parse(response[0][2]);
                     const imageUrl = this._findImageUrl(innerData);
                     if (imageUrl) {
-                        console.error(`[NotebookLM] 📸 Image Found: ${imageUrl}`);
+                        logToFile(`[NotebookLM] 📸 Image Found: ${imageUrl}`);
                         return imageUrl;
                     }
                 }
             } catch (e) { }
             await new Promise(r => setTimeout(r, 10000));
-            console.error(`[NotebookLM] Poll attempt ${i + 1}/30...`);
+            logToFile(`[NotebookLM] Poll attempt ${i + 1}/30...`);
         }
         throw new Error("Timeout waiting for artifact creation");
     }
 
     async generateInfographic(videoUrl: string): Promise<string> {
         const { notebookId, sourceId } = await this.prepareNotebook(videoUrl);
-        console.error("[NotebookLM] ⏳ Waiting 5s...");
+        logToFile("[NotebookLM] ⏳ Waiting 5s...");
         await new Promise(r => setTimeout(r, 5000));
 
-        console.error("[NotebookLM] 🚀 Triggering Infographic...");
+        logToFile("[NotebookLM] 🚀 Triggering Infographic...");
         const triggerPayload = [[2], notebookId, [null, null, 7, [[[sourceId]]], null, null, null, null, null, null, null, null, null, null, [[null, null, null, 1, 2]]]];
         await this._executeRpc(RPC_GENERATE_INFOGRAPHIC, triggerPayload);
 
@@ -481,7 +717,7 @@ export class NotebookLMClient {
     }
 
     async queryNotebook(notebookId: string, sourceId: string, prompt: string): Promise<string> {
-        console.error(`[NotebookLM] Parsing query: "${prompt}" for notebook ${notebookId}...`);
+        logToFile(`[NotebookLM] Parsing query: "${prompt}" for notebook ${notebookId}...`);
 
         const innerReq = [
             [[[sourceId]]],
@@ -506,17 +742,19 @@ export class NotebookLMClient {
             return "Failed to generate answer.";
         }
 
-        console.error("[NotebookLM] Query successful.");
+        logToFile("[NotebookLM] Query successful.");
         return summary;
     }
 
-    async query(videoUrl: string, question: string): Promise<string> {
-        const { notebookId, sourceId } = await this.prepareNotebook(videoUrl);
+    async query(url: string, question: string, specificSourceId?: string): Promise<string> {
+        let { notebookId, sourceId } = await this.prepareNotebook(url);
 
-        // Small delay to ensure state consistency
-        console.error("[NotebookLM] ⏳ Waiting 2s before querying...");
-        await new Promise(r => setTimeout(r, 2000));
+        if (specificSourceId) {
+            sourceId = specificSourceId;
+            logToFile(`[NotebookLM] Override: Using specific source ID: ${sourceId}`);
+        }
 
+        logToFile(`[NotebookLM] Querying notebook ${notebookId} (source: ${sourceId})...`);
         return await this.queryNotebook(notebookId, sourceId, question);
     }
 
@@ -524,7 +762,7 @@ export class NotebookLMClient {
         // Wrapper for backward compatibility and specific "Summary" behavior (longer wait)
         const { notebookId, sourceId } = await this.prepareNotebook(videoUrl);
 
-        console.error("[NotebookLM] ⏳ Waiting 10s before requesting summary...");
+        logToFile("[NotebookLM] ⏳ Waiting 10s before requesting summary...");
         await new Promise(r => setTimeout(r, 10000));
 
         return await this.queryNotebook(notebookId, sourceId, "give me summary of the video");

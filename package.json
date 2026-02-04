@@ -6,6 +6,7 @@
     "main": "src/server.ts",
     "scripts": {
         "start": "tsx src/server.ts",
+        "build": "vite build && tsc",
         "test": "tsx src/test_summary.ts",
         "setup": "tsx src/setup_auth.ts"
     },
