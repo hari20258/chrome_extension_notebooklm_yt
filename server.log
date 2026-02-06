@@ -1774,3 +1774,684 @@
 [2/5/2026, 1:09:02 AM] Registering tool: check_infographic_status
 [2/5/2026, 1:09:02 AM] All tools registered.
 [2/5/2026, 1:09:02 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 10:05:48 AM] SERVER STARTING...
+[2/6/2026, 10:05:48 AM] Initializing Transports...
+[2/6/2026, 10:05:48 AM] Registering tool: generate_summary
+[2/6/2026, 10:05:48 AM] Registering tool: get_active_notebook
+[2/6/2026, 10:05:48 AM] Registering tool: list_sources
+[2/6/2026, 10:05:48 AM] Registering tool: ask_question
+[2/6/2026, 10:05:48 AM] Registering tool: generate_infographic
+[2/6/2026, 10:05:48 AM] Registering tool: check_infographic_status
+[2/6/2026, 10:05:48 AM] All tools registered.
+[2/6/2026, 10:05:48 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 10:07:34 AM] [HTTP] GET / - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.169","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f3fc14ed574e-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-6985700b000000004cfee82a8b4e61f3-398fbe8860e8a081-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-forwarded-for":"13.70.107.169","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:36 AM] [HTTP] GET /favicon.svg - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.171","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f4021075e7ee-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-6985700b000000004cfee82a8b4e61f3-b69957aa07b05a19-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-forwarded-for":"13.70.107.171","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:38 AM] [HTTP] GET /favicon.png - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.171","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f4120572e7ee-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-6985700b000000004cfee82a8b4e61f3-4c03b4845b75f92b-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-forwarded-for":"13.70.107.171","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:40 AM] [HTTP] GET /favicon.ico - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.171","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f4171449e7ee-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-6985700b000000004cfee82a8b4e61f3-b017ca52b08a649e-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-forwarded-for":"13.70.107.171","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:42 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.171","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f42b7042e7cd-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985700b000000004cfee82a8b4e61f3-b1a6d13f7feeb949-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"9081384118481966345","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.171","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:43 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:44 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:07:44 AM] [HTTP] Streamable HTTP session initialized: 86c60b8f-a0fa-403f-9a1b-41237fae403f
+[2/6/2026, 10:07:45 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.170","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f43c9732a7ed-SYD","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985700b000000004cfee82a8b4e61f3-37350527c92f75e3-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"10166044325930961289","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.170","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:45 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:45 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:07:45 AM] [HTTP] Streamable HTTP session initialized: 62d5ce82-3db5-46a4-84ef-70e10e461232
+[2/6/2026, 10:07:46 AM] [HTTP] GET /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.166","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f44434ecd5de-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"62d5ce82-3db5-46a4-84ef-70e10e461232","traceparent":"00-6985700b000000004cfee82a8b4e61f3-6781517156f4919e-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"11133655538864535276","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.166","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:46 AM] [HTTP] GET /mcp received
+[2/6/2026, 10:07:46 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.161","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f445f4dda967-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"62d5ce82-3db5-46a4-84ef-70e10e461232","traceparent":"00-6985700b000000004cfee82a8b4e61f3-0bb6e42496fbf9fd-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"14670236310367977953","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.161","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:46 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:47 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"46","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.175","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f44b4687e7e8-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"62d5ce82-3db5-46a4-84ef-70e10e461232","traceparent":"00-6985700b000000004cfee82a8b4e61f3-2fb2444a7a3b0010-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"16862602231556499626","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.175","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:47 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:49 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"50","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.169","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f44fc0e4cd77-SYD","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"62d5ce82-3db5-46a4-84ef-70e10e461232","traceparent":"00-6985700b000000004cfee82a8b4e61f3-221e3e3c15ec822a-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"4105237862790135204","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.169","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:49 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:50 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"96","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.172","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f45b5032486c-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"62d5ce82-3db5-46a4-84ef-70e10e461232","traceparent":"00-6985700b000000004cfee82a8b4e61f3-de7ddf59347d8b8c-00","tracestate":"dd=s:-1;p:6be3e7385497fd97;t.dm:-3","x-datadog-parent-id":"17277681659904900197","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985700b00000000,_dd.p.dm=-3","x-datadog-trace-id":"5548127060390470131","x-forwarded-for":"13.70.107.172","x-forwarded-proto":"https"}
+[2/6/2026, 10:07:50 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:07:51 AM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 10:07:51 AM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 10:09:12 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.174","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f65f33e45f25-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985706900000000c637ec16acf5e857-f80896b45ef05bee-00","tracestate":"dd=s:-1;p:25cfd11b8e68bffd;t.dm:-3","x-datadog-parent-id":"10759929646179179619","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.174","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:12 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:12 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:09:12 AM] [HTTP] Streamable HTTP session initialized: f2d3a5ab-a317-4ba6-812c-153d1d09a4a7
+[2/6/2026, 10:09:13 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.162","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f662e392573e-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985706900000000c637ec16acf5e857-fd854ab6466640af-00","tracestate":"dd=s:-1;p:25cfd11b8e68bffd;t.dm:-3","x-datadog-parent-id":"13243105503816189576","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.162","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:13 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:13 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:09:13 AM] [HTTP] Streamable HTTP session initialized: e6a2323a-4973-402d-92b0-4a7c68117bc8
+[2/6/2026, 10:09:14 AM] [HTTP] GET /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.170","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f665169b7e42-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e6a2323a-4973-402d-92b0-4a7c68117bc8","traceparent":"00-6985706900000000c637ec16acf5e857-8a3f1528b24d4576-00","tracestate":"dd=s:-1;p:25cfd11b8e68bffd;t.dm:-3","x-datadog-parent-id":"12161212605972223884","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.170","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:14 AM] [HTTP] GET /mcp received
+[2/6/2026, 10:09:14 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.170","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f66bb018d5e3-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e6a2323a-4973-402d-92b0-4a7c68117bc8","traceparent":"00-6985706900000000c637ec16acf5e857-d0eecb30823caec3-00","tracestate":"dd=s:-1;p:25cfd11b8e68bffd;t.dm:-3","x-datadog-parent-id":"14086301137077320189","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.170","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:14 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:15 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"737","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.174","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f6719565e7c9-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e6a2323a-4973-402d-92b0-4a7c68117bc8","traceparent":"00-6985706900000000c637ec16acf5e857-e9ca504f611a67bb-00","tracestate":"dd=s:-1;p:25cfd11b8e68bffd;t.dm:-3","x-datadog-parent-id":"17363866294302745775","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.174","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:15 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:15 AM] [MCP] Request: Infographic for https://www.youtube.com/watch?v=uOcKF-aLHyw
+[2/6/2026, 10:09:15 AM] [Jobs] Created job job_1770352755895_wxub9w for https://www.youtube.com/watch?v=uOcKF-aLHyw
+[2/6/2026, 10:09:15 AM] [Jobs] Processing job job_1770352755895_wxub9w...
+[2/6/2026, 10:09:15 AM] Initializing Singleton NotebookLMClient...
+[2/6/2026, 10:09:16 AM] [NotebookLM] Launching browser (Headless: true)...
+[2/6/2026, 10:09:19 AM] [NotebookLM] 🔄 Navigating to scrape tokens...
+[2/6/2026, 10:09:21 AM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 10:09:21 AM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 10:09:21 AM] NotebookLMClient started successfully.
+[2/6/2026, 10:09:21 AM] [NotebookLM] Creating Notebook...
+[2/6/2026, 10:09:22 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:09:22 AM] [NotebookLM] Notebook Created: 62e56192-4828-4091-9ce5-a8b1bc2c65a0
+[2/6/2026, 10:09:22 AM] [NotebookLM] Adding Source: https://www.youtube.com/watch?v=uOcKF-aLHyw...
+[2/6/2026, 10:09:23 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.166","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f69ee0a7ab01-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985706900000000c637ec16acf5e857-302b5ca1007c608f-00","tracestate":"dd=s:-1;p:251ff94bda9729a9;t.dm:-3","x-datadog-parent-id":"4000331028825614699","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.166","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:23 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:23 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:09:23 AM] [HTTP] Streamable HTTP session initialized: b7f2e6a2-f364-44ce-b6c9-daf4ace388f6
+[2/6/2026, 10:09:24 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.165","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f6a90697e7ce-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"b7f2e6a2-f364-44ce-b6c9-daf4ace388f6","traceparent":"00-6985706900000000c637ec16acf5e857-92820f0e72775269-00","tracestate":"dd=s:-1;p:251ff94bda9729a9;t.dm:-3","x-datadog-parent-id":"16303169298654329486","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.165","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:27 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:28 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"719","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.163","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f6bd3558e7c0-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"b7f2e6a2-f364-44ce-b6c9-daf4ace388f6","traceparent":"00-6985706900000000c637ec16acf5e857-3175d388568f6c3f-00","tracestate":"dd=s:-1;p:251ff94bda9729a9;t.dm:-3","x-datadog-parent-id":"13817399060307925730","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.163","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:29 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:09:29 AM] [Jobs] Checking status for job: job_1770352755895_wxub9w
+[2/6/2026, 10:09:29 AM] [HTTP] GET /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.172","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f6ab04cd7e3f-SYD","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"b7f2e6a2-f364-44ce-b6c9-daf4ace388f6","traceparent":"00-6985706900000000c637ec16acf5e857-a1cf3163ed91f5a8-00","tracestate":"dd=s:-1;p:251ff94bda9729a9;t.dm:-3","x-datadog-parent-id":"4965216080520380814","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985706900000000,_dd.p.dm=-3","x-datadog-trace-id":"14283144325364050007","x-forwarded-for":"13.70.107.172","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:09:29 AM] [HTTP] GET /mcp received
+[2/6/2026, 10:09:29 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:09:29 AM] [NotebookLM] Source Added: c91a8128-a9c1-48d3-8527-07b2b7a6e510
+[2/6/2026, 10:09:29 AM] [NotebookLM] ⏳ Waiting 5s...
+[2/6/2026, 10:09:34 AM] [NotebookLM] 🚀 Triggering Infographic...
+[2/6/2026, 10:09:39 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:09:39 AM] [NotebookLM] Polling for artifacts...
+[2/6/2026, 10:09:39 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:09:49 AM] [NotebookLM] Poll attempt 1/30...
+[2/6/2026, 10:09:50 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:00 AM] [NotebookLM] Poll attempt 2/30...
+[2/6/2026, 10:10:00 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:06 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.170","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f7aed0ffe7c2-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-698570a000000000389503d7905f47de-b735b42ba8878309-00","tracestate":"dd=s:-1;p:34f4e5b744981d20;t.dm:-3","x-datadog-parent-id":"12969174291434047166","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=698570a000000000,_dd.p.dm=-3","x-datadog-trace-id":"4077169262028867550","x-forwarded-for":"13.70.107.170","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:10:06 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:10:06 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:10:06 AM] [HTTP] Streamable HTTP session initialized: 84268a0b-f0f4-470d-a670-98afca8e9dad
+[2/6/2026, 10:10:06 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.166","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f7b132c2e7c1-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"84268a0b-f0f4-470d-a670-98afca8e9dad","traceparent":"00-698570a000000000389503d7905f47de-9f1dbfe0a782972f-00","tracestate":"dd=s:-1;p:34f4e5b744981d20;t.dm:-3","x-datadog-parent-id":"17522888070006434814","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=698570a000000000,_dd.p.dm=-3","x-datadog-trace-id":"4077169262028867550","x-forwarded-for":"13.70.107.166","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:10:06 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:10:06 AM] [HTTP] GET /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.173","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f7b1537a62c2-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"84268a0b-f0f4-470d-a670-98afca8e9dad","traceparent":"00-698570a000000000389503d7905f47de-2e1b5e8f6cbfc6b4-00","tracestate":"dd=s:-1;p:34f4e5b744981d20;t.dm:-3","x-datadog-parent-id":"722796933241444097","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=698570a000000000,_dd.p.dm=-3","x-datadog-trace-id":"4077169262028867550","x-forwarded-for":"13.70.107.173","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:10:06 AM] [HTTP] GET /mcp received
+[2/6/2026, 10:10:07 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"727","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.166","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97f7b324e4d5e2-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"84268a0b-f0f4-470d-a670-98afca8e9dad","traceparent":"00-698570a000000000389503d7905f47de-0b2b08ff1adc0ca9-00","tracestate":"dd=s:-1;p:34f4e5b744981d20;t.dm:-3","x-datadog-parent-id":"6617373089680163034","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=698570a000000000,_dd.p.dm=-3","x-datadog-trace-id":"4077169262028867550","x-forwarded-for":"13.70.107.166","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:10:07 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:10:07 AM] [MCP] Request: Summary for https://www.youtube.com/watch?v=uOcKF-aLHyw
+[2/6/2026, 10:10:07 AM] [NotebookLM] ⚡ Cache Hit! Reusing notebook: 62e56192-4828-4091-9ce5-a8b1bc2c65a0
+[2/6/2026, 10:10:07 AM] [NotebookLM] ⚡ Using Cached Source ID: c91a8128-a9c1-48d3-8527-07b2b7a6e510
+[2/6/2026, 10:10:07 AM] [NotebookLM] ⏳ Waiting 10s before requesting summary...
+[2/6/2026, 10:10:10 AM] [NotebookLM] Poll attempt 3/30...
+[2/6/2026, 10:10:11 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:17 AM] [NotebookLM] Parsing query: "give me summary of the video" for notebook 62e56192-4828-4091-9ce5-a8b1bc2c65a0...
+[2/6/2026, 10:10:17 AM] [NotebookLM] Executing Streamed RPC to https://notebooklm.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed?bl=boq_labs-tailwind-frontend_20260204.11_p0&f.sid=-7685717528210034420&hl=en&_reqid=152858&rt=c
+[2/6/2026, 10:10:21 AM] [NotebookLM] Poll attempt 4/30...
+[2/6/2026, 10:10:21 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:31 AM] [NotebookLM] Poll attempt 5/30...
+[2/6/2026, 10:10:32 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:35 AM] [NotebookLM] Query successful.
+[2/6/2026, 10:10:35 AM] [Session] Active notebook set: https://www.youtube.com/watch?v=uOcKF-aLHyw (unknown)
+[2/6/2026, 10:10:42 AM] [NotebookLM] Poll attempt 6/30...
+[2/6/2026, 10:10:42 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:10:52 AM] [NotebookLM] Poll attempt 7/30...
+[2/6/2026, 10:10:53 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:03 AM] [NotebookLM] Poll attempt 8/30...
+[2/6/2026, 10:11:03 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:13 AM] [NotebookLM] Poll attempt 9/30...
+[2/6/2026, 10:11:14 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:24 AM] [NotebookLM] Poll attempt 10/30...
+[2/6/2026, 10:11:24 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:34 AM] [NotebookLM] Poll attempt 11/30...
+[2/6/2026, 10:11:35 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:45 AM] [NotebookLM] Poll attempt 12/30...
+[2/6/2026, 10:11:46 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:56 AM] [NotebookLM] Poll attempt 13/30...
+[2/6/2026, 10:11:56 AM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 10:11:56 AM] [NotebookLM] 📸 Image Found: https://lh3.googleusercontent.com/notebooklm/ANHLwAzQ6ACfJeC5-Gdr2KcbGkfymw9BpjVuAADMnQLHXv8Wo3p3pzLKJV9WxWss6PWMQMImKqkTwwgR5jrRc-lnoTo1t-Ti__OCf9zJtwKv9iq37GrchDZDrwvuKPbERU_NJCHEqufMCO6-usPBVY5mBxnF87ToGrk=w2752-d-h1536-mp2
+[2/6/2026, 10:11:56 AM] [Jobs] Job job_1770352755895_wxub9w got image URL: https://lh3.googleusercontent.com/notebooklm/ANHLwAzQ6ACfJeC5-Gdr2KcbGkfymw9BpjVuAADMnQLHXv8Wo3p3pzLKJV9WxWss6PWMQMImKqkTwwgR5jrRc-lnoTo1t-Ti__OCf9zJtwKv9iq37GrchDZDrwvuKPbERU_NJCHEqufMCO6-usPBVY5mBxnF87ToGrk=w2752-d-h1536-mp2
+[2/6/2026, 10:11:56 AM] [NotebookLM] Downloading resource: https://lh3.googleusercontent.com/notebooklm/ANHLw...
+[2/6/2026, 10:12:00 AM] [Jobs] Image downloaded for job_1770352755895_wxub9w (165328 chars)
+[2/6/2026, 10:12:00 AM] [Jobs] Job job_1770352755895_wxub9w completed, hasImageData: true
+[2/6/2026, 10:12:37 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.174","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97fb59a7860fc3-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-6985712d0000000035818144fdb19733-dd6c3e46f43e7610-00","tracestate":"dd=s:-1;p:29a9e3757efa476e;t.dm:-3","x-datadog-parent-id":"14467919347750481274","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985712d00000000,_dd.p.dm=-3","x-datadog-trace-id":"3855504889319888691","x-forwarded-for":"13.70.107.174","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:12:37 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:12:37 AM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 10:12:38 AM] [HTTP] Streamable HTTP session initialized: 67455f50-d83c-417a-adbb-2e584aa5b2dd
+[2/6/2026, 10:12:39 AM] [HTTP] GET /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.173","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97fb6c94815e4f-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"67455f50-d83c-417a-adbb-2e584aa5b2dd","traceparent":"00-6985712d0000000035818144fdb19733-d053d8d3743bf995-00","tracestate":"dd=s:-1;p:29a9e3757efa476e;t.dm:-3","x-datadog-parent-id":"9476357304161492445","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985712d00000000,_dd.p.dm=-3","x-datadog-trace-id":"3855504889319888691","x-forwarded-for":"13.70.107.173","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:12:39 AM] [HTTP] GET /mcp received
+[2/6/2026, 10:12:39 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.174","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97fb6ca0b777f8-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"67455f50-d83c-417a-adbb-2e584aa5b2dd","traceparent":"00-6985712d0000000035818144fdb19733-3ab08d643e114482-00","tracestate":"dd=s:-1;p:29a9e3757efa476e;t.dm:-3","x-datadog-parent-id":"6666863066183794446","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985712d00000000,_dd.p.dm=-3","x-datadog-trace-id":"3855504889319888691","x-forwarded-for":"13.70.107.174","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:12:39 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:12:40 AM] [HTTP] POST /mcp - Headers: {"host":"southwest-speeches-referring-research.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"719","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"13.70.107.171","cf-ew-via":"15","cf-ipcountry":"AU","cf-ray":"9c97fb71740a182f-BLR","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"0b49c3ad-8cd8-42cc-8ad8-472153757927","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"67455f50-d83c-417a-adbb-2e584aa5b2dd","traceparent":"00-6985712d0000000035818144fdb19733-f6211c8f6ecb0323-00","tracestate":"dd=s:-1;p:29a9e3757efa476e;t.dm:-3","x-datadog-parent-id":"69808037517355772","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=6985712d00000000,_dd.p.dm=-3","x-datadog-trace-id":"3855504889319888691","x-forwarded-for":"13.70.107.171","x-forwarded-proto":"https","x-openai-session":"v1/3n7W2vldVstL7QxjrZB4xIXwZGuuorSPrZr5mAErxH5v5gv2jHKpUCgI9f5pFRIvWhPgGMNirNZ3","x-openai-subject":"v1/1CPErzTR186BHtpdul6uJE4ZI5INYwtUg794LwHl9qFiR4KgO9WnD4DG0MLyHb0PXI0DLznSZyreqQelPhKe0wvRoDHaxbefTEms6ID"}
+[2/6/2026, 10:12:40 AM] [HTTP] POST /mcp received
+[2/6/2026, 10:12:40 AM] [Jobs] Checking status for job: job_1770352755895_wxub9w
+[2/6/2026, 10:12:40 AM] [Jobs] Returning completed job job_1770352755895_wxub9w, hasImageData: true, imageDataLength: 165328
+[2/6/2026, 11:14:12 AM] SERVER STARTING...
+[2/6/2026, 11:14:12 AM] Initializing Transports...
+[2/6/2026, 11:14:12 AM] Registering tool: generate_summary
+[2/6/2026, 11:14:12 AM] Registering tool: get_active_notebook
+[2/6/2026, 11:14:12 AM] Registering tool: list_sources
+[2/6/2026, 11:14:12 AM] Registering tool: ask_question
+[2/6/2026, 11:14:12 AM] Registering tool: generate_infographic
+[2/6/2026, 11:14:12 AM] Registering tool: check_infographic_status
+[2/6/2026, 11:14:12 AM] All tools registered.
+[2/6/2026, 11:14:12 AM] NotebookLM MCP Server running on Stdio
+[2/6/2026, 11:14:12 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 11:16:17 AM] SERVER STARTING...
+[2/6/2026, 11:16:17 AM] Initializing Transports...
+[2/6/2026, 11:16:18 AM] Registering tool: generate_summary
+[2/6/2026, 11:16:18 AM] Registering tool: get_active_notebook
+[2/6/2026, 11:16:18 AM] Registering tool: list_sources
+[2/6/2026, 11:16:18 AM] Registering tool: ask_question
+[2/6/2026, 11:16:18 AM] Registering tool: generate_infographic
+[2/6/2026, 11:16:18 AM] Registering tool: check_infographic_status
+[2/6/2026, 11:16:18 AM] All tools registered.
+[2/6/2026, 11:16:18 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 11:16:34 AM] SERVER STARTING...
+[2/6/2026, 11:16:34 AM] Initializing Transports...
+[2/6/2026, 11:16:34 AM] Registering tool: generate_summary
+[2/6/2026, 11:16:34 AM] Registering tool: get_active_notebook
+[2/6/2026, 11:16:34 AM] Registering tool: list_sources
+[2/6/2026, 11:16:34 AM] Registering tool: ask_question
+[2/6/2026, 11:16:34 AM] Registering tool: generate_infographic
+[2/6/2026, 11:16:34 AM] Registering tool: check_infographic_status
+[2/6/2026, 11:16:34 AM] All tools registered.
+[2/6/2026, 11:16:34 AM] NotebookLM MCP Server running on Stdio
+[2/6/2026, 11:16:34 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 11:16:34 AM] Port 3001 is in use. Assuming background server is running. Continuing in Stdio/Transport mode.
+[2/6/2026, 11:19:17 AM] SERVER STARTING...
+[2/6/2026, 11:19:17 AM] Initializing Transports...
+[2/6/2026, 11:19:17 AM] Registering tool: generate_summary
+[2/6/2026, 11:19:17 AM] Registering tool: get_active_notebook
+[2/6/2026, 11:19:17 AM] Registering tool: list_sources
+[2/6/2026, 11:19:17 AM] Registering tool: ask_question
+[2/6/2026, 11:19:17 AM] Registering tool: generate_infographic
+[2/6/2026, 11:19:17 AM] Registering tool: check_infographic_status
+[2/6/2026, 11:19:17 AM] All tools registered.
+[2/6/2026, 11:19:17 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 11:40:22 AM] SERVER STARTING...
+[2/6/2026, 11:40:22 AM] Initializing Transports...
+[2/6/2026, 11:40:22 AM] Registering tool: generate_summary
+[2/6/2026, 11:40:22 AM] Registering tool: get_active_notebook
+[2/6/2026, 11:40:22 AM] Registering tool: list_sources
+[2/6/2026, 11:40:22 AM] Registering tool: ask_question
+[2/6/2026, 11:40:22 AM] Registering tool: generate_infographic
+[2/6/2026, 11:40:22 AM] Registering tool: check_infographic_status
+[2/6/2026, 11:40:22 AM] All tools registered.
+[2/6/2026, 11:40:22 AM] HTTP/WS Server listening on port 3001
+[2/6/2026, 11:42:43 AM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","user-agent":"curl/8.5.0","accept":"*/*"}
+[2/6/2026, 11:42:43 AM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 11:42:43 AM] [HTTP] Created transport with sessionId: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:42:43 AM] [HTTP] server.connect() completed for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:42:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:43:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:43:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:43:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:43:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:44:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:44:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:44:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:44:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:45:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:45:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:45:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:45:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:46:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:46:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:46:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:46:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:47:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:47:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:47:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:47:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:48:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:48:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:48:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:48:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:49:10 AM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 11:49:10 AM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 11:49:10 AM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 11:49:10 AM] [HTTP] Created transport with sessionId: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:49:10 AM] [HTTP] server.connect() completed for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 11:49:10 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:49:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:49:25 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:49:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:49:40 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:49:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:49:55 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:49:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:50:10 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:50:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:50:25 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:50:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:50:33 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"96"}
+[2/6/2026, 11:50:33 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:50:33 AM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 11:50:33 AM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 11:50:40 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:50:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:50:55 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:50:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:51:11 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:51:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:51:29 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:51:43 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:51:44 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:51:58 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:51:59 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:52:09 AM] [HTTP] POST /messages?sessionId=ca8bcddd-f237-40fc-bcfa-288307caf646 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"96"}
+[2/6/2026, 11:52:09 AM] [HTTP] POST /messages (session: ca8bcddd-f237-40fc-bcfa-288307caf646)
+[2/6/2026, 11:52:09 AM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 11:52:09 AM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 11:52:13 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:52:14 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:52:28 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:52:29 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:52:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:52:54 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:53:10 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:53:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:53:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:53:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:53:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:53:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:53:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:53:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:54:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:54:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:54:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:54:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:54:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:54:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:54:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:54:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:55:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:55:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:55:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:55:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:55:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:55:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:55:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:55:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:56:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:56:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:56:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:56:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:56:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:56:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:56:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:56:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:57:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:57:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:57:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:57:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:57:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:57:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:57:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:57:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:58:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:58:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:58:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:58:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:58:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:58:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:58:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:58:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:59:07 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:59:12 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:59:22 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:59:27 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:59:37 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:59:42 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 11:59:52 AM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 11:59:57 AM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:00:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:00:12 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:00:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:00:27 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:00:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:00:42 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:00:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:00:57 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:01:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:01:12 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:01:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:01:27 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:01:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:01:42 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:01:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:01:57 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:02:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:02:12 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:02:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:02:27 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:02:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:02:42 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:02:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:02:57 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:03:12 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:03:27 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:03:42 PM] [HTTP] Sent heartbeat for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:51 PM] [HTTP] SSE connection closed: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:51 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 12:03:51 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: ca8bcddd-f237-40fc-bcfa-288307caf646
+[2/6/2026, 12:03:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:03:55 PM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:03:55 PM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 12:03:55 PM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 12:03:55 PM] [HTTP] Created transport with sessionId: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:03:55 PM] [HTTP] server.connect() completed for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:03:55 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:03:55 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 12:03:56 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:04:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:04:10 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:04:15 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"96"}
+[2/6/2026, 12:04:15 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:04:15 PM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 12:04:15 PM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 12:04:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:04:25 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:04:35 PM] [HTTP] POST /messages?sessionId=86e397b6-6944-4b33-9e79-3464dc80bd5a - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"96"}
+[2/6/2026, 12:04:35 PM] [HTTP] POST /messages (session: 86e397b6-6944-4b33-9e79-3464dc80bd5a)
+[2/6/2026, 12:04:35 PM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 12:04:35 PM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 12:04:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:04:40 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:04:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:04:55 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:05:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:05:10 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:05:22 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:05:25 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:05:37 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:05:40 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:05:52 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:05:55 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:06:07 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:06:10 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:06:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:06:25 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:06:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:06:40 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:06:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:06:55 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:07:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:07:10 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:07:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:07:25 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:07:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:07:40 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:07:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:07:55 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:08:10 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:08:25 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:08:40 PM] [HTTP] Sent heartbeat for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:08:53 PM] [HTTP] SSE connection closed: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:53 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 12:08:53 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: 86e397b6-6944-4b33-9e79-3464dc80bd5a
+[2/6/2026, 12:08:58 PM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:08:58 PM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 12:08:58 PM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 12:08:58 PM] [HTTP] Created transport with sessionId: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:08:58 PM] [HTTP] server.connect() completed for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages?sessionId=d32c8d87-c4dc-4f15-87d1-eef5131b0e14 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages (session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14)
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages?sessionId=d32c8d87-c4dc-4f15-87d1-eef5131b0e14 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages (session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14)
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages?sessionId=d32c8d87-c4dc-4f15-87d1-eef5131b0e14 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages (session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14)
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages?sessionId=d32c8d87-c4dc-4f15-87d1-eef5131b0e14 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages (session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14)
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages?sessionId=d32c8d87-c4dc-4f15-87d1-eef5131b0e14 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 12:08:58 PM] [HTTP] POST /messages (session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14)
+[2/6/2026, 12:09:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:09:13 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:09:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:09:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:09:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:09:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:09:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:09:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:10:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:10:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:10:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:10:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:10:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:10:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:10:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:10:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:11:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:11:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:11:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:11:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:11:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:11:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:11:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:11:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:12:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:12:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:12:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:12:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:12:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:12:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:12:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:12:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:13:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:13:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:13:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:13:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:13:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:13:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:13:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:13:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:14:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:14:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:14:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:14:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:14:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:14:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:14:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:14:59 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:15:14 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:15:29 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:15:44 PM] [HTTP] Sent heartbeat for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:48 PM] [HTTP] SSE connection closed: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:48 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 12:15:48 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: d32c8d87-c4dc-4f15-87d1-eef5131b0e14
+[2/6/2026, 12:15:49 PM] SERVER STARTING...
+[2/6/2026, 12:15:49 PM] Initializing Transports...
+[2/6/2026, 12:15:49 PM] Registering tool: generate_summary
+[2/6/2026, 12:15:49 PM] Registering tool: get_active_notebook
+[2/6/2026, 12:15:49 PM] Registering tool: list_sources
+[2/6/2026, 12:15:49 PM] Registering tool: ask_question
+[2/6/2026, 12:15:49 PM] Registering tool: generate_infographic
+[2/6/2026, 12:15:49 PM] Registering tool: check_infographic_status
+[2/6/2026, 12:15:49 PM] All tools registered.
+[2/6/2026, 12:15:49 PM] NotebookLM MCP Server running on Stdio
+[2/6/2026, 12:15:49 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 12:15:49 PM] Port 3001 is in use. Assuming background server is running. Continuing in Stdio/Transport mode.
+[2/6/2026, 12:15:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:16:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:16:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:16:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:16:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:17:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:17:11 PM] SERVER STARTING...
+[2/6/2026, 12:17:11 PM] Initializing Transports...
+[2/6/2026, 12:17:11 PM] Registering tool: generate_summary
+[2/6/2026, 12:17:11 PM] Registering tool: get_active_notebook
+[2/6/2026, 12:17:11 PM] Registering tool: list_sources
+[2/6/2026, 12:17:11 PM] Registering tool: ask_question
+[2/6/2026, 12:17:11 PM] Registering tool: generate_infographic
+[2/6/2026, 12:17:11 PM] Registering tool: check_infographic_status
+[2/6/2026, 12:17:11 PM] All tools registered.
+[2/6/2026, 12:17:11 PM] NotebookLM MCP Server running on Stdio
+[2/6/2026, 12:17:11 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 12:17:11 PM] Port 3001 is in use. Assuming background server is running. Continuing in Stdio/Transport mode.
+[2/6/2026, 12:17:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:17:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:17:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:18:05 PM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:18:05 PM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 12:18:05 PM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 12:18:05 PM] [HTTP] Created transport with sessionId: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:18:05 PM] [HTTP] server.connect() completed for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages?sessionId=f9812405-04c4-4fb1-955e-20d06acc6bf9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages (session: f9812405-04c4-4fb1-955e-20d06acc6bf9)
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages?sessionId=f9812405-04c4-4fb1-955e-20d06acc6bf9 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages (session: f9812405-04c4-4fb1-955e-20d06acc6bf9)
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages?sessionId=f9812405-04c4-4fb1-955e-20d06acc6bf9 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages (session: f9812405-04c4-4fb1-955e-20d06acc6bf9)
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages?sessionId=f9812405-04c4-4fb1-955e-20d06acc6bf9 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages (session: f9812405-04c4-4fb1-955e-20d06acc6bf9)
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages?sessionId=f9812405-04c4-4fb1-955e-20d06acc6bf9 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 12:18:05 PM] [HTTP] POST /messages (session: f9812405-04c4-4fb1-955e-20d06acc6bf9)
+[2/6/2026, 12:18:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:18:20 PM] [HTTP] Sent heartbeat for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:18:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:18:35 PM] [HTTP] Sent heartbeat for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:18:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:18:50 PM] [HTTP] Sent heartbeat for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:18:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:19:05 PM] [HTTP] Sent heartbeat for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:19:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:19:20 PM] [HTTP] Sent heartbeat for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:19:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:19:28 PM] [HTTP] SSE connection closed: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:19:28 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 12:19:28 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: f9812405-04c4-4fb1-955e-20d06acc6bf9
+[2/6/2026, 12:19:33 PM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:19:33 PM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 12:19:33 PM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 12:19:33 PM] [HTTP] Created transport with sessionId: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:19:33 PM] [HTTP] server.connect() completed for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 12:19:33 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:19:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:19:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:19:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:20:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:20:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:20:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:20:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:20:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:20:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:20:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:20:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:21:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:21:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:21:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:21:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:21:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:21:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:21:41 PM] [HTTP] POST /messages?sessionId=14d4f709-5478-4584-9f72-346cc5878cdc - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"205"}
+[2/6/2026, 12:21:41 PM] [HTTP] POST /messages (session: 14d4f709-5478-4584-9f72-346cc5878cdc)
+[2/6/2026, 12:21:42 PM] [MCP] Request: Question for https://notebooklm.google.com/notebook/62e56192-4828-4091-9ce5-a8b1bc2c65a0: "Summarize this"
+[2/6/2026, 12:21:42 PM] Initializing Singleton NotebookLMClient...
+[2/6/2026, 12:21:42 PM] [NotebookLM] Launching browser (Headless: true)...
+[2/6/2026, 12:21:44 PM] [NotebookLM] 🔄 Navigating to scrape tokens...
+[2/6/2026, 12:21:46 PM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 12:21:46 PM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 12:21:46 PM] NotebookLMClient started successfully.
+[2/6/2026, 12:21:46 PM] [NotebookLM] Direct Notebook URL detected: 62e56192-4828-4091-9ce5-a8b1bc2c65a0
+[2/6/2026, 12:21:46 PM] [NotebookLM] Source ID unknown for this notebook. Fetching via RPC...
+[2/6/2026, 12:21:46 PM] [NotebookLM] Listing sources for: 62e56192-4828-4091-9ce5-a8b1bc2c65a0...
+[2/6/2026, 12:21:46 PM] [Debug] calling _executeRpc for sources...
+[2/6/2026, 12:21:46 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 12:21:46 PM] [Debug] _executeRpc returned: Object
+[2/6/2026, 12:21:46 PM] [Debug] Full response: [["wrb.fr","rLM1Ne","[[\"The Master Art of Asking and Receiving\",[[[\"c91a8128-a9c1-48d3-8527-07b2b7a6e510\"],\"How to Get Whatever You Want\",[null,571,[1770352763,621078000],[\"4a802f78-e1c6-49dc-9d80-c1f570ab6995\",[1770352763,128097000]],9,[\"https://www.youtube.com/watch?v\\u003duOcKF-aLHyw\",\"uOcKF-aLHyw\",\"GrindBuddy\"],1],[null,2]]],\"62e56192-4828-4091-9ce5-a8b1bc2c65a0\",\"🙋\\u200d♂️\",null,[1,false,true,null,null,[1770360706,503083000],1,false,[1770352762,32792000],null,null,null,false,true,1,false],null,null,null,[true,true,true],[6,500,300,500000]]]",null,null,null,"generic"],["di",327],["af.httprm",327,"1275489083985350359",11]]
+[2/6/2026, 12:21:46 PM] [Debug] response[0][1]: rLM1Ne (Expected: rLM1Ne)
+[2/6/2026, 12:21:46 PM] [Debug] response[0][2] type: string
+[2/6/2026, 12:21:46 PM] [NotebookLM] Found 1 sources via RPC.
+[2/6/2026, 12:21:46 PM] [NotebookLM] ✅ Using first source: c91a8128-a9c1-48d3-8527-07b2b7a6e510
+[2/6/2026, 12:21:46 PM] [NotebookLM] Querying notebook 62e56192-4828-4091-9ce5-a8b1bc2c65a0 (source: c91a8128-a9c1-48d3-8527-07b2b7a6e510)...
+[2/6/2026, 12:21:46 PM] [NotebookLM] Parsing query: "Summarize this" for notebook 62e56192-4828-4091-9ce5-a8b1bc2c65a0...
+[2/6/2026, 12:21:46 PM] [NotebookLM] Executing Streamed RPC to https://notebooklm.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed?bl=boq_labs-tailwind-frontend_20260204.11_p0&f.sid=7001079141452627045&hl=en&_reqid=126943&rt=c
+[2/6/2026, 12:21:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:21:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:22:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:22:07 PM] [NotebookLM] Query successful.
+[2/6/2026, 12:22:07 PM] [Session] Active notebook set: https://notebooklm.google.com/notebook/62e56192-4828-4091-9ce5-a8b1bc2c65a0 (62e56192-4828-4091-9ce5-a8b1bc2c65a0)
+[2/6/2026, 12:22:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:22:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:22:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:22:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:22:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:22:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:22:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:23:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:23:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:23:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:23:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:23:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:23:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:23:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:23:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:24:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:24:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:24:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:24:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:24:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:24:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:24:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:24:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:25:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:25:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:25:18 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:25:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:25:33 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:25:39 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:25:48 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:25:53 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:26:03 PM] [HTTP] Sent heartbeat for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:26:08 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:26:08 PM] [HTTP] SSE connection closed: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:26:08 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 12:26:08 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: 14d4f709-5478-4584-9f72-346cc5878cdc
+[2/6/2026, 12:26:23 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:26:28 PM] SERVER STARTING...
+[2/6/2026, 12:26:28 PM] Initializing Transports...
+[2/6/2026, 12:26:28 PM] Registering tool: generate_summary
+[2/6/2026, 12:26:28 PM] Registering tool: get_active_notebook
+[2/6/2026, 12:26:28 PM] Registering tool: list_sources
+[2/6/2026, 12:26:28 PM] Registering tool: ask_question
+[2/6/2026, 12:26:28 PM] Registering tool: generate_infographic
+[2/6/2026, 12:26:28 PM] Registering tool: check_infographic_status
+[2/6/2026, 12:26:28 PM] All tools registered.
+[2/6/2026, 12:26:28 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 12:26:28 PM] Port 3001 is in use. Assuming background server is running. Continuing in Stdio/Transport mode.
+[2/6/2026, 12:26:38 PM] [HTTP] Sent heartbeat for session: 3d650d51-e7d1-493b-b479-3c4561e715e7
+[2/6/2026, 12:26:48 PM] SERVER STARTING...
+[2/6/2026, 12:26:48 PM] Initializing Transports...
+[2/6/2026, 12:26:48 PM] Registering tool: generate_summary
+[2/6/2026, 12:26:48 PM] Registering tool: get_active_notebook
+[2/6/2026, 12:26:48 PM] Registering tool: list_sources
+[2/6/2026, 12:26:48 PM] Registering tool: ask_question
+[2/6/2026, 12:26:48 PM] Registering tool: generate_infographic
+[2/6/2026, 12:26:48 PM] Registering tool: check_infographic_status
+[2/6/2026, 12:26:48 PM] All tools registered.
+[2/6/2026, 12:26:48 PM] HTTP/WS Server listening on port 3001

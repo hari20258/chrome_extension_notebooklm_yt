@@ -161,33 +161,40 @@ function registerTools(server: McpServer) {
     // --- Helper for wrapping errors ---
     const wrapError = (msg: string) => ({ content: [{ type: "text" as const, text: msg }], isError: true });
 
-    // --- Tool: generate_summary (MCP App Enabled) ---
+    // --- Tool: ping (Debug) ---
+    server.tool(
+        "ping",
+        "A simple ping tool to verify tool discovery works.",
+        { message: z.string().optional() },
+        async ({ message }) => {
+            return {
+                content: [{ type: "text", text: `Pong! You said: ${message || "nothing"}` }]
+            };
+        }
+    );
+
+    // --- Tool: generate_summary (Standard MCP) ---
     logToFile("Registering tool: generate_summary");
-    registerAppTool(
-        server,
+    server.tool(
         "generate_summary",
+        "Generates a comprehensive summary of a YouTube video or NotebookLM notebook content. Side-effect: Sets this as the active notebook.",
         {
-            title: "Generate Summary",
-            description: "Generates a comprehensive summary of a YouTube video or NotebookLM notebook content. Side-effect: Sets this as the active notebook.",
-            inputSchema: z.object({
-                url: z.string().url().optional().describe("The URL of the YouTube video OR a direct NotebookLM link. Optional if an active notebook exists in the session.")
-            }) as any,
-            _meta: { ui: { resourceUri } },
+            url: z.string().url().describe("The URL of the YouTube video OR a direct NotebookLM link. Optional if an active notebook exists in the session.")
         },
-        async (args: any) => {
+        async (args) => {
             const targetUrl = args.url;
             logToFile(`[MCP] Request: Summary for ${targetUrl}`);
             let notebookId: string = "unknown";
             try {
                 const client = await getClient();
-                const summary = await client.generateSummary(targetUrl!);
+                const summary = await client.generateSummary(targetUrl);
 
                 // Update Session State
-                notebookId = client._parseNotebookUrl(targetUrl!) || "unknown";
-                setActiveNotebook(targetUrl!, notebookId);
+                notebookId = client._parseNotebookUrl(targetUrl) || "unknown";
+                setActiveNotebook(targetUrl, notebookId);
 
                 return {
-                    content: [{ type: "text" as const, text: `📝 **Summary Generated**\n\n${summary}` }],
+                    content: [{ type: "text", text: `📝 **Summary Generated**\n\n${summary}` }],
                     meta: { source: targetUrl, notebookId }
                 };
             } catch (e: any) {
@@ -202,22 +209,17 @@ function registerTools(server: McpServer) {
                         // Force refresh client instance
                         clientInstance = null;
                         const retryClient = await getClient();
-                        const summary = await retryClient.generateSummary(targetUrl!);
-
-                        // Update Session State on retry
-                        notebookId = retryClient._parseNotebookUrl(targetUrl!) || "unknown";
-                        setActiveNotebook(targetUrl!, notebookId);
+                        const summary = await retryClient.generateSummary(targetUrl);
 
                         return {
-                            content: [{ type: "text" as const, text: `📝 **Summary Generated**\n\n${summary}` }],
-                            meta: { source: targetUrl, notebookId }
+                            content: [{ type: "text", text: `📝 **Summary Generated**\n\n${summary}` }]
                         };
                     } catch (err: any) {
-                        return { content: [{ type: "text" as const, text: `⚠️ Login failed: ${err.message}` }] };
+                        return { content: [{ type: "text", text: `⚠️ Login failed: ${err.message}` }] };
                     }
                 }
                 logToFile(`Error: ${e.message}`);
-                return wrapError(`Error generating summary: ${e.message}`);
+                return { content: [{ type: "text", text: `Error generating summary: ${e.message}` }], isError: true };
             }
         }
     );
@@ -678,6 +680,12 @@ function startHttpServer(server: McpServer) {
         res.json({ status: "ok", mode: "http", port: HTTP_PORT });
     });
 
+    // Dedicated SSE endpoint
+    expressApp.get("/sse", async (req, res) => {
+        logToFile(`[HTTP] GET /sse request -> Handling as SSE`);
+        await handleSseConnection(req, res);
+    });
+
     // Root info endpoint (Supports SSE auto-discovery)
     expressApp.get("/", async (req, res) => {
         const accept = req.headers.accept || "";
@@ -699,8 +707,16 @@ function startHttpServer(server: McpServer) {
         });
     });
 
-    expressApp.listen(HTTP_PORT, () => {
+    const httpServer = expressApp.listen(HTTP_PORT, () => {
         logToFile(`HTTP/WS Server listening on port ${HTTP_PORT}`);
+    });
+
+    httpServer.on('error', (e: any) => {
+        if (e.code === 'EADDRINUSE') {
+            logToFile(`Port ${HTTP_PORT} is in use. Assuming background server is running. Continuing in Stdio/Transport mode.`);
+        } else {
+            logToFile(`HTTP Server Error: ${e}`);
+        }
     });
 }
 
@@ -717,6 +733,9 @@ async function startStdioServer(server: McpServer) {
 // --- Main Entry Point ---
 async function main() {
     const useStdio = process.argv.includes("--stdio");
+    if (useStdio) {
+        console.log = console.error;
+    }
 
     logToFile("SERVER STARTING...");
     logToFile("Initializing Transports...");

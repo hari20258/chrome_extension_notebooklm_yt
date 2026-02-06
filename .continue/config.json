@@ -1,0 +1,23 @@
+{
+    "models": [
+        {
+            "title": "Llama 3.2 (Ollama)",
+            "provider": "ollama",
+            "model": "llama3.2"
+        },
+        {
+            "title": "Llama 3 (Ollama)",
+            "provider": "ollama",
+            "model": "llama3"
+        }
+    ],
+    "mcpServers": {
+        "notebooklm": {
+            "command": "/usr/local/bin/node",
+            "args": [
+                "/Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/server.js",
+                "--stdio"
+            ]
+        }
+    }
+}
