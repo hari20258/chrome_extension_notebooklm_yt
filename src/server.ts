@@ -114,15 +114,63 @@ function logToFile(msg: string) {
     console.error(`[${timestamp}] ${msg}`);
 }
 
-// --- Singleton Client ---
-let clientInstance: NotebookLMClient | null = null;
-async function getClient(): Promise<NotebookLMClient> {
-    if (!clientInstance) {
-        logToFile("Initializing Singleton NotebookLMClient...");
+// --- Cookie Storage (from Chrome Extension) ---
+import { NativeFetchClient } from "./native_fetch_client.js";
+
+interface ChromeCookie {
+    name: string;
+    value: string;
+    domain: string;
+    path: string;
+    secure: boolean;
+    httpOnly: boolean;
+    expirationDate?: number;
+}
+
+let storedCookies: ChromeCookie[] = [];
+let cookiesReceivedAt: number | null = null;
+
+export function setCookiesFromExtension(cookies: ChromeCookie[]) {
+    storedCookies = cookies;
+    cookiesReceivedAt = Date.now();
+    logToFile(`[Cookies] Received ${cookies.length} cookies from extension`);
+}
+
+export function hasFreshCookies(): boolean {
+    if (!cookiesReceivedAt || storedCookies.length === 0) return false;
+    // Consider cookies stale after 10 minutes
+    const TEN_MINUTES = 10 * 60 * 1000;
+    return (Date.now() - cookiesReceivedAt) < TEN_MINUTES;
+}
+
+// --- Singleton Client (Prefer Native when cookies available) ---
+let clientInstance: NotebookLMClient | NativeFetchClient | null = null;
+let usingNativeClient = false;
+
+async function getClient(): Promise<NotebookLMClient | NativeFetchClient> {
+    // If we have fresh cookies, prefer NativeFetchClient (no browser popup!)
+    if (hasFreshCookies()) {
+        if (!clientInstance || !usingNativeClient) {
+            logToFile("[Client] 🚀 Using NativeFetchClient (cookies from extension)");
+            // Close old Playwright client if exists
+            if (clientInstance && !usingNativeClient) {
+                try { await (clientInstance as NotebookLMClient).stop(); } catch { }
+            }
+            clientInstance = new NativeFetchClient(storedCookies);
+            await clientInstance.start();
+            usingNativeClient = true;
+        }
+        return clientInstance;
+    }
+
+    // Fallback to Playwright client
+    if (!clientInstance || usingNativeClient) {
+        logToFile("[Client] 🎭 Falling back to Playwright NotebookLMClient");
         const headlessEnv = process.env.NOTEBOOKLM_HEADLESS;
         const headless = headlessEnv === undefined ? true : headlessEnv === "true";
         clientInstance = new NotebookLMClient(headless);
         await clientInstance.start();
+        usingNativeClient = false;
         logToFile("NotebookLMClient started successfully.");
     }
     return clientInstance;
@@ -494,6 +542,22 @@ function startHttpServer(server: McpServer) {
         allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
     }));
     expressApp.use(express.json({ limit: '10mb' }));
+
+    // --- Cookie Sync Endpoint (from Chrome Extension) ---
+    expressApp.post("/sync-cookies", (req, res) => {
+        try {
+            const { cookies } = req.body;
+            if (!Array.isArray(cookies)) {
+                res.status(400).json({ error: "Invalid cookies format" });
+                return;
+            }
+            setCookiesFromExtension(cookies);
+            res.json({ success: true, count: cookies.length });
+        } catch (e: any) {
+            logToFile(`[Cookies] Error processing cookies: ${e.message}`);
+            res.status(500).json({ error: e.message });
+        }
+    });
 
     // Store transports by session ID (supports both SSE and Streamable HTTP)
     const sessionTransports = new Map<string, SSEServerTransport | StreamableHTTPServerTransport>();

@@ -2455,3 +2455,349 @@
 [2/6/2026, 12:26:48 PM] Registering tool: check_infographic_status
 [2/6/2026, 12:26:48 PM] All tools registered.
 [2/6/2026, 12:26:48 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 1:06:49 PM] SERVER STARTING...
+[2/6/2026, 1:06:49 PM] Initializing Transports...
+[2/6/2026, 1:06:49 PM] Registering tool: generate_summary
+[2/6/2026, 1:06:49 PM] Registering tool: get_active_notebook
+[2/6/2026, 1:06:49 PM] Registering tool: list_sources
+[2/6/2026, 1:06:49 PM] Registering tool: ask_question
+[2/6/2026, 1:06:49 PM] Registering tool: generate_infographic
+[2/6/2026, 1:06:49 PM] Registering tool: check_infographic_status
+[2/6/2026, 1:06:49 PM] All tools registered.
+[2/6/2026, 1:06:49 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 1:11:12 PM] [HTTP] GET / - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.217","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c9900fa80e92ea4-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-69859b160000000038cb915f904e13c7-7ea4e33b9f3d1620-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-forwarded-for":"20.210.174.217","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:13 PM] [HTTP] GET /favicon.svg - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.222","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c9900fea13c480c-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-69859b160000000038cb915f904e13c7-5c4cf9ca9bf5df7f-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-forwarded-for":"20.210.174.222","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:14 PM] [HTTP] GET /favicon.png - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.222","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99010193bb480c-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-69859b160000000038cb915f904e13c7-184f7581e401939b-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-forwarded-for":"20.210.174.222","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:15 PM] [HTTP] GET /favicon.ico - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"Python/3.12 aiohttp/3.13.3","accept":"*/*","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.222","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99010b418b480c-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","traceparent":"00-69859b160000000038cb915f904e13c7-4b8d2e3ff09787e3-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-forwarded-for":"20.210.174.222","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:16 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.212","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990111a1372b2f-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859b160000000038cb915f904e13c7-44a67cae9d292c5e-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"17690600661872852867","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.212","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:16 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:16 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:11:16 PM] [HTTP] Streamable HTTP session initialized: 268f2ae4-0547-41c8-98aa-4b85ad848d8e
+[2/6/2026, 1:11:16 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.213","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990113e17096a0-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859b160000000038cb915f904e13c7-f216c863cb542a85-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"11319718144711463578","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.213","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:16 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:16 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:11:16 PM] [HTTP] Streamable HTTP session initialized: e8ba4b80-c08f-4a17-997f-9406d427a56a
+[2/6/2026, 1:11:17 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.223","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c9901158778fcb3-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e8ba4b80-c08f-4a17-997f-9406d427a56a","traceparent":"00-69859b160000000038cb915f904e13c7-1dee186310359ec6-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"8881367062535798657","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.223","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:17 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:17 PM] [HTTP] GET /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.211","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990115830cd3ed-KIX","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e8ba4b80-c08f-4a17-997f-9406d427a56a","traceparent":"00-69859b160000000038cb915f904e13c7-f143de01877268d7-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"10543812477767284854","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.211","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:17 PM] [HTTP] GET /mcp received
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"46","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.210","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990117c37f8391-KIX","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e8ba4b80-c08f-4a17-997f-9406d427a56a","traceparent":"00-69859b160000000038cb915f904e13c7-c3ee721b431f2404-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"12721875865584821993","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.210","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"50","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.211","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99011e819d19c5-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e8ba4b80-c08f-4a17-997f-9406d427a56a","traceparent":"00-69859b160000000038cb915f904e13c7-87fdd6b2120427a9-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"2715708506677206833","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.211","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"96","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.212","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990121110a00b4-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"e8ba4b80-c08f-4a17-997f-9406d427a56a","traceparent":"00-69859b160000000038cb915f904e13c7-d392d277b8cb09d5-00","tracestate":"dd=s:-1;p:24c4c8de78eac794;t.dm:-3","x-datadog-parent-id":"4906290678255223540","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b1600000000,_dd.p.dm=-3","x-datadog-trace-id":"4092524526025184199","x-forwarded-for":"20.210.174.212","x-forwarded-proto":"https"}
+[2/6/2026, 1:11:18 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:11:18 PM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 1:11:18 PM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 1:12:16 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.217","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99028af03dfca0-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859b5100000000c6bafaaffb6c1c5b-ffc28740e242a590-00","tracestate":"dd=s:-1;p:4cf9dfe3689455f1;t.dm:-3","x-datadog-parent-id":"8471413990043749520","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b5100000000,_dd.p.dm=-3","x-datadog-trace-id":"14320033598922300507","x-forwarded-for":"20.210.174.217","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:16 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:16 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:12:16 PM] [HTTP] Streamable HTTP session initialized: d3d517d0-d5e9-49b7-acda-0c7b4af32aa1
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.221","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99028d50891a1d-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859b5100000000c6bafaaffb6c1c5b-cd83cae8267ce69c-00","tracestate":"dd=s:-1;p:4cf9dfe3689455f1;t.dm:-3","x-datadog-parent-id":"13463997875587284841","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b5100000000,_dd.p.dm=-3","x-datadog-trace-id":"14320033598922300507","x-forwarded-for":"20.210.174.221","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:17 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:12:17 PM] [HTTP] Streamable HTTP session initialized: f6860419-3e35-4683-96a7-491d8954b563
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.216","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99028ef78ab118-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"f6860419-3e35-4683-96a7-491d8954b563","traceparent":"00-69859b5100000000c6bafaaffb6c1c5b-4e78596658b92a0f-00","tracestate":"dd=s:-1;p:4cf9dfe3689455f1;t.dm:-3","x-datadog-parent-id":"13152393063596793943","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b5100000000,_dd.p.dm=-3","x-datadog-trace-id":"14320033598922300507","x-forwarded-for":"20.210.174.216","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:17 PM] [HTTP] GET /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.216","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99028f96418340-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"f6860419-3e35-4683-96a7-491d8954b563","traceparent":"00-69859b5100000000c6bafaaffb6c1c5b-d0298fd0f3bad650-00","tracestate":"dd=s:-1;p:4cf9dfe3689455f1;t.dm:-3","x-datadog-parent-id":"11961694948049991198","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b5100000000,_dd.p.dm=-3","x-datadog-trace-id":"14320033598922300507","x-forwarded-for":"20.210.174.216","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:17 PM] [HTTP] GET /mcp received
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"737","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.210","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99029066a78378-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"f6860419-3e35-4683-96a7-491d8954b563","traceparent":"00-69859b5100000000c6bafaaffb6c1c5b-d51d518c69b38a71-00","tracestate":"dd=s:-1;p:4cf9dfe3689455f1;t.dm:-3","x-datadog-parent-id":"6733309896624835155","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b5100000000,_dd.p.dm=-3","x-datadog-trace-id":"14320033598922300507","x-forwarded-for":"20.210.174.210","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:17 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:17 PM] [MCP] Request: Infographic for https://www.youtube.com/watch?v=0CmtDk-joT4
+[2/6/2026, 1:12:17 PM] [Jobs] Created job job_1770363737753_51xbi6 for https://www.youtube.com/watch?v=0CmtDk-joT4
+[2/6/2026, 1:12:17 PM] [Jobs] Processing job job_1770363737753_51xbi6...
+[2/6/2026, 1:12:17 PM] Initializing Singleton NotebookLMClient...
+[2/6/2026, 1:12:17 PM] [NotebookLM] Launching browser (Headless: true)...
+[2/6/2026, 1:12:19 PM] [NotebookLM] 🔄 Navigating to scrape tokens...
+[2/6/2026, 1:12:21 PM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 1:12:21 PM] [NotebookLM] ✅ Tokens acquired. bl: boq_labs-tailwind-frontend_20260204.11_p0
+[2/6/2026, 1:12:21 PM] NotebookLMClient started successfully.
+[2/6/2026, 1:12:21 PM] [NotebookLM] Creating Notebook...
+[2/6/2026, 1:12:22 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:23 PM] [NotebookLM] Notebook Created: 1dd9435c-5f28-4c28-a319-b91e9cb4b65d
+[2/6/2026, 1:12:23 PM] [NotebookLM] Adding Source: https://www.youtube.com/watch?v=0CmtDk-joT4...
+[2/6/2026, 1:12:25 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:25 PM] [NotebookLM] Source Added: 7b098fb0-5b1c-4902-92d0-78f1c7e64ca9
+[2/6/2026, 1:12:25 PM] [NotebookLM] ⏳ Waiting 5s...
+[2/6/2026, 1:12:30 PM] [NotebookLM] 🚀 Triggering Infographic...
+[2/6/2026, 1:12:32 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:32 PM] [NotebookLM] Polling for artifacts...
+[2/6/2026, 1:12:33 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:43 PM] [NotebookLM] Poll attempt 1/30...
+[2/6/2026, 1:12:43 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:53 PM] [NotebookLM] Poll attempt 2/30...
+[2/6/2026, 1:12:54 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.210","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c9903712303b418-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859b76000000005e74749b4d75785e-bfaeb189ec45eeb9-00","tracestate":"dd=s:-1;p:721d1259a6140f67;t.dm:-3","x-datadog-parent-id":"10519158254352011646","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b7600000000,_dd.p.dm=-3","x-datadog-trace-id":"6806193147231959134","x-forwarded-for":"20.210.174.210","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:54 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:54 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:12:54 PM] [HTTP] Streamable HTTP session initialized: 343250af-a095-4fd4-8da0-8f52ed7559a2
+[2/6/2026, 1:12:54 PM] [HTTP] GET /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.222","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990377a1fe006a-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"343250af-a095-4fd4-8da0-8f52ed7559a2","traceparent":"00-69859b76000000005e74749b4d75785e-7fda527ddd59de7c-00","tracestate":"dd=s:-1;p:721d1259a6140f67;t.dm:-3","x-datadog-parent-id":"5441664814377653798","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b7600000000,_dd.p.dm=-3","x-datadog-trace-id":"6806193147231959134","x-forwarded-for":"20.210.174.222","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:54 PM] [HTTP] GET /mcp received
+[2/6/2026, 1:12:54 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.221","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99037871688cf2-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"343250af-a095-4fd4-8da0-8f52ed7559a2","traceparent":"00-69859b76000000005e74749b4d75785e-d2038eba7e494cc6-00","tracestate":"dd=s:-1;p:721d1259a6140f67;t.dm:-3","x-datadog-parent-id":"9393050506952568063","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b7600000000,_dd.p.dm=-3","x-datadog-trace-id":"6806193147231959134","x-forwarded-for":"20.210.174.221","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:54 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:54 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:12:55 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"727","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.216","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99037a06651b19-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"343250af-a095-4fd4-8da0-8f52ed7559a2","traceparent":"00-69859b76000000005e74749b4d75785e-8ceba3f4fed20e98-00","tracestate":"dd=s:-1;p:721d1259a6140f67;t.dm:-3","x-datadog-parent-id":"1608553824031221394","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859b7600000000,_dd.p.dm=-3","x-datadog-trace-id":"6806193147231959134","x-forwarded-for":"20.210.174.216","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:12:55 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:12:55 PM] [MCP] Request: Summary for https://www.youtube.com/watch?v=0CmtDk-joT4
+[2/6/2026, 1:12:55 PM] [NotebookLM] ⚡ Cache Hit! Reusing notebook: 1dd9435c-5f28-4c28-a319-b91e9cb4b65d
+[2/6/2026, 1:12:55 PM] [NotebookLM] ⚡ Using Cached Source ID: 7b098fb0-5b1c-4902-92d0-78f1c7e64ca9
+[2/6/2026, 1:12:55 PM] [NotebookLM] ⏳ Waiting 10s before requesting summary...
+[2/6/2026, 1:13:04 PM] [NotebookLM] Poll attempt 3/30...
+[2/6/2026, 1:13:05 PM] [NotebookLM] Parsing query: "give me summary of the video" for notebook 1dd9435c-5f28-4c28-a319-b91e9cb4b65d...
+[2/6/2026, 1:13:05 PM] [NotebookLM] Executing Streamed RPC to https://notebooklm.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed?bl=boq_labs-tailwind-frontend_20260204.11_p0&f.sid=-7979391955789116340&hl=en&_reqid=127508&rt=c
+[2/6/2026, 1:13:05 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:13:15 PM] [NotebookLM] Poll attempt 4/30...
+[2/6/2026, 1:13:16 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:13:25 PM] [NotebookLM] Query successful.
+[2/6/2026, 1:13:25 PM] [Session] Active notebook set: https://www.youtube.com/watch?v=0CmtDk-joT4 (unknown)
+[2/6/2026, 1:13:26 PM] [NotebookLM] Poll attempt 5/30...
+[2/6/2026, 1:13:26 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:13:36 PM] [NotebookLM] Poll attempt 6/30...
+[2/6/2026, 1:13:37 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:13:47 PM] [NotebookLM] Poll attempt 7/30...
+[2/6/2026, 1:13:47 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:13:57 PM] [NotebookLM] Poll attempt 8/30...
+[2/6/2026, 1:13:58 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:08 PM] [NotebookLM] Poll attempt 9/30...
+[2/6/2026, 1:14:08 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:18 PM] [NotebookLM] Poll attempt 10/30...
+[2/6/2026, 1:14:19 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:29 PM] [NotebookLM] Poll attempt 11/30...
+[2/6/2026, 1:14:29 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:39 PM] [NotebookLM] Poll attempt 12/30...
+[2/6/2026, 1:14:40 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:50 PM] [NotebookLM] Poll attempt 13/30...
+[2/6/2026, 1:14:50 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:14:50 PM] [NotebookLM] 📸 Image Found: https://lh3.googleusercontent.com/notebooklm/ANHLwAxA_F7h0SFrrpp8N8FE_9i7ddFCENI117cpu_XwRKaoNduD703M-pBUHnyhucVw2EARggOGV2NuqU4N1Ife9Bbzzt4Tx9LvXO4uniftvjbniu_8vQ2rfgQwD24SlMcog3GcGCfVBk7hk6i4gzykCPoOnbWTfQU=w2752-d-h1536-mp2
+[2/6/2026, 1:14:50 PM] [Jobs] Job job_1770363737753_51xbi6 got image URL: https://lh3.googleusercontent.com/notebooklm/ANHLwAxA_F7h0SFrrpp8N8FE_9i7ddFCENI117cpu_XwRKaoNduD703M-pBUHnyhucVw2EARggOGV2NuqU4N1Ife9Bbzzt4Tx9LvXO4uniftvjbniu_8vQ2rfgQwD24SlMcog3GcGCfVBk7hk6i4gzykCPoOnbWTfQU=w2752-d-h1536-mp2
+[2/6/2026, 1:14:50 PM] [NotebookLM] Downloading resource: https://lh3.googleusercontent.com/notebooklm/ANHLw...
+[2/6/2026, 1:14:54 PM] [Jobs] Image downloaded for job_1770363737753_51xbi6 (203348 chars)
+[2/6/2026, 1:14:54 PM] [Jobs] Job job_1770363737753_51xbi6 completed, hasImageData: true
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"300","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.218","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99073d30cb00a1-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","traceparent":"00-69859c1200000000ad85238dbf21b943-44c83cc658bb96f3-00","tracestate":"dd=s:-1;p:7d1246e6b295c70b;t.dm:-3","x-datadog-parent-id":"7741319149459285459","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859c1200000000,_dd.p.dm=-3","x-datadog-trace-id":"12503439032168069443","x-forwarded-for":"20.210.174.218","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:15:29 PM] [HTTP] Initializing new Streamable HTTP session...
+[2/6/2026, 1:15:29 PM] [HTTP] Streamable HTTP session initialized: c1f3d7fe-c815-45b5-934f-77f41aafc42a
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"54","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.216","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99073f57bc835e-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"c1f3d7fe-c815-45b5-934f-77f41aafc42a","traceparent":"00-69859c1200000000ad85238dbf21b943-828fba97bf2ca33f-00","tracestate":"dd=s:-1;p:7d1246e6b295c70b;t.dm:-3","x-datadog-parent-id":"16506297462341656679","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859c1200000000,_dd.p.dm=-3","x-datadog-trace-id":"12503439032168069443","x-forwarded-for":"20.210.174.216","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:15:29 PM] [HTTP] GET /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","accept":"application/json, text/event-stream, text/event-stream","accept-encoding":"gzip","cache-control":"no-store","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.213","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c99073f66559650-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"c1f3d7fe-c815-45b5-934f-77f41aafc42a","traceparent":"00-69859c1200000000ad85238dbf21b943-ec2a37e0a918a893-00","tracestate":"dd=s:-1;p:7d1246e6b295c70b;t.dm:-3","x-datadog-parent-id":"7348809165992506123","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859c1200000000,_dd.p.dm=-3","x-datadog-trace-id":"12503439032168069443","x-forwarded-for":"20.210.174.213","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:15:29 PM] [HTTP] GET /mcp received
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp - Headers: {"host":"ages-specific-oasis-butler.trycloudflare.com","user-agent":"openai-mcp/1.0.0","content-length":"719","accept":"application/json, text/event-stream","accept-encoding":"gzip","cdn-loop":"cloudflare; loops=1; subreqs=1","cf-connecting-ip":"20.210.174.216","cf-ew-via":"15","cf-ipcountry":"JP","cf-ray":"9c990740d0718382-BOM","cf-visitor":"{\"scheme\":\"https\"}","cf-warp-tag-id":"f9b06340-2138-4ca7-966d-419f6aa6beff","cf-worker":"trycloudflare.com","connection":"keep-alive","content-type":"application/json","mcp-protocol-version":"2025-11-25","mcp-session-id":"c1f3d7fe-c815-45b5-934f-77f41aafc42a","traceparent":"00-69859c1200000000ad85238dbf21b943-8f824a8609c55dcf-00","tracestate":"dd=s:-1;p:7d1246e6b295c70b;t.dm:-3","x-datadog-parent-id":"5613546078501824311","x-datadog-sampling-priority":"-1","x-datadog-tags":"_dd.p.tid=69859c1200000000,_dd.p.dm=-3","x-datadog-trace-id":"12503439032168069443","x-forwarded-for":"20.210.174.216","x-forwarded-proto":"https","x-openai-session":"v1/4Y8gpUfgd2DASxNjLNrbuKosK0P7hu3z8Sts5pNt0upF0fsRLsR3gobuQA7lW1u9ww9wb5u3JLep","x-openai-subject":"v1/1TkmZ9vi2HN0ulr4rFQhK2erseyZ5fTF1FdFNfnj2glXPFbgxTEjdV0h0gdsRyHqTcbmFpIlcqh3jQjzgDPidScXtAs8kzMea3GGwrq"}
+[2/6/2026, 1:15:29 PM] [HTTP] POST /mcp received
+[2/6/2026, 1:15:29 PM] [Jobs] Checking status for job: job_1770363737753_51xbi6
+[2/6/2026, 1:15:29 PM] [Jobs] Returning completed job job_1770363737753_51xbi6, hasImageData: true, imageDataLength: 203348
+[2/6/2026, 1:16:30 PM] [HTTP] POST /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"application/json, text/event-stream","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 1:16:30 PM] [HTTP] GET /sse - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","pragma":"no-cache","cache-control":"no-cache","accept-encoding":"gzip, deflate"}
+[2/6/2026, 1:16:30 PM] [HTTP] New SSE connection request: /sse
+[2/6/2026, 1:16:30 PM] [HTTP] Created transport with sessionId: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:16:30 PM] [HTTP] server.connect() completed for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages?sessionId=21fd9d67-11da-42fd-903c-839e4b1b8674 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"164"}
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages (session: 21fd9d67-11da-42fd-903c-839e4b1b8674)
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages?sessionId=21fd9d67-11da-42fd-903c-839e4b1b8674 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages (session: 21fd9d67-11da-42fd-903c-839e4b1b8674)
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages?sessionId=21fd9d67-11da-42fd-903c-839e4b1b8674 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"62"}
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages (session: 21fd9d67-11da-42fd-903c-839e4b1b8674)
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages?sessionId=21fd9d67-11da-42fd-903c-839e4b1b8674 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"72"}
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages (session: 21fd9d67-11da-42fd-903c-839e4b1b8674)
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages?sessionId=21fd9d67-11da-42fd-903c-839e4b1b8674 - Headers: {"host":"localhost:3001","connection":"keep-alive","mcp-protocol-version":"2025-11-25","content-type":"application/json","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","user-agent":"node","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 1:16:30 PM] [HTTP] POST /messages (session: 21fd9d67-11da-42fd-903c-839e4b1b8674)
+[2/6/2026, 1:16:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:17:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:17:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:17:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:17:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:18:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:18:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:18:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:18:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:18:56 PM] [HTTP] POST / - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","accept":"text/event-stream, application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"458"}
+[2/6/2026, 1:18:56 PM] [HTTP] GET / - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"text/event-stream","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate"}
+[2/6/2026, 1:18:56 PM] [HTTP] Root request with Accept: text/event-stream -> Handling as SSE
+[2/6/2026, 1:18:56 PM] [HTTP] New SSE connection request: /
+[2/6/2026, 1:18:56 PM] [HTTP] Created transport with sessionId: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:18:56 PM] [HTTP] server.connect() completed for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages?sessionId=48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"458"}
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages (session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9)
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages?sessionId=48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"54"}
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages (session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9)
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages?sessionId=48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"58"}
+[2/6/2026, 1:18:56 PM] [HTTP] POST /messages (session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9)
+[2/6/2026, 1:19:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:19:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:19:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:19:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:19:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:19:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:19:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:19:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:20:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:20:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:20:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:20:19 PM] [HTTP] POST /messages?sessionId=48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"363"}
+[2/6/2026, 1:20:19 PM] [HTTP] POST /messages (session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9)
+[2/6/2026, 1:20:19 PM] [MCP] Request: List Sources for https://notebooklm.google.com/notebook/ee98ed25-2dde-4800-98e8-578b28a2c1ba
+[2/6/2026, 1:20:19 PM] [NotebookLM] Listing sources for: ee98ed25-2dde-4800-98e8-578b28a2c1ba...
+[2/6/2026, 1:20:19 PM] [Debug] calling _executeRpc for sources...
+[2/6/2026, 1:20:19 PM] [HTTP] POST /messages?sessionId=48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9 - Headers: {"host":"localhost:3001","connection":"keep-alive","content-type":"application/json","user-agent":"Visual Studio Code - Insiders/1.110.0-insider","accept":"*/*","accept-language":"*","sec-fetch-mode":"cors","accept-encoding":"gzip, deflate","content-length":"96"}
+[2/6/2026, 1:20:19 PM] [HTTP] POST /messages (session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9)
+[2/6/2026, 1:20:19 PM] [MCP] Resource requested: ui://infographic/view.html
+[2/6/2026, 1:20:19 PM] [MCP] Serving UI from: /Users/harivishnus/Desktop/University/Internships/altrosyn/Chrome_extension/dist/src/mcp-app.html
+[2/6/2026, 1:20:21 PM] [Debug] Parsed 'wrb.fr' frame successfully.
+[2/6/2026, 1:20:21 PM] [Debug] _executeRpc returned: Object
+[2/6/2026, 1:20:21 PM] [Debug] Full response: [["wrb.fr","rLM1Ne","[[\"The Blueprint for Lasting Wealth and Financial Freedom\",[[[\"a91e6021-8103-4bb1-8f23-f3261c9301db\"],\"8 Habits of Wealthy People That Changed My Life | Money Mindset | Sonia Shenoy\",[null,1080,[1770233293,720576000],[\"1995bfc9-73ef-4fd4-ac4b-596c2a7b28e8\",[1770233293,228099000]],9,[\"https://www.youtube.com/watch?v\\u003ddVnDtO_YHi0\",\"dVnDtO_YHi0\",\"Sonia Shenoy\"],1],[null,2]]],\"ee98ed25-2dde-4800-98e8-578b28a2c1ba\",\"💰\",null,[1,false,true,null,null,[1770364220,922405000],1,false,[1770233292,921480000],null,null,null,false,true,1,false],null,null,null,[true,true,true],[6,500,300,500000]]]",null,null,null,"generic"],["di",336],["af.httprm",335,"-3339285102199875153",443]]
+[2/6/2026, 1:20:21 PM] [Debug] response[0][1]: rLM1Ne (Expected: rLM1Ne)
+[2/6/2026, 1:20:21 PM] [Debug] response[0][2] type: string
+[2/6/2026, 1:20:21 PM] [NotebookLM] Found 1 sources via RPC.
+[2/6/2026, 1:20:21 PM] [Session] Active notebook set: https://notebooklm.google.com/notebook/ee98ed25-2dde-4800-98e8-578b28a2c1ba (ee98ed25-2dde-4800-98e8-578b28a2c1ba)
+[2/6/2026, 1:20:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:20:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:20:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:20:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:20:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:21:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:21:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:21:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:21:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:21:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:21:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:21:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:21:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:22:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:22:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:22:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:22:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:22:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:22:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:22:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:22:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:23:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:23:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:23:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:23:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:23:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:23:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:23:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:23:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:24:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:24:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:24:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:24:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:24:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:24:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:24:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:24:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:25:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:25:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:25:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:25:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:25:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:25:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:25:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:25:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:26:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:26:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:26:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:26:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:26:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:26:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:26:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:26:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:27:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:27:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:27:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:27:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:27:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:27:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:27:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:27:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:28:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:28:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:28:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:28:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:28:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:28:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:28:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:28:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:29:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:29:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:29:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:29:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:29:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:29:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:29:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:29:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:30:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:30:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:30:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:30:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:30:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:30:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:30:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:30:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:31:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:31:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:31:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:31:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:31:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:31:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:31:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:31:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:32:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:32:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:32:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:32:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:32:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:32:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:32:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:32:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:33:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:33:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:33:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:33:26 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:33:30 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:33:41 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:33:45 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:33:56 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:34:00 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:34:11 PM] [HTTP] Sent heartbeat for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:34:15 PM] [HTTP] Sent heartbeat for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:34:15 PM] [HTTP] SSE connection closed: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:34:15 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 1:34:15 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: 21fd9d67-11da-42fd-903c-839e4b1b8674
+[2/6/2026, 1:34:15 PM] [HTTP] SSE connection closed: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 1:34:15 PM] [HTTP] Express Request 'error' event: aborted
+[2/6/2026, 1:34:15 PM] [HTTP] Express Request 'close' event (Client disconnected?) for session: 48db44ab-b3a1-4e0c-ba6d-dfdfd2bd39c9
+[2/6/2026, 2:08:46 PM] SERVER STARTING...
+[2/6/2026, 2:08:46 PM] Initializing Transports...
+[2/6/2026, 2:08:46 PM] Registering tool: generate_summary
+[2/6/2026, 2:08:46 PM] Registering tool: get_active_notebook
+[2/6/2026, 2:08:46 PM] Registering tool: list_sources
+[2/6/2026, 2:08:46 PM] Registering tool: ask_question
+[2/6/2026, 2:08:46 PM] Registering tool: generate_infographic
+[2/6/2026, 2:08:46 PM] Registering tool: check_infographic_status
+[2/6/2026, 2:08:46 PM] All tools registered.
+[2/6/2026, 2:08:46 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 2:08:46 PM] Port 3001 is in use. Assuming background server is running. Continuing in Stdio/Transport mode.
+[2/6/2026, 2:09:09 PM] SERVER STARTING...
+[2/6/2026, 2:09:09 PM] Initializing Transports...
+[2/6/2026, 2:09:09 PM] Registering tool: generate_summary
+[2/6/2026, 2:09:09 PM] Registering tool: get_active_notebook
+[2/6/2026, 2:09:09 PM] Registering tool: list_sources
+[2/6/2026, 2:09:09 PM] Registering tool: ask_question
+[2/6/2026, 2:09:09 PM] Registering tool: generate_infographic
+[2/6/2026, 2:09:09 PM] Registering tool: check_infographic_status
+[2/6/2026, 2:09:09 PM] All tools registered.
+[2/6/2026, 2:09:09 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 2:09:30 PM] [HTTP] POST /sync-cookies - Headers: {"host":"localhost:3001","user-agent":"curl/8.7.1","accept":"*/*","content-type":"application/json","content-length":"67"}
+[2/6/2026, 2:09:30 PM] [Cookies] Received 1 cookies from extension
+[2/6/2026, 2:20:00 PM] SERVER STARTING...
+[2/6/2026, 2:20:00 PM] Initializing Transports...
+[2/6/2026, 2:20:00 PM] Registering tool: generate_summary
+[2/6/2026, 2:20:00 PM] Registering tool: get_active_notebook
+[2/6/2026, 2:20:00 PM] Registering tool: list_sources
+[2/6/2026, 2:20:00 PM] Registering tool: ask_question
+[2/6/2026, 2:20:00 PM] Registering tool: generate_infographic
+[2/6/2026, 2:20:00 PM] Registering tool: check_infographic_status
+[2/6/2026, 2:20:00 PM] All tools registered.
+[2/6/2026, 2:20:00 PM] HTTP/WS Server listening on port 3001
+[2/6/2026, 2:27:54 PM] [HTTP] OPTIONS /sync-cookies - Headers: {"host":"localhost:3001","connection":"keep-alive","accept":"*/*","access-control-request-method":"POST","access-control-request-headers":"content-type","origin":"chrome-extension://mpehfoelgklhajohimhaloeinkfehlkf","user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36","sec-fetch-mode":"cors","sec-fetch-site":"cross-site","sec-fetch-dest":"empty","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en-GB;q=0.9,en;q=0.8"}
+[2/6/2026, 2:27:54 PM] [HTTP] POST /sync-cookies - Headers: {"host":"localhost:3001","connection":"keep-alive","content-length":"31465","user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36","content-type":"application/json","accept":"*/*","origin":"chrome-extension://mpehfoelgklhajohimhaloeinkfehlkf","sec-fetch-site":"cross-site","sec-fetch-mode":"cors","sec-fetch-dest":"empty","accept-encoding":"gzip, deflate, br, zstd","accept-language":"en-US,en-GB;q=0.9,en;q=0.8"}
+[2/6/2026, 2:27:54 PM] [Cookies] Received 81 cookies from extension

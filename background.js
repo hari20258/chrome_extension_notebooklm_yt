@@ -21,6 +21,65 @@ const RPC = {
 // State
 let sessionTokens = { at: null, bl: null, fsid: null };
 
+// --- COOKIE SYNC TO MCP SERVER ---
+const MCP_SERVER_URL = "http://localhost:3001";
+
+async function extractAndSyncCookies() {
+    try {
+        // Get all Google-related cookies
+        const googleCookies = await chrome.cookies.getAll({ domain: ".google.com" });
+        const notebookCookies = await chrome.cookies.getAll({ domain: "notebooklm.google.com" });
+
+        // Combine and deduplicate
+        const allCookies = [...googleCookies, ...notebookCookies];
+        const seen = new Set();
+        const uniqueCookies = allCookies.filter(c => {
+            const key = `${c.name}@${c.domain}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        console.log(`[Cookies] Extracted ${uniqueCookies.length} unique cookies`);
+
+        // Send to MCP server
+        const response = await fetch(`${MCP_SERVER_URL}/sync-cookies`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cookies: uniqueCookies })
+        });
+
+        if (response.ok) {
+            console.log("[Cookies] ✅ Synced cookies to MCP server");
+        } else {
+            console.warn("[Cookies] ⚠️ Server responded with:", response.status);
+        }
+    } catch (e) {
+        console.warn("[Cookies] Failed to sync (server may not be running):", e.message);
+    }
+}
+
+// Sync on extension startup
+extractAndSyncCookies();
+
+// Listen for refresh requests (on-demand when cookies go stale)
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+    if (message.type === 'REFRESH_COOKIES') {
+        console.log("[Cookies] 🔄 Server requested cookie refresh");
+        extractAndSyncCookies().then(() => sendResponse({ success: true }));
+        return true; // Keep channel open for async response
+    }
+});
+
+// Also allow internal messages to trigger refresh
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'REFRESH_COOKIES') {
+        console.log("[Cookies] 🔄 Refresh requested");
+        extractAndSyncCookies().then(() => sendResponse({ success: true }));
+        return true;
+    }
+});
+
 // --- 1. TOKEN SCRAPER ---
 async function refreshTokens() {
     console.log("[Headless] 🔄 Fetching new auth tokens...");
