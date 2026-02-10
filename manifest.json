@@ -8,7 +8,8 @@
         "tabs",
         "scripting",
         "storage",
-        "cookies"
+        "cookies",
+        "notifications"
     ],
     "host_permissions": [
         "https://www.youtube.com/*",

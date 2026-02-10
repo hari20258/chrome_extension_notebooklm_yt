@@ -85,6 +85,126 @@ async function extractAndSyncCookies() {
 chrome.runtime.onStartup.addListener(extractAndSyncCookies);
 chrome.runtime.onInstalled.addListener(extractAndSyncCookies);
 
+// --- SSE LISTENER (Server pushes re-auth events only when needed) ---
+let authEventSource = null;
+let isReauthInProgress = false;
+
+async function connectAuthEvents() {
+    try {
+        const storage = await chrome.storage.local.get(['user_token', 'server_url']);
+        const userToken = storage.user_token || '';
+        const serverUrl = storage.server_url || MCP_SERVER_URL;
+
+        const url = `${serverUrl}/auth-events?user_token=${encodeURIComponent(userToken)}`;
+
+        // Close existing connection if any
+        if (authEventSource) {
+            authEventSource.close();
+            authEventSource = null;
+        }
+
+        authEventSource = new EventSource(url);
+
+        authEventSource.onmessage = async (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'reauth' && !isReauthInProgress) {
+                    console.log("[SSE] 🔴 Server says re-auth needed! Opening login tab...");
+                    isReauthInProgress = true;
+                    await handleReauth();
+                    isReauthInProgress = false;
+                } else if (data.type === 'connected') {
+                    console.log("[SSE] ✅ Connected to server auth events for:", data.user_token);
+                }
+            } catch (e) {
+                console.error("[SSE] Error parsing event:", e);
+            }
+        };
+
+        authEventSource.onerror = (e) => {
+            console.log("[SSE] Connection lost. Will auto-reconnect...");
+            // EventSource auto-reconnects by default
+        };
+
+        console.log("[SSE] Connecting to", url);
+    } catch (e) {
+        console.log("[SSE] Failed to connect (server may not be running):", e.message);
+    }
+}
+
+async function handleReauth() {
+    try {
+        // Show notification
+        chrome.notifications.create('reauth', {
+            type: 'basic',
+            iconUrl: 'icon128.png',
+            title: 'NotebookLM - Login Required',
+            message: 'Your session expired. A login tab has been opened. Please log in to continue.',
+            priority: 2
+        });
+
+        // Open NotebookLM in a new tab
+        const tab = await chrome.tabs.create({ url: 'https://notebooklm.google.com', active: true });
+        console.log("[SSE] Opened login tab:", tab.id);
+
+        // Wait for the user to log in (poll tab URL every 3s, up to 5min)
+        const MAX_WAIT = 300000;
+        const POLL_INTERVAL = 3000;
+        const start = Date.now();
+
+        await new Promise((resolve) => {
+            const check = setInterval(async () => {
+                try {
+                    const updatedTab = await chrome.tabs.get(tab.id);
+                    const tabUrl = updatedTab.url || '';
+
+                    // Login is complete when URL is on notebooklm (not accounts.google.com)
+                    if (tabUrl.includes('notebooklm.google.com') && !tabUrl.includes('accounts.google.com')) {
+                        console.log("[SSE] ✅ Login detected! URL:", tabUrl);
+                        clearInterval(check);
+                        resolve();
+                    }
+
+                    if (Date.now() - start > MAX_WAIT) {
+                        console.log("[SSE] ⏰ Login timeout");
+                        clearInterval(check);
+                        resolve();
+                    }
+                } catch (e) {
+                    // Tab was closed by user
+                    console.log("[SSE] Tab was closed");
+                    clearInterval(check);
+                    resolve();
+                }
+            }, POLL_INTERVAL);
+        });
+
+        // Extract fresh cookies and sync
+        console.log("[SSE] Extracting fresh cookies after login...");
+        const result = await extractAndSyncCookies();
+        console.log("[SSE] Cookie sync result:", result);
+
+        // Close the login tab
+        try { await chrome.tabs.remove(tab.id); } catch (e) { /* already closed */ }
+
+        chrome.notifications.create('reauth-done', {
+            type: 'basic',
+            iconUrl: 'icon128.png',
+            title: 'NotebookLM - Re-authenticated!',
+            message: 'Cookies re-synced. Your request will now continue automatically.',
+            priority: 1
+        });
+
+    } catch (e) {
+        console.error("[SSE] Re-auth handling failed:", e);
+        isReauthInProgress = false;
+    }
+}
+
+// Connect on extension load (will auto-reconnect if server isn't running yet)
+connectAuthEvents();
+
+
 // Listen for refresh requests (on-demand when cookies go stale)
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
     if (message.type === 'REFRESH_COOKIES') {

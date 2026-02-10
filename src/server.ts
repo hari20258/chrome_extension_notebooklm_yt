@@ -89,6 +89,27 @@ interface InfographicJob {
 
 const infographicJobs = new Map<string, InfographicJob>();
 
+// --- Per-User Re-Auth (SSE Push) ---
+// Connected extension SSE clients, keyed by user token
+import { Response as ExpressResponse } from 'express';
+const reauthSseClients = new Map<string, Set<ExpressResponse>>();
+const needsReauth = new Map<string, boolean>();
+
+function pushReauthEvent(userToken: string) {
+    const key = userToken || '__legacy__';
+    needsReauth.set(key, true);
+    const clients = reauthSseClients.get(key);
+    if (clients && clients.size > 0) {
+        const event = `data: ${JSON.stringify({ type: 'reauth', user_token: key })}\n\n`;
+        for (const res of clients) {
+            try { res.write(event); } catch (e) { /* client disconnected */ }
+        }
+        logToFile(`[SSE] Pushed reauth event to ${clients.size} client(s) for ${key}`);
+    } else {
+        logToFile(`[SSE] No connected extensions for ${key}. User must manually re-sync.`);
+    }
+}
+
 function generateJobId(): string {
     return `job_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 }
@@ -393,15 +414,17 @@ function registerTools(server: McpServer) {
             title: "List Sources",
             description: "Lists all sources in a NotebookLM notebook. Returns source IDs, titles, types, and original URLs. Side-effect: Sets this as the active notebook.",
             inputSchema: z.object({
-                url: z.string().url().describe("The URL of the NotebookLM notebook.")
+                url: z.string().url().describe("The URL of the NotebookLM notebook."),
+                user_token: z.string().optional().describe("Optional user token for multi-user mode.")
             }) as any,
             _meta: { ui: { resourceUri } },
         },
         async (args: any) => {
             const url = args.url;
-            logToFile(`[MCP] Request: List Sources for ${url}`);
+            const userToken = args.user_token;
+            logToFile(`[MCP] Request: List Sources for ${url} (user: ${userToken || 'legacy'})`);
             try {
-                const client = await getClient();
+                const client = await getClient(userToken);
                 const sources = await client.listSources(url);
 
                 // Update Session State
@@ -432,7 +455,8 @@ function registerTools(server: McpServer) {
             inputSchema: z.object({
                 url: z.string().url().optional().describe("The URL of the YouTube video OR a direct NotebookLM link. Optional if an active notebook exists in the session."),
                 question: z.string().describe("The question to ask"),
-                source_id: z.string().optional().describe("Optional: The specific Source ID to target (if known from list_sources).")
+                source_id: z.string().optional().describe("Optional: The specific Source ID to target (if known from list_sources)."),
+                user_token: z.string().optional().describe("Optional user token for multi-user mode.")
             }) as any,
             _meta: { ui: { resourceUri } },
         },
@@ -440,10 +464,11 @@ function registerTools(server: McpServer) {
             const targetUrl = args.url;
             const question = args.question;
             const source_id = args.source_id;
+            const userToken = args.user_token;
 
-            logToFile(`[MCP] Request: Question for ${targetUrl}: "${question}"`);
+            logToFile(`[MCP] Request: Question for ${targetUrl}: "${question}" (user: ${userToken || 'legacy'})`);
             try {
-                const client = await getClient();
+                const client = await getClient(userToken);
                 const answer = await client.query(targetUrl!, question, source_id);
 
                 // Update Session State
@@ -491,70 +516,160 @@ function registerTools(server: McpServer) {
         "Starts generating a visual infographic for a YouTube video (async). Returns a job_id immediately. Use 'check_infographic_status' with the job_id to get the result when ready. Generation typically takes 1-3 minutes.",
         {
             video_url: z.string().describe("The URL of the YouTube video"),
+            user_token: z.string().optional().describe("Optional user token for multi-user mode.")
         },
         async (args) => {
             const video_url = args.video_url;
-            logToFile(`[MCP] Request: Infographic for ${video_url}`);
+            const userToken = args.user_token;
+            logToFile(`[MCP] Request: Infographic for ${video_url} (user: ${userToken || 'legacy'})`);
 
             // Cleanup old jobs
             cleanupOldJobs();
 
-            // Create job
-            const jobId = generateJobId();
-            const job: InfographicJob = {
-                id: jobId,
-                videoUrl: video_url,
-                status: 'pending',
-                createdAt: Date.now()
-            };
-            infographicJobs.set(jobId, job);
-            logToFile(`[Jobs] Created job ${jobId} for ${video_url}`);
-
-            // Start async processing (don't await!)
-            (async () => {
-                try {
-                    job.status = 'processing';
-                    logToFile(`[Jobs] Processing job ${jobId}...`);
-
-                    const client = await getClient();
-
-                    // Ensure browser is healthy before operations
-                    await client.ensureBrowserReady();
-
-                    const imageUrl = await client.generateInfographic(video_url);
-                    logToFile(`[Jobs] Job ${jobId} got image URL: ${imageUrl}`);
-
-                    // Store image info but don't mark complete yet
-                    job.imageUrl = imageUrl;
-                    job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}`;
-
-                    // Download and embed image BEFORE marking complete
-                    try {
-                        const imageBytes = await client.downloadResource(imageUrl);
-                        const processedBuffer = await sharp(imageBytes, { failOnError: false })
-                            .resize({ width: 1024, withoutEnlargement: true })
-                            .jpeg({ quality: 85 })
-                            .toBuffer();
-                        job.imageData = processedBuffer.toString('base64');
-                        logToFile(`[Jobs] Image downloaded for ${jobId} (${job.imageData.length} chars)`);
-                    } catch (err: any) {
-                        logToFile(`[Jobs] Image download failed for ${jobId}: ${err.message}`);
-                    }
-
-                    // NOW mark as completed (after image is ready)
-                    job.status = 'completed';
-                    job.completedAt = Date.now();
-                    logToFile(`[Jobs] Job ${jobId} completed, hasImageData: ${!!job.imageData}`);
-                } catch (e: any) {
-                    logToFile(`[Jobs] Job ${jobId} failed: ${e.message}`);
-                    job.status = 'failed';
-                    job.error = e.message;
-                    job.completedAt = Date.now();
+            // --- Deduplication: Reuse in-flight job for same video + user ---
+            const userKey = userToken || '__legacy__';
+            let job: InfographicJob | undefined;
+            let jobId: string = '';
+            for (const [existingId, existingJob] of infographicJobs) {
+                if (
+                    existingJob.videoUrl === video_url &&
+                    (existingJob.status === 'pending' || existingJob.status === 'processing') &&
+                    (Date.now() - existingJob.createdAt) < 300000 // Only reuse if less than 5 min old
+                ) {
+                    job = existingJob;
+                    jobId = existingId;
+                    logToFile(`[Jobs] ♻️ Reusing existing in-flight job ${jobId} for ${video_url} (dedup)`);
+                    break;
                 }
-            })();
+            }
 
-            // Wait for completion (up to 300s) so we can return a single result screen
-            const MAX_WAIT = 300000; // 300 seconds
+            if (!job) {
+                // Create new job
+                jobId = generateJobId();
+                job = {
+                    id: jobId,
+                    videoUrl: video_url,
+                    status: 'pending',
+                    createdAt: Date.now()
+                };
+                infographicJobs.set(jobId, job);
+                logToFile(`[Jobs] Created job ${jobId} for ${video_url}`);
+
+                // Start async processing (don't await!)
+                (async () => {
+                    try {
+                        job.status = 'processing';
+                        logToFile(`[Jobs] Processing job ${jobId}...`);
+
+                        // Note: getClient handles choosing correct cookies based on userToken
+                        const client = await getClient(userToken);
+
+                        // Ensure browser is healthy before operations
+                        await client.ensureBrowserReady();
+
+                        const imageUrl = await client.generateInfographic(video_url);
+                        logToFile(`[Jobs] Job ${jobId} got image URL: ${imageUrl}`);
+
+                        // Store image info but don't mark complete yet
+                        job.imageUrl = imageUrl;
+                        job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}`;
+
+                        // Download and embed image BEFORE marking complete
+                        try {
+                            const imageBytes = await client.downloadResource(imageUrl);
+                            const processedBuffer = await sharp(imageBytes, { failOnError: false })
+                                .resize({ width: 1024, withoutEnlargement: true })
+                                .jpeg({ quality: 85 })
+                                .toBuffer();
+                            job.imageData = processedBuffer.toString('base64');
+                            logToFile(`[Jobs] Image downloaded for ${jobId} (${job.imageData.length} chars)`);
+                        } catch (err: any) {
+                            logToFile(`[Jobs] Image download failed for ${jobId}: ${err.message}`);
+                        }
+
+                        // NOW mark as completed (after image is ready)
+                        job.status = 'completed';
+                        job.completedAt = Date.now();
+                        logToFile(`[Jobs] Job ${jobId} completed, hasImageData: ${!!job.imageData}`);
+                    } catch (e: any) {
+                        if (e.message.includes("Authentication required")) {
+                            // ---- FLAG FOR EXTENSION RE-AUTH ----
+                            const reauthKey = userToken || '__legacy__';
+                            pushReauthEvent(reauthKey);
+                            logToFile(`[Jobs] ⚠️ Auth failed for job ${jobId}. Pushed reauth event for ${reauthKey}. Waiting for extension to re-sync cookies...`);
+
+                            // Wait up to 120s for the extension to re-sync fresh cookies
+                            const REAUTH_TIMEOUT = 120000;
+                            const REAUTH_POLL = 3000;
+                            const reauthStart = Date.now();
+                            let reauthSucceeded = false;
+
+                            while (Date.now() - reauthStart < REAUTH_TIMEOUT) {
+                                await new Promise(resolve => setTimeout(resolve, REAUTH_POLL));
+                                if (!needsReauth.get(reauthKey)) {
+                                    // Extension re-synced! needsReauth was cleared by /sync-cookies
+                                    reauthSucceeded = true;
+                                    break;
+                                }
+                            }
+
+                            if (reauthSucceeded) {
+                                logToFile(`[Jobs] ✅ Fresh cookies received! Retrying job ${jobId}...`);
+                                try {
+                                    // Remove old broken client
+                                    userClients.delete(reauthKey);
+                                    const freshClient = await getClient(userToken);
+                                    await freshClient.ensureBrowserReady();
+
+                                    const imageUrl = await freshClient.generateInfographic(video_url);
+                                    logToFile(`[Jobs] Job ${jobId} got image URL after re-auth: ${imageUrl}`);
+
+                                    job.imageUrl = imageUrl;
+                                    job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}`;
+
+                                    try {
+                                        const imageBytes = await freshClient.downloadResource(imageUrl);
+                                        const processedBuffer = await sharp(imageBytes, { failOnError: false })
+                                            .resize({ width: 1024, withoutEnlargement: true })
+                                            .jpeg({ quality: 85 })
+                                            .toBuffer();
+                                        job.imageData = processedBuffer.toString('base64');
+                                        logToFile(`[Jobs] Image downloaded for ${jobId} after re-auth`);
+                                    } catch (imgErr: any) {
+                                        logToFile(`[Jobs] Image download failed for ${jobId}: ${imgErr.message}`);
+                                    }
+
+                                    job.status = 'completed';
+                                    job.completedAt = Date.now();
+                                    logToFile(`[Jobs] ✅ Job ${jobId} completed after re-auth!`);
+                                    return;
+                                } catch (retryErr: any) {
+                                    logToFile(`[Jobs] Retry after re-auth failed for ${jobId}: ${retryErr.message}`);
+                                    job.status = 'failed';
+                                    job.error = `Re-auth succeeded but retry failed: ${retryErr.message}`;
+                                    job.completedAt = Date.now();
+                                    return;
+                                }
+                            } else {
+                                logToFile(`[Jobs] ⏰ Re-auth timeout for job ${jobId}. User did not re-sync cookies within 120s.`);
+                                needsReauth.delete(reauthKey);
+                                job.status = 'failed';
+                                job.error = 'Session expired. Please re-sync your cookies using the Chrome extension, then try again.';
+                                job.completedAt = Date.now();
+                                return;
+                            }
+                        }
+                        // Non-auth error: just fail normally
+                        logToFile(`[Jobs] Job ${jobId} failed: ${e.message}`);
+                        job.status = 'failed';
+                        job.error = e.message;
+                        job.completedAt = Date.now();
+                    }
+                })();
+            }
+
+            // Wait for completion (up to 10s)
+            const MAX_WAIT = 10000; // 10 seconds (User requested fast feedback)
             const POLL_INTERVAL = 20000; // 20 seconds
             const startTime = Date.now();
             logToFile(`[Jobs] Waiting for job ${jobId} to complete (streaming mode)...`);
@@ -591,7 +706,7 @@ function registerTools(server: McpServer) {
             return {
                 content: [{
                     type: "text" as const,
-                    text: `🚀 **Infographic generation started!**\n\n📋 **Job ID:** \`${jobId}\`\n\n⏳ Still processing (timeout after 300s)...\n\n**Next step:** Call \`check_infographic_status\` with job_id: "${jobId}" to get the result.`
+                    text: `🚀 **Generation Started!**\n\n📋 **Job ID:** \`${jobId}\`\n\nThe job is running in the background. I'll check the status automatically until it's done...`
                 }]
             };
         },
@@ -606,13 +721,15 @@ function registerTools(server: McpServer) {
             title: "Check Infographic Status",
             description: "Check the status of an infographic generation job. When complete, displays the image in the viewer.",
             inputSchema: z.object({
-                job_id: z.string().describe("The job ID returned by generate_infographic")
+                job_id: z.string().describe("The job ID returned by generate_infographic"),
+                user_token: z.string().optional().describe("Optional user token for multi-user mode.")
             }) as any,
             _meta: { ui: { resourceUri } },
         },
         async (args: any) => {
             const job_id = args.job_id;
-            logToFile(`[Jobs] Checking status for job: ${job_id}`);
+            const userToken = args.user_token;
+            logToFile(`[Jobs] Checking status for job: ${job_id} (user: ${userToken || 'legacy'})`);
 
             const job = infographicJobs.get(job_id);
             if (!job) {
@@ -751,6 +868,15 @@ function startHttpServer(server: McpServer) {
                 return;
             }
             setCookiesFromExtension(cookies, user_token, user_agent);
+
+            // Clear re-auth flag (fresh cookies received!)
+            const reauthKey = user_token || '__legacy__';
+            if (needsReauth.get(reauthKey)) {
+                needsReauth.set(reauthKey, false);
+                userClients.delete(reauthKey); // Force fresh client on next request
+                logToFile(`[Cookies] ✅ Re-auth flag cleared for ${reauthKey}. Fresh cookies received.`);
+            }
+
             res.json({
                 success: true,
                 count: cookies.length,
@@ -761,6 +887,39 @@ function startHttpServer(server: McpServer) {
             logToFile(`[Cookies] Error processing cookies: ${e.message}`);
             res.status(500).json({ error: e.message });
         }
+    });
+
+    // --- Auth Events SSE Endpoint (extension connects once, server pushes when re-auth needed) ---
+    expressApp.get("/auth-events", (req, res) => {
+        const userToken = (req.query.user_token as string) || '__legacy__';
+
+        // Set up SSE headers
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'
+        });
+        res.write(`data: ${JSON.stringify({ type: 'connected', user_token: userToken })}\n\n`);
+
+        // Register this client
+        if (!reauthSseClients.has(userToken)) {
+            reauthSseClients.set(userToken, new Set());
+        }
+        reauthSseClients.get(userToken)!.add(res);
+        logToFile(`[SSE] Extension connected for ${userToken}. Total clients: ${reauthSseClients.get(userToken)!.size}`);
+
+        // Cleanup on disconnect
+        req.on('close', () => {
+            reauthSseClients.get(userToken)?.delete(res);
+            logToFile(`[SSE] Extension disconnected for ${userToken}.`);
+        });
+
+        // Keep-alive ping every 30s
+        const keepAlive = setInterval(() => {
+            try { res.write(': keepalive\n\n'); } catch (e) { clearInterval(keepAlive); }
+        }, 30000);
+        req.on('close', () => clearInterval(keepAlive));
     });
 
     // Store transports by session ID (supports both SSE and Streamable HTTP)
