@@ -9,7 +9,7 @@ export default defineConfig({
         assetsInlineLimit: 100000000,
         chunkSizeWarningLimit: 100000000,
         cssCodeSplit: false,
-        brotliSize: false,
+        reportCompressedSize: false,
         rollupOptions: {
             input: "src/mcp-app.html",
             output: {
