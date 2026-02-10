@@ -134,12 +134,14 @@ const COOKIES_FILE = path.join(USER_DATA_DIR, 'user_cookies.json');
 interface UserCookieData {
     cookies: ChromeCookie[];
     receivedAt: number;
+    userAgent?: string;
 }
 const userCookies: Map<string, UserCookieData> = new Map();
 
 // Legacy single-user mode (for backwards compatibility)
 let legacyCookies: ChromeCookie[] = [];
 let legacyCookiesReceivedAt: number | null = null;
+let legacyCookiesUserAgent: string | undefined = undefined;
 
 function generateUserToken(): string {
     return 'user_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
@@ -156,7 +158,7 @@ function persistAllCookies() {
         });
         // Also save legacy cookies under special key
         if (legacyCookies.length > 0 && legacyCookiesReceivedAt) {
-            data['__legacy__'] = { cookies: legacyCookies, receivedAt: legacyCookiesReceivedAt };
+            data['__legacy__'] = { cookies: legacyCookies, receivedAt: legacyCookiesReceivedAt, userAgent: legacyCookiesUserAgent };
         }
         fsSync.writeFileSync(COOKIES_FILE, JSON.stringify(data, null, 2));
         logToFile(`[Cookies] Saved cookies for ${userCookies.size} users to disk.`);
@@ -174,6 +176,7 @@ function loadAllCookies() {
                 if (key === '__legacy__') {
                     legacyCookies = userData.cookies;
                     legacyCookiesReceivedAt = userData.receivedAt;
+                    legacyCookiesUserAgent = userData.userAgent;
                 } else if (Array.isArray(userData.cookies) && typeof userData.receivedAt === 'number') {
                     userCookies.set(key, userData);
                 }
@@ -188,32 +191,33 @@ function loadAllCookies() {
 // Load on startup
 loadAllCookies();
 
-export function setCookiesFromExtension(cookies: ChromeCookie[], userToken?: string) {
+export function setCookiesFromExtension(cookies: ChromeCookie[], userToken?: string, userAgent?: string) {
     if (userToken) {
-        userCookies.set(userToken, { cookies, receivedAt: Date.now() });
+        userCookies.set(userToken, { cookies, receivedAt: Date.now(), userAgent });
         logToFile(`[Cookies] Received ${cookies.length} cookies for user ${userToken}`);
     } else {
         // Legacy mode
         legacyCookies = cookies;
         legacyCookiesReceivedAt = Date.now();
+        legacyCookiesUserAgent = userAgent;
         logToFile(`[Cookies] Received ${cookies.length} cookies (legacy mode)`);
     }
     persistAllCookies();
 }
 
-export function getCookiesForUser(userToken?: string): { cookies: ChromeCookie[], fresh: boolean } {
+export function getCookiesForUser(userToken?: string): { cookies: ChromeCookie[], fresh: boolean, userAgent?: string } {
     const MAX_AGE = 60 * 60 * 1000; // 60 minutes
 
     if (userToken && userCookies.has(userToken)) {
         const data = userCookies.get(userToken)!;
         const fresh = (Date.now() - data.receivedAt) < MAX_AGE;
-        return { cookies: data.cookies, fresh };
+        return { cookies: data.cookies, fresh, userAgent: data.userAgent };
     }
 
     // Fallback to legacy
     if (legacyCookies.length > 0 && legacyCookiesReceivedAt) {
         const fresh = (Date.now() - legacyCookiesReceivedAt) < MAX_AGE;
-        return { cookies: legacyCookies, fresh };
+        return { cookies: legacyCookies, fresh, userAgent: legacyCookiesUserAgent };
     }
 
     return { cookies: [], fresh: false };
@@ -235,7 +239,7 @@ const userClients: Map<string, { client: NativeFetchClient | NotebookLMClient, i
 
 async function getClient(userToken?: string): Promise<NotebookLMClient | NativeFetchClient> {
     const clientKey = userToken || '__legacy__';
-    const { cookies, fresh } = getCookiesForUser(userToken);
+    const { cookies, fresh, userAgent } = getCookiesForUser(userToken);
 
     // If we have fresh cookies for this user, prefer NativeFetchClient
     if (fresh && cookies.length > 0) {
@@ -246,7 +250,7 @@ async function getClient(userToken?: string): Promise<NotebookLMClient | NativeF
             if (existing && !existing.isNative) {
                 try { await (existing.client as NotebookLMClient).stop(); } catch { }
             }
-            const client = new NativeFetchClient(cookies);
+            const client = new NativeFetchClient(cookies, userAgent);
             await client.start();
             userClients.set(clientKey, { client, isNative: true });
         }
@@ -549,11 +553,45 @@ function registerTools(server: McpServer) {
                 }
             })();
 
-            // Return immediately with job ID
+            // Wait for completion (up to 300s) so we can return a single result screen
+            const MAX_WAIT = 300000; // 300 seconds
+            const POLL_INTERVAL = 20000; // 20 seconds
+            const startTime = Date.now();
+            logToFile(`[Jobs] Waiting for job ${jobId} to complete (streaming mode)...`);
+
+            while (Date.now() - startTime < MAX_WAIT) {
+                if (job.status === 'completed') {
+                    // Completed! Return with image for MCP App viewer
+                    logToFile(`[Jobs] Returning completed job ${jobId} immediately.`);
+
+                    const responseContent: any[] = [{
+                        type: "text" as const,
+                        text: `✅ **Infographic Ready!**\n\n🖼️ **[Open in Viewer](${job.viewerUrl})**\n\n📸 **[Direct Image](${job.imageUrl})**\n\n⏱️ Completed in ${Math.round((job.completedAt! - job.createdAt) / 1000)}s`
+                    }];
+
+                    // Add embedded image
+                    if (job.imageData) {
+                        responseContent.push({
+                            type: "image" as const,
+                            data: job.imageData,
+                            mimeType: "image/jpeg"
+                        });
+                    }
+                    return { content: responseContent };
+                }
+
+                if (job.status === 'failed') {
+                    return { content: [{ type: "text" as const, text: `❌ Job failed: ${job.error}` }], isError: true };
+                }
+
+                await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
+            }
+
+            // Timeout Fallback
             return {
                 content: [{
                     type: "text" as const,
-                    text: `🚀 **Infographic generation started!**\n\n📋 **Job ID:** \`${jobId}\`\n\n⏳ Estimated time: 1-3 minutes\n\n**Next step:** Call \`check_infographic_status\` with job_id: "${jobId}" to get the result.`
+                    text: `🚀 **Infographic generation started!**\n\n📋 **Job ID:** \`${jobId}\`\n\n⏳ Still processing (timeout after 300s)...\n\n**Next step:** Call \`check_infographic_status\` with job_id: "${jobId}" to get the result.`
                 }]
             };
         },
@@ -707,11 +745,12 @@ function startHttpServer(server: McpServer) {
     expressApp.post("/sync-cookies", (req, res) => {
         try {
             const { cookies, user_token } = req.body;
+            const user_agent = req.get('User-Agent');
             if (!Array.isArray(cookies)) {
                 res.status(400).json({ error: "Invalid cookies format" });
                 return;
             }
-            setCookiesFromExtension(cookies, user_token);
+            setCookiesFromExtension(cookies, user_token, user_agent);
             res.json({
                 success: true,
                 count: cookies.length,

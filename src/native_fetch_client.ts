@@ -55,53 +55,162 @@ interface ChromeCookie {
 export class NativeFetchClient {
     private cookies: ChromeCookie[] = [];
     private sessionTokens: SessionTokens = { at: null, bl: null, fsid: null };
+    private userAgent: string = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-    constructor(cookies: ChromeCookie[]) {
+    constructor(cookies: ChromeCookie[], userAgent?: string) {
         this.cookies = cookies;
+        if (userAgent) {
+            this.userAgent = userAgent;
+            logToFile(`[NativeFetch] Using captured User-Agent: ${userAgent}`);
+        }
+
+        // Debug: Check for critical cookies
+        const names = cookies.map(c => c.name);
+        const critical = ['SID', 'HSID', 'SSID', 'OSID', '__Secure-3PSID'];
+        const missing = critical.filter(c => !names.includes(c));
+
+        if (missing.length > 0) {
+            logToFile(`[NativeFetch] ℹ️ Note: Missing traditional cookies: ${missing.join(', ')}. This might be fine if __Secure-3PSID is present.`);
+        } else {
+            logToFile(`[NativeFetch] ✅ All critical cookies found.`);
+        }
+
         logToFile(`[NativeFetch] Initialized with ${cookies.length} cookies`);
     }
 
     /**
-     * Format cookies for fetch headers
+     * Format cookies for fetch headers (Filtered by URL and Deduplicated)
      */
-    private getCookieHeader(): string {
-        return this.cookies.map(c => `${c.name}=${c.value}`).join('; ');
+    private getCookieHeader(targetUrl: string): string {
+        const urlObj = new URL(targetUrl);
+        const host = urlObj.hostname;
+        const pathname = urlObj.pathname;
+
+        const validCookies: ChromeCookie[] = [];
+
+        for (const cookie of this.cookies) {
+            // Domain Matching
+            let domainMatch = false;
+            const cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
+
+            if (cookie.domain.startsWith('.')) {
+                // e.g. .google.com matches notebooklm.google.com
+                if (host.endsWith(cookieDomain) || host === cookieDomain) {
+                    domainMatch = true;
+                }
+            } else {
+                // Exact match required for non-dot domains
+                if (host === cookieDomain) {
+                    domainMatch = true;
+                }
+            }
+            if (!domainMatch) continue;
+
+            // Path Matching
+            if (!pathname.startsWith(cookie.path)) continue;
+
+            validCookies.push(cookie);
+        }
+
+        // Deduplicate: Sort by specificity (Longest Path > Longest Domain)
+        // This ensures if multiple cookies match (e.g. one for / and one for /app), we pick the most specific one if names collide
+        const sortedCookies = validCookies.sort((a, b) => {
+            if (b.path.length !== a.path.length) return b.path.length - a.path.length;
+            return b.domain.length - a.domain.length;
+        });
+
+        const uniqueCookies = new Map<string, ChromeCookie>();
+        for (const cookie of sortedCookies) {
+            if (!uniqueCookies.has(cookie.name)) {
+                uniqueCookies.set(cookie.name, cookie);
+            }
+        }
+
+        const names = Array.from(uniqueCookies.keys());
+        if (names.length > 0) {
+            logToFile(`[NativeFetch] 🍪 Sending cookies to ${host}: ${names.join(', ')}`);
+        } else {
+            logToFile(`[NativeFetch] ⚠️ No cookies found for ${host}!`);
+        }
+
+        return Array.from(uniqueCookies.values()).map(c => `${c.name}=${c.value}`).join('; ');
     }
 
     /**
      * Standard fetch with cookies
      */
     private async fetchWithCookies(url: string, options: RequestInit = {}): Promise<Response> {
-        const headers = new Headers(options.headers || {});
-        headers.set('Cookie', this.getCookieHeader());
-        headers.set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
-        headers.set('Accept-Language', 'en-US,en;q=0.9');
-        headers.set('Referer', 'https://notebooklm.google.com/');
+        let currentUrl = url;
+        let redirectCount = 0;
+        const maxRedirects = 5;
 
-        // Client Hints (Global)
-        headers.set('sec-ch-ua', '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"');
-        headers.set('sec-ch-ua-mobile', '?0');
-        headers.set('sec-ch-ua-platform', '"macOS"');
+        while (true) {
+            const headers = new Headers(options.headers || {});
 
-        // Context-aware headers
-        const isRpc = url.includes('batchexecute') || url.includes('GenerateFreeFormStreamed');
+            // 1. Set Cookies for the CURRENT URL
+            // This is crucial: If we redirect to accounts.google.com, we must send accounts cookies!
+            headers.set('Cookie', this.getCookieHeader(currentUrl));
 
-        if (isRpc) {
-            headers.set('Sec-Fetch-Dest', 'empty');
-            headers.set('Sec-Fetch-Mode', 'cors');
-            headers.set('Sec-Fetch-Site', 'same-origin');
-            if (!headers.has('Accept')) headers.set('Accept', '*/*');
-        } else {
-            // Navigation / Page Load
-            headers.set('Sec-Fetch-Dest', 'document');
-            headers.set('Sec-Fetch-Mode', 'navigate');
-            headers.set('Sec-Fetch-Site', 'none');
-            headers.set('Sec-Fetch-User', '?1');
-            headers.set('Upgrade-Insecure-Requests', '1');
-            if (!headers.has('Accept')) headers.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7');
+            // 2. Set Standard Headers
+            headers.set('User-Agent', this.userAgent);
+            headers.set('Accept-Language', 'en-US,en;q=0.9');
+
+            // 3. Handle Referer
+            if (headers.has('Referer') && headers.get('Referer') === '') {
+                headers.delete('Referer');
+            } else if (!headers.has('Referer')) {
+                // For initial request, default to notebooklm. 
+                // For redirects, we ideally set it to the previous URL, but strict auth might prefer clean slate or specific referer.
+                // Let's stick to default for now.
+                headers.set('Referer', 'https://notebooklm.google.com/');
+            }
+
+            // 4. Client Hints
+            const uaVersion = this.userAgent.match(/Chrome\/(\d+)/)?.[1] || "121";
+            headers.set('sec-ch-ua', `"Not A(Brand";v="99", "Google Chrome";v="${uaVersion}", "Chromium";v="${uaVersion}"`);
+            headers.set('sec-ch-ua-mobile', '?0');
+            headers.set('sec-ch-ua-platform', '"macOS"');
+
+            // 5. Context-aware headers
+            const isRpc = currentUrl.includes('batchexecute') || currentUrl.includes('GenerateFreeFormStreamed');
+            if (options.method === 'POST' || isRpc) {
+                headers.set('Origin', 'https://notebooklm.google.com');
+                headers.set('Sec-Fetch-Dest', 'empty');
+                headers.set('Sec-Fetch-Mode', 'cors');
+                headers.set('Sec-Fetch-Site', 'same-origin');
+                if (!headers.has('Accept')) headers.set('Accept', '*/*');
+            } else {
+                headers.set('Sec-Fetch-Dest', 'document');
+                headers.set('Sec-Fetch-Mode', 'navigate');
+                headers.set('Sec-Fetch-Site', 'none');
+                headers.set('Sec-Fetch-User', '?1');
+                headers.set('Upgrade-Insecure-Requests', '1');
+                if (!headers.has('Accept')) headers.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7');
+            }
+
+            // 6. Execute Fetch
+            const response = await fetch(currentUrl, {
+                ...options,
+                headers,
+                redirect: 'manual' // DISABLE auto-redirect
+            });
+
+            // 7. Handle Redirects Manually
+            if (response.status >= 300 && response.status < 400 && redirectCount < maxRedirects) {
+                const location = response.headers.get('Location');
+                if (!location) return response; // No location, return as is (browser handles this error)
+
+                const nextUrl = new URL(location, currentUrl).toString();
+                logToFile(`[NativeFetch] ↪️ Following redirect to: ${nextUrl}`);
+
+                currentUrl = nextUrl;
+                redirectCount++;
+                // Loop continues -> `getCookieHeader(nextUrl)` will be called next iteration
+                continue;
+            }
+
+            return response;
         }
-
-        return fetch(url, { ...options, headers });
     }
 
     async start(): Promise<void> {
@@ -122,7 +231,10 @@ export class NativeFetchClient {
     async _refreshTokens(): Promise<boolean> {
         logToFile("[NativeFetch] 🔄 Fetching tokens...");
 
-        const response = await this.fetchWithCookies(BASE_URL);
+        // Initial Fetch should mimic a clean navigation (No Referer)
+        const response = await this.fetchWithCookies(BASE_URL, {
+            headers: { 'Referer': '' }
+        });
         const html = await response.text();
 
         // Check for login redirect

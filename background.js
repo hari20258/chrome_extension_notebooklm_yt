@@ -31,15 +31,25 @@ async function extractAndSyncCookies() {
         const userToken = storage.user_token || null;
         const serverUrl = storage.server_url || MCP_SERVER_URL;
 
-        // Get all Google-related cookies
-        const googleCookies = await chrome.cookies.getAll({ domain: ".google.com" });
-        const notebookCookies = await chrome.cookies.getAll({ domain: "notebooklm.google.com" });
+        // Get cookies using multiple strategies to ensure we catch SID/HSID
+        const d1 = await chrome.cookies.getAll({ domain: "google.com" });
+        const d2 = await chrome.cookies.getAll({ domain: ".google.com" });
+        const u1 = await chrome.cookies.getAll({ url: "https://notebooklm.google.com" });
+        const u2 = await chrome.cookies.getAll({ url: "https://accounts.google.com" });
+
+        // Explicitly check for SID/HSID on multiple variants (Common pitfall)
+        const sid = await chrome.cookies.get({ url: "https://google.com", name: "SID" });
+        const hsid = await chrome.cookies.get({ url: "https://google.com", name: "HSID" });
+        const sid_www = await chrome.cookies.get({ url: "https://www.google.com", name: "SID" });
+        const hsid_www = await chrome.cookies.get({ url: "https://www.google.com", name: "HSID" });
+
+        const explicitCookies = [sid, hsid, sid_www, hsid_www].filter(c => c !== null);
 
         // Combine and deduplicate
-        const allCookies = [...googleCookies, ...notebookCookies];
+        const allCookies = [...d1, ...d2, ...u1, ...u2, ...explicitCookies];
         const seen = new Set();
         const uniqueCookies = allCookies.filter(c => {
-            const key = `${c.name}@${c.domain}`;
+            const key = `${c.name}@${c.domain}@${c.path}`;
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
@@ -72,7 +82,8 @@ async function extractAndSyncCookies() {
 }
 
 // Sync on extension startup
-extractAndSyncCookies();
+chrome.runtime.onStartup.addListener(extractAndSyncCookies);
+chrome.runtime.onInstalled.addListener(extractAndSyncCookies);
 
 // Listen for refresh requests (on-demand when cookies go stale)
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
