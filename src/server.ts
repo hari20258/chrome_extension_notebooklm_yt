@@ -353,36 +353,38 @@ function registerTools(server: McpServer) {
             let notebookId: string = "unknown";
             try {
                 const client = await getClient(userToken);
-                const summary = await client.generateSummary(targetUrl);
+
+                // Race the summary against a 40s timeout to beat Cloudflare's ~60s limit
+                const SUMMARY_TIMEOUT = 40000;
+                const summaryPromise = client.generateSummary(targetUrl);
+                const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), SUMMARY_TIMEOUT));
+                const summary = await Promise.race([summaryPromise, timeoutPromise]);
 
                 // Update Session State
                 notebookId = client._parseNotebookUrl(targetUrl) || "unknown";
                 setActiveNotebook(targetUrl, notebookId);
+
+                if (summary === null) {
+                    logToFile(`[MCP] Summary timed out after ${SUMMARY_TIMEOUT / 1000}s for ${targetUrl}`);
+                    return {
+                        content: [{ type: "text", text: `⏳ **Summary is taking longer than expected.**\n\nThe notebook is loaded and processing. Please try asking again in a moment — it should be much faster on retry since the notebook is now cached.` }],
+                    };
+                }
 
                 return {
                     content: [{ type: "text", text: `📝 **Summary Generated**\n\n${summary}` }],
                     meta: { source: targetUrl, notebookId }
                 };
             } catch (e: any) {
-                // AUTO-LOGIN HANDLER
+                // AUTH FAILURE HANDLER
                 if (e.message.includes("Authentication required")) {
-                    logToFile("Authentication required. Attempting auto-login...");
-                    const loginClient = new NotebookLMClient(false);
-                    try {
-                        await loginClient.openLoginWindow();
-                        try { await loginClient.stop(); } catch { }
-
-                        // Force refresh client instance
-                        userClients.delete('__legacy__');
-                        const retryClient = await getClient();
-                        const summary = await retryClient.generateSummary(targetUrl);
-
-                        return {
-                            content: [{ type: "text", text: `📝 **Summary Generated**\n\n${summary}` }]
-                        };
-                    } catch (err: any) {
-                        return { content: [{ type: "text", text: `⚠️ Login failed: ${err.message}` }] };
-                    }
+                    const reauthKey = userToken || '__legacy__';
+                    pushReauthEvent(reauthKey);
+                    logToFile(`[MCP] ⚠️ Summary auth failed. Pushed reauth event for ${reauthKey}.`);
+                    return {
+                        content: [{ type: "text", text: `🔐 **Authentication needed.** Your browser extension should prompt you to log in. Please try again after logging in.` }],
+                        isError: true
+                    };
                 }
                 logToFile(`Error: ${e.message}`);
                 return { content: [{ type: "text", text: `Error generating summary: ${e.message}` }], isError: true };
@@ -469,11 +471,23 @@ function registerTools(server: McpServer) {
             logToFile(`[MCP] Request: Question for ${targetUrl}: "${question}" (user: ${userToken || 'legacy'})`);
             try {
                 const client = await getClient(userToken);
-                const answer = await client.query(targetUrl!, question, source_id);
+
+                // Race against 40s timeout to beat Cloudflare's ~60s limit
+                const QUERY_TIMEOUT = 40000;
+                const queryPromise = client.query(targetUrl!, question, source_id);
+                const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), QUERY_TIMEOUT));
+                const answer = await Promise.race([queryPromise, timeoutPromise]);
 
                 // Update Session State
                 const notebookId = client._parseNotebookUrl(targetUrl!) || "unknown";
                 setActiveNotebook(targetUrl!, notebookId);
+
+                if (answer === null) {
+                    logToFile(`[MCP] Question timed out after ${QUERY_TIMEOUT / 1000}s`);
+                    return {
+                        content: [{ type: "text" as const, text: `⏳ **Taking longer than expected.** The notebook is loaded. Please ask your question again — it should work on retry.` }],
+                    };
+                }
 
                 return {
                     content: [{ type: "text" as const, text: `❓ **Question:** ${question}\n\n💡 **Answer:**\n${answer}` }],
@@ -481,27 +495,13 @@ function registerTools(server: McpServer) {
                 };
             } catch (e: any) {
                 if (e.message.includes("Authentication required")) {
-                    logToFile("Authentication required. Attempting auto-login...");
-                    const loginClient = new NotebookLMClient(false);
-                    try {
-                        await loginClient.openLoginWindow();
-                        try { await loginClient.stop(); } catch { }
-
-                        userClients.delete('__legacy__');
-                        const retryClient = await getClient();
-                        const answer = await retryClient.query(targetUrl!, question, source_id);
-
-                        // Update Session State on retry
-                        const notebookId = retryClient._parseNotebookUrl(targetUrl!) || "unknown";
-                        setActiveNotebook(targetUrl!, notebookId);
-
-                        return {
-                            content: [{ type: "text" as const, text: `❓ **Question:** ${question}\n\n💡 **Answer:**\n${answer}` }],
-                            meta: { sourceId: source_id || "auto", source: targetUrl, notebookId }
-                        };
-                    } catch (err: any) {
-                        return { content: [{ type: "text" as const, text: `⚠️ Login failed: ${err.message}` }] };
-                    }
+                    const reauthKey = userToken || '__legacy__';
+                    pushReauthEvent(reauthKey);
+                    logToFile(`[MCP] ⚠️ Question auth failed. Pushed reauth event for ${reauthKey}.`);
+                    return {
+                        content: [{ type: "text" as const, text: `🔐 **Authentication needed.** Your browser extension should prompt you to log in. Please try again after logging in.` }],
+                        isError: true
+                    };
                 }
                 logToFile(`Error: ${e.message}`);
                 return wrapError(`Error asking question: ${e.message}`);

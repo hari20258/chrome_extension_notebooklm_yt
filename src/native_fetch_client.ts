@@ -644,7 +644,8 @@ export class NativeFetchClient {
         logToFile("[NativeFetch] Polling for artifacts...");
         for (let i = 0; i < 30; i++) {
             try {
-                const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
+                // Try without filter first (find ANY infographic, including existing ones)
+                const payload = [[2], notebookId];
                 const response = await this._executeRpc(RPC_LIST_ARTIFACTS, payload);
                 if (response && response[0] && typeof response[0][2] === 'string') {
                     const innerData = JSON.parse(response[0][2]);
@@ -653,8 +654,14 @@ export class NativeFetchClient {
                         logToFile(`[NativeFetch] 📸 Image Found: ${imageUrl}`);
                         return imageUrl;
                     }
+                    // Debug: log what we got back
+                    logToFile(`[NativeFetch] Artifact response (no image found): ${JSON.stringify(innerData).substring(0, 200)}...`);
+                } else {
+                    logToFile(`[NativeFetch] Artifact response was null or unexpected format.`);
                 }
-            } catch (e) { }
+            } catch (e: any) {
+                logToFile(`[NativeFetch] Artifact poll error: ${e.message}`);
+            }
             await new Promise(r => setTimeout(r, 10000));
             logToFile(`[NativeFetch] Poll attempt ${i + 1}/30...`);
         }
@@ -692,14 +699,15 @@ export class NativeFetchClient {
         ];
 
         const rawResponse = await this._executeStreamedRpc(fReq);
+        logToFile(`[NativeFetch] Streamed response size: ${rawResponse.length} bytes`);
         const summary = this._parseStreamedResponse(rawResponse);
 
         if (!summary) {
-            console.warn("[NativeFetch] Query returned empty text.");
+            logToFile(`[NativeFetch] ⚠️ Query returned empty text. Raw response (first 500 chars): ${rawResponse.toString('utf-8').substring(0, 500)}`);
             return "Failed to generate answer.";
         }
 
-        logToFile("[NativeFetch] Query successful.");
+        logToFile(`[NativeFetch] ✅ Query successful (${summary.length} chars).`);
         return summary;
     }
 
