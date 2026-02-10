@@ -363,7 +363,11 @@ export class NativeFetchClient {
 
         if (!response.ok) throw new Error(`RPC Failed: ${response.status}`);
         const text = await response.text();
-        return this._parseRpcResponse(text);
+        const parsed = this._parseRpcResponse(text);
+        if (!parsed) {
+            logToFile(`[NativeFetch] ⚠️ RPC Response parsing failed. Raw text (first 500 chars): ${text.substring(0, 500)}`);
+        }
+        return parsed;
     }
 
     _parseRpcResponse(text: string): any {
@@ -658,7 +662,7 @@ export class NativeFetchClient {
                     // Debug: log what we got back
                     logToFile(`[NativeFetch] Artifact response (no image found): ${JSON.stringify(innerData).substring(0, 200)}...`);
                 } else {
-                    logToFile(`[NativeFetch] Artifact response was null or unexpected format.`);
+                    logToFile(`[NativeFetch] Artifact response was null or unexpected format. Raw: ${JSON.stringify(response).substring(0, 500)}`);
                 }
             } catch (e: any) {
                 logToFile(`[NativeFetch] Artifact poll error: ${e.message}`);
