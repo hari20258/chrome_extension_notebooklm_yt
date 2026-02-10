@@ -447,7 +447,7 @@ export class NativeFetchClient {
                 const obj = JSON.parse(jsonStr);
                 const extracted = this._extractWrbText(obj);
                 if (extracted) {
-                    fullText += extracted.trim() + "\n";
+                    fullText = extracted.trim() + "\n";
                 }
             } catch (e) { }
 
@@ -649,8 +649,8 @@ export class NativeFetchClient {
         logToFile("[NativeFetch] Polling for artifacts...");
         for (let i = 0; i < 30; i++) {
             try {
-                // Try without filter first (find ANY infographic, including existing ones)
-                const payload = [[2], notebookId];
+                // Restore legacy filter - the server seems to require it or behaves differently without it
+                const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
                 const response = await this._executeRpc(RPC_LIST_ARTIFACTS, payload);
                 if (response && response[0] && typeof response[0][2] === 'string') {
                     const innerData = JSON.parse(response[0][2]);
