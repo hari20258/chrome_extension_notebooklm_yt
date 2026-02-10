@@ -127,53 +127,144 @@ interface ChromeCookie {
     expirationDate?: number;
 }
 
-let storedCookies: ChromeCookie[] = [];
-let cookiesReceivedAt: number | null = null;
+const USER_DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../user_data');
+const COOKIES_FILE = path.join(USER_DATA_DIR, 'user_cookies.json');
 
-export function setCookiesFromExtension(cookies: ChromeCookie[]) {
-    storedCookies = cookies;
-    cookiesReceivedAt = Date.now();
-    logToFile(`[Cookies] Received ${cookies.length} cookies from extension`);
+// Per-user cookie storage
+interface UserCookieData {
+    cookies: ChromeCookie[];
+    receivedAt: number;
+}
+const userCookies: Map<string, UserCookieData> = new Map();
+
+// Legacy single-user mode (for backwards compatibility)
+let legacyCookies: ChromeCookie[] = [];
+let legacyCookiesReceivedAt: number | null = null;
+
+function generateUserToken(): string {
+    return 'user_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
 }
 
-export function hasFreshCookies(): boolean {
-    if (!cookiesReceivedAt || storedCookies.length === 0) return false;
-    // Consider cookies stale after 10 minutes
-    const TEN_MINUTES = 10 * 60 * 1000;
-    return (Date.now() - cookiesReceivedAt) < TEN_MINUTES;
-}
-
-// --- Singleton Client (Prefer Native when cookies available) ---
-let clientInstance: NotebookLMClient | NativeFetchClient | null = null;
-let usingNativeClient = false;
-
-async function getClient(): Promise<NotebookLMClient | NativeFetchClient> {
-    // If we have fresh cookies, prefer NativeFetchClient (no browser popup!)
-    if (hasFreshCookies()) {
-        if (!clientInstance || !usingNativeClient) {
-            logToFile("[Client] 🚀 Using NativeFetchClient (cookies from extension)");
-            // Close old Playwright client if exists
-            if (clientInstance && !usingNativeClient) {
-                try { await (clientInstance as NotebookLMClient).stop(); } catch { }
-            }
-            clientInstance = new NativeFetchClient(storedCookies);
-            await clientInstance.start();
-            usingNativeClient = true;
+function persistAllCookies() {
+    try {
+        if (!fsSync.existsSync(USER_DATA_DIR)) {
+            fsSync.mkdirSync(USER_DATA_DIR, { recursive: true });
         }
-        return clientInstance;
+        const data: Record<string, UserCookieData> = {};
+        userCookies.forEach((value, key) => {
+            data[key] = value;
+        });
+        // Also save legacy cookies under special key
+        if (legacyCookies.length > 0 && legacyCookiesReceivedAt) {
+            data['__legacy__'] = { cookies: legacyCookies, receivedAt: legacyCookiesReceivedAt };
+        }
+        fsSync.writeFileSync(COOKIES_FILE, JSON.stringify(data, null, 2));
+        logToFile(`[Cookies] Saved cookies for ${userCookies.size} users to disk.`);
+    } catch (e: any) {
+        logToFile(`[Cookies] Failed to save cookies: ${e.message}`);
+    }
+}
+
+function loadAllCookies() {
+    try {
+        if (fsSync.existsSync(COOKIES_FILE)) {
+            const data = JSON.parse(fsSync.readFileSync(COOKIES_FILE, 'utf-8'));
+            for (const [key, value] of Object.entries(data)) {
+                const userData = value as UserCookieData;
+                if (key === '__legacy__') {
+                    legacyCookies = userData.cookies;
+                    legacyCookiesReceivedAt = userData.receivedAt;
+                } else if (Array.isArray(userData.cookies) && typeof userData.receivedAt === 'number') {
+                    userCookies.set(key, userData);
+                }
+            }
+            logToFile(`[Cookies] Loaded cookies for ${userCookies.size} users from disk.`);
+        }
+    } catch (e: any) {
+        logToFile(`[Cookies] Failed to load cookies: ${e.message}`);
+    }
+}
+
+// Load on startup
+loadAllCookies();
+
+export function setCookiesFromExtension(cookies: ChromeCookie[], userToken?: string) {
+    if (userToken) {
+        userCookies.set(userToken, { cookies, receivedAt: Date.now() });
+        logToFile(`[Cookies] Received ${cookies.length} cookies for user ${userToken}`);
+    } else {
+        // Legacy mode
+        legacyCookies = cookies;
+        legacyCookiesReceivedAt = Date.now();
+        logToFile(`[Cookies] Received ${cookies.length} cookies (legacy mode)`);
+    }
+    persistAllCookies();
+}
+
+export function getCookiesForUser(userToken?: string): { cookies: ChromeCookie[], fresh: boolean } {
+    const MAX_AGE = 60 * 60 * 1000; // 60 minutes
+
+    if (userToken && userCookies.has(userToken)) {
+        const data = userCookies.get(userToken)!;
+        const fresh = (Date.now() - data.receivedAt) < MAX_AGE;
+        return { cookies: data.cookies, fresh };
     }
 
-    // Fallback to Playwright client
-    if (!clientInstance || usingNativeClient) {
-        logToFile("[Client] 🎭 Falling back to Playwright NotebookLMClient");
+    // Fallback to legacy
+    if (legacyCookies.length > 0 && legacyCookiesReceivedAt) {
+        const fresh = (Date.now() - legacyCookiesReceivedAt) < MAX_AGE;
+        return { cookies: legacyCookies, fresh };
+    }
+
+    return { cookies: [], fresh: false };
+}
+
+export function hasFreshCookies(userToken?: string): boolean {
+    const { cookies, fresh } = getCookiesForUser(userToken);
+    return cookies.length > 0 && fresh;
+}
+
+export function isValidUserToken(token: string): boolean {
+    return userCookies.has(token);
+}
+
+export { generateUserToken };
+
+// --- Per-User Client Management ---
+const userClients: Map<string, { client: NativeFetchClient | NotebookLMClient, isNative: boolean }> = new Map();
+
+async function getClient(userToken?: string): Promise<NotebookLMClient | NativeFetchClient> {
+    const clientKey = userToken || '__legacy__';
+    const { cookies, fresh } = getCookiesForUser(userToken);
+
+    // If we have fresh cookies for this user, prefer NativeFetchClient
+    if (fresh && cookies.length > 0) {
+        const existing = userClients.get(clientKey);
+        if (!existing || !existing.isNative) {
+            logToFile(`[Client] 🚀 Using NativeFetchClient for ${userToken || 'legacy user'}`);
+            // Close old Playwright client if exists
+            if (existing && !existing.isNative) {
+                try { await (existing.client as NotebookLMClient).stop(); } catch { }
+            }
+            const client = new NativeFetchClient(cookies);
+            await client.start();
+            userClients.set(clientKey, { client, isNative: true });
+        }
+        return userClients.get(clientKey)!.client;
+    }
+
+    // Fallback to Playwright client (shared singleton for legacy mode)
+    const existing = userClients.get(clientKey);
+    if (!existing || existing.isNative) {
+        logToFile(`[Client] 🎭 Falling back to Playwright NotebookLMClient for ${userToken || 'legacy user'}`);
         const headlessEnv = process.env.NOTEBOOKLM_HEADLESS;
         const headless = headlessEnv === undefined ? true : headlessEnv === "true";
-        clientInstance = new NotebookLMClient(headless);
-        await clientInstance.start();
-        usingNativeClient = false;
+        const client = new NotebookLMClient(headless);
+        await client.start();
+        userClients.set(clientKey, { client, isNative: false });
         logToFile("NotebookLMClient started successfully.");
     }
-    return clientInstance;
+    return userClients.get(clientKey)!.client;
 }
 
 // --- Resource URI ---
@@ -227,14 +318,16 @@ function registerTools(server: McpServer) {
         "generate_summary",
         "Generates a comprehensive summary of a YouTube video or NotebookLM notebook content. Side-effect: Sets this as the active notebook.",
         {
-            url: z.string().url().describe("The URL of the YouTube video OR a direct NotebookLM link. Optional if an active notebook exists in the session.")
+            url: z.string().url().describe("The URL of the YouTube video OR a direct NotebookLM link. Optional if an active notebook exists in the session."),
+            user_token: z.string().optional().describe("Optional user token for multi-user mode. Get this from the /register.html page and configure your extension with it.")
         },
         async (args) => {
             const targetUrl = args.url;
-            logToFile(`[MCP] Request: Summary for ${targetUrl}`);
+            const userToken = args.user_token;
+            logToFile(`[MCP] Request: Summary for ${targetUrl} (user: ${userToken || 'legacy'})`);
             let notebookId: string = "unknown";
             try {
-                const client = await getClient();
+                const client = await getClient(userToken);
                 const summary = await client.generateSummary(targetUrl);
 
                 // Update Session State
@@ -255,7 +348,7 @@ function registerTools(server: McpServer) {
                         try { await loginClient.stop(); } catch { }
 
                         // Force refresh client instance
-                        clientInstance = null;
+                        userClients.delete('__legacy__');
                         const retryClient = await getClient();
                         const summary = await retryClient.generateSummary(targetUrl);
 
@@ -365,7 +458,7 @@ function registerTools(server: McpServer) {
                         await loginClient.openLoginWindow();
                         try { await loginClient.stop(); } catch { }
 
-                        clientInstance = null;
+                        userClients.delete('__legacy__');
                         const retryClient = await getClient();
                         const answer = await retryClient.query(targetUrl!, question, source_id);
 
@@ -543,16 +636,88 @@ function startHttpServer(server: McpServer) {
     }));
     expressApp.use(express.json({ limit: '10mb' }));
 
+    // --- User Registration Endpoint ---
+    expressApp.get("/register", (req, res) => {
+        const token = generateUserToken();
+        logToFile(`[Register] Generated new user token: ${token}`);
+        res.json({
+            success: true,
+            user_token: token,
+            instructions: "Copy this token into your Chrome extension settings, then sync your cookies."
+        });
+    });
+
+    // Serve a simple registration page
+    expressApp.get("/register.html", (req, res) => {
+        res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NotebookLM MCP - User Registration</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; background: #1a1a2e; color: #eee; }
+        h1 { color: #00d4ff; }
+        .token-box { background: #16213e; padding: 20px; border-radius: 10px; margin: 20px 0; font-family: monospace; font-size: 18px; word-break: break-all; }
+        button { background: #00d4ff; color: #1a1a2e; border: none; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 5px; margin: 10px 5px 10px 0; }
+        button:hover { background: #00b4dd; }
+        .instructions { background: #16213e; padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .instructions ol { padding-left: 20px; }
+        .instructions li { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔐 NotebookLM MCP Registration</h1>
+    <p>Generate a unique token to link your Google account with this server.</p>
+    <button onclick="generateToken()">Generate New Token</button>
+    <div id="tokenDisplay" class="token-box" style="display:none;">
+        <strong>Your Token:</strong><br><br>
+        <span id="token"></span>
+        <br><br>
+        <button onclick="copyToken()">📋 Copy Token</button>
+    </div>
+    <div class="instructions">
+        <h3>📋 Instructions</h3>
+        <ol>
+            <li>Click "Generate New Token" above</li>
+            <li>Copy the token</li>
+            <li>Open the NotebookLM Extension popup in Chrome</li>
+            <li>Paste your token in the "User Token" field</li>
+            <li>Click "Sync Cookies"</li>
+            <li>When using ChatGPT, include your token: <em>"Summarize [URL] with token YOUR_TOKEN"</em></li>
+        </ol>
+    </div>
+    <script>
+        async function generateToken() {
+            const res = await fetch('/register');
+            const data = await res.json();
+            document.getElementById('token').textContent = data.user_token;
+            document.getElementById('tokenDisplay').style.display = 'block';
+        }
+        function copyToken() {
+            navigator.clipboard.writeText(document.getElementById('token').textContent);
+            alert('Token copied!');
+        }
+    </script>
+</body>
+</html>
+        `);
+    });
+
     // --- Cookie Sync Endpoint (from Chrome Extension) ---
     expressApp.post("/sync-cookies", (req, res) => {
         try {
-            const { cookies } = req.body;
+            const { cookies, user_token } = req.body;
             if (!Array.isArray(cookies)) {
                 res.status(400).json({ error: "Invalid cookies format" });
                 return;
             }
-            setCookiesFromExtension(cookies);
-            res.json({ success: true, count: cookies.length });
+            setCookiesFromExtension(cookies, user_token);
+            res.json({
+                success: true,
+                count: cookies.length,
+                user_token: user_token || null,
+                mode: user_token ? 'per-user' : 'legacy'
+            });
         } catch (e: any) {
             logToFile(`[Cookies] Error processing cookies: ${e.message}`);
             res.status(500).json({ error: e.message });

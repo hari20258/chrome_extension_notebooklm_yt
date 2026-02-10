@@ -26,6 +26,11 @@ const MCP_SERVER_URL = "http://localhost:3001";
 
 async function extractAndSyncCookies() {
     try {
+        // Get stored user token (if any)
+        const storage = await chrome.storage.local.get(['user_token', 'server_url']);
+        const userToken = storage.user_token || null;
+        const serverUrl = storage.server_url || MCP_SERVER_URL;
+
         // Get all Google-related cookies
         const googleCookies = await chrome.cookies.getAll({ domain: ".google.com" });
         const notebookCookies = await chrome.cookies.getAll({ domain: "notebooklm.google.com" });
@@ -42,20 +47,27 @@ async function extractAndSyncCookies() {
 
         console.log(`[Cookies] Extracted ${uniqueCookies.length} unique cookies`);
 
-        // Send to MCP server
-        const response = await fetch(`${MCP_SERVER_URL}/sync-cookies`, {
+        // Send to MCP server (with user_token if set)
+        const response = await fetch(`${serverUrl}/sync-cookies`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cookies: uniqueCookies })
+            body: JSON.stringify({
+                cookies: uniqueCookies,
+                user_token: userToken
+            })
         });
 
         if (response.ok) {
-            console.log("[Cookies] ✅ Synced cookies to MCP server");
+            const result = await response.json();
+            console.log("[Cookies] ✅ Synced cookies to MCP server", result);
+            return { success: true, ...result };
         } else {
             console.warn("[Cookies] ⚠️ Server responded with:", response.status);
+            return { success: false, error: `Server error: ${response.status}` };
         }
     } catch (e) {
         console.warn("[Cookies] Failed to sync (server may not be running):", e.message);
+        return { success: false, error: e.message };
     }
 }
 
@@ -66,16 +78,39 @@ extractAndSyncCookies();
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
     if (message.type === 'REFRESH_COOKIES') {
         console.log("[Cookies] 🔄 Server requested cookie refresh");
-        extractAndSyncCookies().then(() => sendResponse({ success: true }));
+        extractAndSyncCookies().then((result) => sendResponse(result));
         return true; // Keep channel open for async response
     }
 });
 
-// Also allow internal messages to trigger refresh
+// Also allow internal messages to trigger refresh and set user token
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'REFRESH_COOKIES') {
         console.log("[Cookies] 🔄 Refresh requested");
-        extractAndSyncCookies().then(() => sendResponse({ success: true }));
+        extractAndSyncCookies().then((result) => sendResponse(result));
+        return true;
+    }
+    if (message.type === 'SET_USER_TOKEN') {
+        console.log("[Cookies] 🔑 Setting user token:", message.token);
+        chrome.storage.local.set({ user_token: message.token }, () => {
+            sendResponse({ success: true });
+        });
+        return true;
+    }
+    if (message.type === 'SET_SERVER_URL') {
+        console.log("[Cookies] 🌐 Setting server URL:", message.url);
+        chrome.storage.local.set({ server_url: message.url }, () => {
+            sendResponse({ success: true });
+        });
+        return true;
+    }
+    if (message.type === 'GET_SETTINGS') {
+        chrome.storage.local.get(['user_token', 'server_url'], (result) => {
+            sendResponse({
+                user_token: result.user_token || '',
+                server_url: result.server_url || MCP_SERVER_URL
+            });
+        });
         return true;
     }
 });

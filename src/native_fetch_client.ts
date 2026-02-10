@@ -74,7 +74,32 @@ export class NativeFetchClient {
     private async fetchWithCookies(url: string, options: RequestInit = {}): Promise<Response> {
         const headers = new Headers(options.headers || {});
         headers.set('Cookie', this.getCookieHeader());
-        headers.set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36');
+        headers.set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+        headers.set('Accept-Language', 'en-US,en;q=0.9');
+        headers.set('Referer', 'https://notebooklm.google.com/');
+
+        // Client Hints (Global)
+        headers.set('sec-ch-ua', '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"');
+        headers.set('sec-ch-ua-mobile', '?0');
+        headers.set('sec-ch-ua-platform', '"macOS"');
+
+        // Context-aware headers
+        const isRpc = url.includes('batchexecute') || url.includes('GenerateFreeFormStreamed');
+
+        if (isRpc) {
+            headers.set('Sec-Fetch-Dest', 'empty');
+            headers.set('Sec-Fetch-Mode', 'cors');
+            headers.set('Sec-Fetch-Site', 'same-origin');
+            if (!headers.has('Accept')) headers.set('Accept', '*/*');
+        } else {
+            // Navigation / Page Load
+            headers.set('Sec-Fetch-Dest', 'document');
+            headers.set('Sec-Fetch-Mode', 'navigate');
+            headers.set('Sec-Fetch-Site', 'none');
+            headers.set('Sec-Fetch-User', '?1');
+            headers.set('Upgrade-Insecure-Requests', '1');
+            if (!headers.has('Accept')) headers.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7');
+        }
 
         return fetch(url, { ...options, headers });
     }
@@ -102,6 +127,7 @@ export class NativeFetchClient {
 
         // Check for login redirect
         if (response.url.includes("accounts.google.com")) {
+            logToFile(`[NativeFetch] ⚠️ Redirected to Login: ${response.url}`);
             throw new Error("Authentication required. Please ensure you're logged into Google in the browser where the extension is installed.");
         }
 

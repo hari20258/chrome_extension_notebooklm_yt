@@ -1,4 +1,4 @@
-# NotebookLM Infographic MCP Server
+# NotebookLM MCP Server
 
 This project allows Claude Desktop to interact with **Google NotebookLM** to automatically generate and retrieve infographics from YouTube videos. It functions as a Model Context Protocol (MCP) server, bridging the gap between Claude's interface and Google's internal APIs.
 
@@ -26,6 +26,16 @@ The system operates as a **headless browser automation agent** (using Playwright
     *   Handles Google Authentication (via `user_data` directory).
     *   Manages the complex RPC payload structures required to talk to NotebookLM.
     *   Handles authenticated file downloads.
+
+## Phase 2:
+An MCP (Model Context Protocol) server that connects ChatGPT, Claude, and other AI assistants to **Google NotebookLM**. Generate summaries, ask questions, and create infographics from YouTube videos and documents.
+
+## ✨ Features
+
+- **Video Summarization**: Get comprehensive summaries of YouTube videos
+- **Q&A**: Ask questions about video content
+- **Infographic Generation**: Create visual infographics from videos
+- **Multi-User Support**: Share the server with multiple users, each using their own Google account
 
 ---
 
@@ -64,14 +74,16 @@ Since NotebookLM does not have a public API, this tool relies on **browser cooki
 3.  **Error**: Since the server is headless (invisible), it cannot let you type your password. It will fail and return an error:
     > *"Authentication required. Please run with headless=False first to login."*
 
+
 ### How to Authenticate (First Time Setup)
 To fix this, we provided a dedicated script: `setup_auth.py`.
 
 1.  Stop the MCP server.
 2.  Run the setup script:
-    ```bash
-    python3 setup_auth.py
-    ```
+   ```bash
+   python3 build.py
+    ``
+   `
 3.  **Manual Login**: A visible Chrome window will open. Log in to your Google Account manually.
 4.  **Token Capture**: Once you reach the NotebookLM dashboard, the script captures the session cookies and saves them to the `user_data/` directory.
 5.  **Restart**: Close the window and restart the MCP server. The server now has the "key" (cookies) to work headlessly.
@@ -125,3 +137,204 @@ The core logic resides in `notebooklm_client.py`:
 *   `_parse_streamed_response`: Handles the raw byte stream and "JSON Mining".
 *   `_extract_wrb_text`: The recursive extraction engine with the Heuristic Filters.
 *   `generate_summary`: Orchestrates the RPC call and returns the final clean string.
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 20.19+ or 22.12+ (recommended)
+- **npm** (comes with Node.js)
+- **Google Chrome** browser
+- A **Google Account** logged into NotebookLM
+
+### Installation
+
+```bash
+# 1. Clone/download the project
+cd Chrome_extension
+
+# 2. Install dependencies
+npm install
+
+# 3. Build the project
+npm run build
+
+# 4. Install Chrome Extension (see below)
+```
+
+---
+
+## 📋 Terminal Commands
+
+You need **3 terminals** running simultaneously:
+
+### Terminal 1: MCP Server
+```bash
+cd /path/to/Chrome_extension
+npm start
+```
+The server runs on `http://localhost:3001`.
+
+### Terminal 2: Cloudflare Tunnel (for remote access)
+```bash
+cd /path/to/Chrome_extension
+cloudflared tunnel --url http://localhost:3001
+```
+This creates a public URL like `https://xyz-abc.trycloudflare.com`.
+
+### Terminal 3: (Optional) Watch logs
+```bash
+cd /path/to/Chrome_extension
+tail -f server.log
+```
+
+---
+
+## 🧩 Chrome Extension Setup
+
+1. **Build the extension icons** (if needed):
+
+2. **Load the extension in Chrome**:
+   - Navigate to `chrome://extensions/`
+   - Enable **Developer mode** (top right)
+   - Click **Load unpacked**
+   - Select the `Chrome_extension` folder
+
+3. **Verify**: Click the extension icon to open the popup. You should see a "Sync Cookies" button.
+
+---
+
+## 👤 Single-User Mode (Local Use)
+
+If you're the only user:
+
+1. Start the server (`npm start`)
+2. Click the Chrome extension icon
+3. Click **"Sync Cookies"**
+4. Use your Cloudflare link with ChatGPT or Claude
+
+Your cookies are automatically saved to `user_data/user_cookies.json` and persist across restarts.
+
+---
+
+## 👥 Multi-User Mode (Sharing with Others)
+
+If you want to share your server with multiple people (e.g., friends or team):
+
+### For the Server Admin (You)
+
+1. Start the server and Cloudflare tunnel
+2. Share your Cloudflare URL with others
+
+### For Each User
+
+1. **Install the Chrome Extension** on their machine
+2. **Open the Registration Page**: Visit `<your-cloudflare-url>/register.html`
+3. **Generate a Token**: Click "Generate New Token" and copy it
+4. **Configure Extension**: Open the extension popup and enter:
+   - **Server URL**: Your Cloudflare URL (e.g., `https://xyz.trycloudflare.com`)
+   - **User Token**: The token they generated
+5. **Sync Cookies**: Click "Sync Cookies"
+6. **Use with AI**: When calling tools, include their token:
+   - Example: *"Summarize https://youtube.com/watch?v=xxx with token user_abc123..."*
+
+---
+
+## 🛠️ Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `generate_summary` | Get a comprehensive summary of a YouTube video |
+| `ask_question` | Ask questions about video content |
+| `list_sources` | List all sources in a notebook |
+| `generate_infographic` | Create a visual infographic |
+| `check_infographic_status` | Check generation progress |
+| `get_active_notebook` | Get the current session's notebook |
+
+### Example Prompts
+
+```
+Summarize this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+What are the main points in https://www.youtube.com/watch?v=xyz?
+
+Create an infographic for https://www.youtube.com/watch?v=abc
+```
+
+### Multi-User Example
+
+```
+Summarize https://www.youtube.com/watch?v=xyz with token user_abc123def456
+```
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3001` | Server port |
+| `NOTEBOOKLM_HEADLESS` | `true` | Run Playwright in headless mode |
+
+### Files
+
+| Path | Purpose |
+|------|---------|
+| `user_data/user_cookies.json` | Stored user cookies (auto-generated) |
+| `cache.json` | Notebook/source ID cache |
+| `server.log` | Server logs |
+
+---
+
+## 🐛 Troubleshooting
+
+### "Authentication required" Error
+
+1. Make sure you're logged into Google in Chrome
+2. Open the extension popup and click "Sync Cookies"
+3. Wait 5-10 seconds and try again
+
+### Cookies Not Syncing
+
+1. Check server is running (`npm start`)
+2. Check server URL in extension settings
+3. Check browser console for errors
+
+### Multi-User Token Not Working
+
+1. Ensure the token was generated from the same server
+2. Re-sync cookies after setting the token
+3. Include the exact token in your prompt
+
+---
+
+## 📁 Project Structure
+
+```
+Chrome_extension/
+├── src/
+│   ├── server.ts          # Main MCP server
+│   ├── native_fetch_client.ts  # Cookie-based API client
+│   └── notebooklm_client.ts    # Playwright fallback client
+├── background.js          # Chrome extension background script
+├── manifest.json          # Extension manifest
+├── user_data/             # Cookie storage (auto-created)
+└── dist/                  # Built server files
+```
+
+---
+
+## 🔒 Security Notes
+
+- Cookies are stored locally on the server machine
+- Each user token is unique and randomly generated
+- The server only accepts cookies from the Chrome extension
+- HTTPS via Cloudflare tunnel encrypts all traffic
+
+---
+
+## 📄 License
+
+MIT
