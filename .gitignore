@@ -8,3 +8,5 @@ payload_dump.txt
 .DS_Store
 __pycache__/
 *.pyc
+notebooklm_extension.zip
+*.zip
