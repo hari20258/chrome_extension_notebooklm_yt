@@ -7,8 +7,8 @@ This project allows Claude Desktop to interact with **Google NotebookLM** to aut
 The system operates as a **headless browser automation agent** (using Playwright) wrapped in an **MCP Server**.
 
 1.  **User Request**: You ask Claude to "Generate an infographic for [YouTube URL]".
-2.  **MCP Server (`server.py`)**: Receives the tool call and delegates it to the `NotebookLMClient`.
-3.  **Automation Client (`notebooklm_client.py`)**:
+2.  **MCP Server (`server.ts`)**: Receives the tool call and delegates it to the `NotebookLMClient`.
+3.  **Automation Client (`notebooklm_client.ts`)**:
     *   Launches a headless Chrome instance with persistent user data (cookies).
     *   Navigates to NotebookLM and acquires session tokens (`at`, `bl`, `fsid`).
     *   **RPC Execution**: Instead of clicking buttons, it reverse-engineered Google's internal RPC (Remote Procedure Call) endpoints (`batchexecute`) to programmatically create notebooks, add sources, and trigger generation.
@@ -19,10 +19,10 @@ The system operates as a **headless browser automation agent** (using Playwright
 
 ## 🏗️ System Architecture
 
-*   **`server.py`**: The entry point. Uses `FastMCP` to expose two tools:
+*   **`server.ts`**: The entry point. Uses `McpServer` to expose tools:
     *   `generate_infographic(video_url)`: The main driver.
     *   `fetch_infographic(notebook_id)`: Helper to retrieve an image if the initial generation timed out or failed.
-*   **`notebooklm_client.py`**: A robust wrapper around Playwright.
+*   **`notebooklm_client.ts`**: A robust wrapper around Playwright.
     *   Handles Google Authentication (via `user_data` directory).
     *   Manages the complex RPC payload structures required to talk to NotebookLM.
     *   Handles authenticated file downloads.
@@ -59,7 +59,7 @@ Getting the infographic to actually render in Claude was a significant engineeri
 *   **Problem**: After fixing the download, the tool would run successfully, but Claude would show a generic "Tool execution failed" or "Disconnected" error.
 *   **Symptom**: The server logs showed the image was downloaded and encoded... and then silence.
 *   **Reason**: The original images from NotebookLM are massive (approx. **10MB** PNGs). This exceeded the payload size limits for the MCP connection or triggered timeouts in Claude's processing.
-*   **Fix**: We implemented an optimization pipeline in `server.py`:
+*   **Fix**: We implemented an optimization pipeline in `server.ts`:
     1.  **Resize**: Any image wider than 1024px is resized (using High-Quality Lanczos resampling).
     2.  **Compress**: The image is converted from PNG to **JPEG** (Quality 85).
     *   **Result**: Payload reduced from ~10MB to **~300KB**.
@@ -76,17 +76,16 @@ Since NotebookLM does not have a public API, this tool relies on **browser cooki
 
 
 ### How to Authenticate (First Time Setup)
-To fix this, we provided a dedicated script: `setup_auth.py`.
+To fix this, we provided a dedicated script: `src/setup_auth.ts`.
 
 1.  Stop the MCP server.
 2.  Run the setup script:
    ```bash
-   python3 build.py
-    ``
-   `
+   npm run setup
+   ```
 3.  **Manual Login**: A visible Chrome window will open. Log in to your Google Account manually.
 4.  **Token Capture**: Once you reach the NotebookLM dashboard, the script captures the session cookies and saves them to the `user_data/` directory.
-5.  **Restart**: Close the window and restart the MCP server. The server now has the "key" (cookies) to work headlessly.
+5.  **Restart**: Close the window and restart the MCP server (`npm start`). The server now has the "key" (cookies) to work headlessly.
 
 ## ✅ Final Solution
 The robust pipeline is now:
@@ -133,7 +132,7 @@ Extracting a clean text summary from Google's internal `GenerateFreeFormStreamed
 *   **Solution**: Removed file logging.
 
 ### 🏗️ Implementation Details
-The core logic resides in `notebooklm_client.py`:
+The core logic resides in `src/notebooklm_client.ts`:
 *   `_parse_streamed_response`: Handles the raw byte stream and "JSON Mining".
 *   `_extract_wrb_text`: The recursive extraction engine with the Heuristic Filters.
 *   `generate_summary`: Orchestrates the RPC call and returns the final clean string.
@@ -193,6 +192,7 @@ tail -f server.log
 ## 🧩 Chrome Extension Setup
 
 1. **Build the extension icons** (if needed):
+   Run `npm run build` to generate the `dist` folder.
 
 2. **Load the extension in Chrome**:
    - Navigate to `chrome://extensions/`
@@ -230,6 +230,8 @@ If you want to share your server with multiple people (e.g., friends or team):
 
 1. **Install the Chrome Extension** on their machine
 2. **Open the Registration Page**: Visit `<your-cloudflare-url>/register.html`
+   > Note: `register.html` is served by the MCP server.
+   > **Important**: This page might not be served correctly if not built or if server routes are not set up. This feature assumes `register.html` is available.
 3. **Generate a Token**: Click "Generate New Token" and copy it
 4. **Configure Extension**: Open the extension popup and enter:
    - **Server URL**: Your Cloudflare URL (e.g., `https://xyz.trycloudflare.com`)

@@ -15,10 +15,16 @@
         "https://notebooklm.google.com/*",
         "https://*.googleusercontent.com/*",
         "https://accounts.google.com/*",
-        "https://*.google.com/*"
+        "https://*.google.com/*",
+        "http://localhost:3001/*",
+        "https://*.trycloudflare.com/*"
     ],
     "background": {
         "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon_128.png"
     },
     "content_scripts": [
         {
