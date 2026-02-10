@@ -607,7 +607,7 @@ function registerTools(server: McpServer) {
 
                         // Store image info but don't mark complete yet
                         job.imageUrl = imageUrl;
-                        job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}`;
+                        job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}${userToken ? `&user_token=${userToken}` : ''}`;
 
                         // Download and embed image BEFORE marking complete
                         try {
@@ -660,7 +660,7 @@ function registerTools(server: McpServer) {
                                     logToFile(`[Jobs] Job ${jobId} got image URL after re-auth: ${imageUrl}`);
 
                                     job.imageUrl = imageUrl;
-                                    job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}`;
+                                    job.viewerUrl = `http://localhost:${HTTP_PORT}/view?url=${encodeURIComponent(imageUrl)}${userToken ? `&user_token=${userToken}` : ''}`;
 
                                     try {
                                         const imageBytes = await freshClient.downloadResource(imageUrl);
@@ -1139,6 +1139,64 @@ function startHttpServer(server: McpServer) {
         const htmlPath = path.join(publicPath, 'infographic-viewer.html');
         logToFile(`[HTTP] Serving file from: ${htmlPath}`);
         res.sendFile(htmlPath);
+    });
+
+    // Image Proxy for authenticated Google content
+    expressApp.get("/proxy-image", async (req, res) => {
+        const imageUrl = req.query.url as string;
+        const userToken = req.query.user_token as string;
+
+        if (!imageUrl) {
+            res.status(400).send("Missing URL");
+            return;
+        }
+
+        // 1. Determine best cookies (Smart Fallback)
+        let { cookies, fresh, userAgent } = getCookiesForUser(userToken);
+
+        if ((!fresh || cookies.length === 0) && !userToken) {
+            // Try to find ANY fresh cookies (Smart Fallback)
+            for (const [key, value] of userCookies.entries()) {
+                if (hasFreshCookies(key)) {
+                    cookies = value.cookies;
+                    userAgent = value.userAgent;
+                    break;
+                }
+            }
+        }
+
+        // 2. Fetch Image
+        try {
+            // Dynamic import to handle potential ESM/CJS issues
+            // @ts-ignore
+            const fetch = (await import('node-fetch')).default;
+            const headers: Record<string, string> = {
+                'User-Agent': userAgent || "Mozilla/5.0",
+                'Referer': 'https://notebooklm.google.com/'
+            };
+
+            if (cookies.length > 0) {
+                headers['Cookie'] = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+            }
+
+            const imgRes = await fetch(imageUrl, { headers });
+
+            if (!imgRes.ok) throw new Error(`Failed to fetch image: ${imgRes.status}`);
+
+            const contentType = imgRes.headers.get('content-type') || 'image/png';
+            res.setHeader('Content-Type', contentType);
+            // Cache for 1 hour
+            res.setHeader('Cache-Control', 'public, max-age=3600');
+
+            if (imgRes.body) {
+                imgRes.body.pipe(res);
+            } else {
+                res.end();
+            }
+        } catch (e: any) {
+            logToFile(`[Proxy] Error serving image: ${e.message}`);
+            res.status(500).send("Error serving image");
+        }
     });
 
     // Health check endpoint

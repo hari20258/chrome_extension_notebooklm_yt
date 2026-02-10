@@ -443,55 +443,23 @@
         document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams(window.location.search);
             const imageUrl = params.get('url');
+            const userToken = params.get('user_token');
 
-            const imageWrapper = document.getElementById('imageWrapper');
-            const loadingState = document.getElementById('loadingState');
-            const actions = document.getElementById('actions');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const openBtn = document.getElementById('openBtn');
-            const statusText = document.getElementById('statusText');
-            const subtitle = document.getElementById('subtitle');
-            const copyLink = document.getElementById('copyLink');
+            // ... (elements selection) ...
 
-            const setError = (title, message) => {
-                loadingState.innerHTML = `
-          <div class="error">
-            <div class="badge">⚠️ Error</div>
-            <h3>${title}</h3>
-            <p>${message}</p>
-          </div>
-        `;
-                statusText.textContent = 'Error';
-            };
+            // ... (setError definition) ...
 
-            // Copy link (either url param or full page url)
-            copyLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const toCopy = imageUrl || window.location.href;
-                try {
-                    await navigator.clipboard.writeText(toCopy);
-                    copyLink.textContent = 'Copied!';
-                    setTimeout(() => (copyLink.textContent = 'Copy image URL'), 1200);
-                } catch {
-                    copyLink.textContent = 'Copy failed';
-                    setTimeout(() => (copyLink.textContent = 'Copy image URL'), 1200);
-                }
-            });
+            // ... (copyLink listener) ...
 
             if (!imageUrl) {
-                statusText.textContent = 'Missing URL';
-                subtitle.innerHTML = `Add <code>?url=&lt;image_url&gt;</code> to view your infographic.`;
+                // ... (error handling) ...
                 return;
             }
 
-            statusText.textContent = 'Loading';
-            subtitle.textContent = 'Fetching your infographic image…';
-            loadingState.innerHTML = `
-        <div class="loading">
-          <div class="spinner" aria-hidden="true"></div>
-          <p>Loading infographic…</p>
-        </div>
-      `;
+            // ... (loading state) ...
+
+            // Use the new proxy endpoint to fetch the authenticated image
+            const proxyUrl = `/proxy-image?url=${encodeURIComponent(imageUrl)}${userToken ? `&user_token=${userToken}` : ''}`;
 
             const img = new Image();
             img.onload = function () {
@@ -500,21 +468,18 @@
                 imageWrapper.appendChild(img);
 
                 actions.style.display = 'flex';
-                downloadBtn.href = imageUrl;
-                openBtn.href = imageUrl;
+                downloadBtn.href = proxyUrl; // Download via proxy
+                openBtn.href = proxyUrl; // Open via proxy
 
                 statusText.textContent = 'Ready';
                 subtitle.textContent = 'Your infographic is ready to view, open, or download.';
             };
-
+            
             img.onerror = function () {
-                setError(
-                    'Failed to load image',
-                    'The image URL may be invalid or expired. Try regenerating the infographic and use the new URL.'
-                );
+                // ... (error handling) ...
             };
 
-            img.src = imageUrl;
+            img.src = proxyUrl;
             img.alt = 'Infographic preview';
         });
     </script>
