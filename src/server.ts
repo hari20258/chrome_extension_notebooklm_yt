@@ -98,6 +98,7 @@ const needsReauth = new Map<string, boolean>();
 function pushReauthEvent(userToken: string) {
     const key = userToken || '__legacy__';
     needsReauth.set(key, true);
+
     const clients = reauthSseClients.get(key);
     if (clients && clients.size > 0) {
         const event = `data: ${JSON.stringify({ type: 'reauth', user_token: key })}\n\n`;
@@ -106,7 +107,22 @@ function pushReauthEvent(userToken: string) {
         }
         logToFile(`[SSE] Pushed reauth event to ${clients.size} client(s) for ${key}`);
     } else {
-        logToFile(`[SSE] No connected extensions for ${key}. User must manually re-sync.`);
+        // Fallback: Broadcast to ALL connected extensions (e.g. if legacy request failed using borrowed cookies)
+        logToFile(`[SSE] No direct connection for ${key}. Broadcasting re-auth to ALL connected extensions...`);
+        let broadcastCount = 0;
+        for (const [otherKey, otherClients] of reauthSseClients.entries()) {
+            if (otherClients && otherClients.size > 0) {
+                const event = `data: ${JSON.stringify({ type: 'reauth', user_token: key })}\n\n`;
+                for (const res of otherClients) {
+                    try { res.write(event); broadcastCount++; } catch (e) { }
+                }
+            }
+        }
+        if (broadcastCount > 0) {
+            logToFile(`[SSE] Broadcast re-auth to ${broadcastCount} other client(s).`);
+        } else {
+            logToFile(`[SSE] No connected extensions at all. User must manually re-sync.`);
+        }
     }
 }
 
@@ -260,7 +276,22 @@ const userClients: Map<string, { client: NativeFetchClient | NotebookLMClient, i
 
 async function getClient(userToken?: string): Promise<NotebookLMClient | NativeFetchClient> {
     const clientKey = userToken || '__legacy__';
-    const { cookies, fresh, userAgent } = getCookiesForUser(userToken);
+    let { cookies, fresh, userAgent } = getCookiesForUser(userToken);
+
+    // SMART FALLBACK: If "legacy" or requested user has no cookies, but we have OTHER users with cookies, use them!
+    // This fixes the issue where ChatGPT sends no token (legacy) but we actually have a logged-in user (e.g. Vishwaa)
+    if ((!fresh || cookies.length === 0) && !userToken) {
+        logToFile("[Client] 🕵️ No cookies for legacy user. Searching for any other logged-in user...");
+        for (const [key, value] of userCookies.entries()) {
+            if (hasFreshCookies(key)) {
+                logToFile(`[Client] 🤝 Found fresh cookies for '${key}'. Borrowing them for this legacy request.`);
+                cookies = value.cookies;
+                userAgent = value.userAgent;
+                fresh = true;
+                break;
+            }
+        }
+    }
 
     // If we have fresh cookies for this user, prefer NativeFetchClient
     if (fresh && cookies.length > 0) {
