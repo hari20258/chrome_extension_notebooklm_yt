@@ -88,6 +88,7 @@ chrome.runtime.onInstalled.addListener(extractAndSyncCookies);
 // --- SSE LISTENER (Server pushes re-auth events only when needed) ---
 let authEventSource = null;
 let isReauthInProgress = false;
+let sseReconnectDelay = 1000; // Start at 1s, exponential backoff
 
 async function connectAuthEvents() {
     try {
@@ -105,14 +106,21 @@ async function connectAuthEvents() {
 
         authEventSource = new EventSource(url);
 
+        authEventSource.onopen = () => {
+            sseReconnectDelay = 1000; // Reset backoff on successful connection
+        };
+
         authEventSource.onmessage = async (event) => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'reauth' && !isReauthInProgress) {
                     console.log("[SSE] 🔴 Server says re-auth needed! Opening login tab...");
-                    isReauthInProgress = true;
-                    await handleReauth();
-                    isReauthInProgress = false;
+                    try {
+                        isReauthInProgress = true;
+                        await handleReauth();
+                    } finally {
+                        isReauthInProgress = false;
+                    }
                 } else if (data.type === 'connected') {
                     console.log("[SSE] ✅ Connected to server auth events for:", data.user_token);
                 }
@@ -122,13 +130,19 @@ async function connectAuthEvents() {
         };
 
         authEventSource.onerror = (e) => {
-            console.log("[SSE] Connection lost. Will auto-reconnect...");
-            // EventSource auto-reconnects by default
+            console.log(`[SSE] Connection lost. Will reconnect in ${sseReconnectDelay / 1000}s...`);
+            authEventSource.close();
+            authEventSource = null;
+            // Exponential backoff: 1s, 2s, 4s, 8s, ... up to 60s
+            setTimeout(connectAuthEvents, sseReconnectDelay);
+            sseReconnectDelay = Math.min(sseReconnectDelay * 2, 60000);
         };
 
         console.log("[SSE] Connecting to", url);
     } catch (e) {
         console.log("[SSE] Failed to connect (server may not be running):", e.message);
+        setTimeout(connectAuthEvents, sseReconnectDelay);
+        sseReconnectDelay = Math.min(sseReconnectDelay * 2, 60000);
     }
 }
 
@@ -245,6 +259,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 });
+
+//====================================================================
+// DEPRECATED LEGACY CODE (below)
+// The following code was used when infographic generation was handled
+// entirely by the extension. It is now handled by the MCP server.
+// Kept for reference but no longer actively used.
+//====================================================================
 
 // --- 1. TOKEN SCRAPER ---
 async function refreshTokens() {
@@ -400,7 +421,7 @@ async function pollForArtifacts(tabId, notebookId, sourceId) {
         try {
             console.log(`[Headless] Polling #${attempts}...`);
 
-            const payload = [[2], notebookId, 'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"'];
+            const payload = [[2], notebookId];
             const response = await executeRPC(RPC.LIST_ARTIFACTS, payload);
 
             if (response && response[0] && typeof response[0][2] === 'string') {

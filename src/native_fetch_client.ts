@@ -443,7 +443,7 @@ export class NativeFetchClient {
                 const obj = JSON.parse(jsonStr);
                 const extracted = this._extractWrbText(obj);
                 if (extracted) {
-                    fullText = extracted.trim() + "\n";
+                    fullText += extracted.trim() + "\n";
                 }
             } catch (e) { }
 
@@ -466,13 +466,12 @@ export class NativeFetchClient {
             if (char === '"') { inString = !inString; continue; }
 
             if (!inString) {
+                // Only track [] depth — not {} — to find the matching ]
                 if (char === '[') depth++;
                 else if (char === ']') {
                     depth--;
                     if (depth === 0) return i;
                 }
-                else if (char === '{') depth++;
-                else if (char === '}') depth--;
             }
         }
         return -1;
@@ -502,7 +501,9 @@ export class NativeFetchClient {
                 }
             } else if (typeof n === 'string' && inPayload) {
                 const val = n.trim();
-                if (val && val.length !== 36) {
+                // Filter out UUIDs properly using regex instead of fragile length check
+                const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (val && !uuidPattern.test(val)) {
                     results.push(val);
                 }
             }
@@ -724,10 +725,24 @@ export class NativeFetchClient {
     }
 
     async generateSummary(videoUrl: string): Promise<string> {
+        // Check cache before prepareNotebook to know if we need the delay
+        const cacheFile = path.resolve(__dirname, "../cache.json");
+        let wasCached = false;
+        try {
+            if (fs.existsSync(cacheFile)) {
+                const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+                wasCached = !!cache[videoUrl];
+            }
+        } catch { }
+
         const { notebookId, sourceId } = await this.prepareNotebook(videoUrl);
 
-        logToFile("[NativeFetch] ⏳ Waiting 10s before requesting summary...");
-        await new Promise(r => setTimeout(r, 10000));
+        if (!wasCached) {
+            logToFile("[NativeFetch] ⏳ Waiting 10s for new notebook to process transcript...");
+            await new Promise(r => setTimeout(r, 10000));
+        } else {
+            logToFile("[NativeFetch] ⚡ Notebook cached, skipping wait.");
+        }
 
         return await this.queryNotebook(notebookId, sourceId, "give me summary of the video");
     }

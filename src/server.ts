@@ -350,7 +350,7 @@ function registerTools(server: McpServer) {
             const targetUrl = args.url;
             const userToken = args.user_token;
             logToFile(`[MCP] Request: Summary for ${targetUrl} (user: ${userToken || 'legacy'})`);
-            let notebookId: string = "unknown";
+            let notebookId = "unknown";
             try {
                 const client = await getClient(userToken);
 
@@ -463,10 +463,14 @@ function registerTools(server: McpServer) {
             _meta: { ui: { resourceUri } },
         },
         async (args: any) => {
-            const targetUrl = args.url;
+            const targetUrl = args.url || getActiveNotebook()?.url;
             const question = args.question;
             const source_id = args.source_id;
             const userToken = args.user_token;
+
+            if (!targetUrl) {
+                return wrapError("No URL provided and no active notebook in session. Please provide a URL.");
+            }
 
             logToFile(`[MCP] Request: Question for ${targetUrl}: "${question}" (user: ${userToken || 'legacy'})`);
             try {
@@ -474,13 +478,13 @@ function registerTools(server: McpServer) {
 
                 // Race against 40s timeout to beat Cloudflare's ~60s limit
                 const QUERY_TIMEOUT = 40000;
-                const queryPromise = client.query(targetUrl!, question, source_id);
+                const queryPromise = client.query(targetUrl, question, source_id);
                 const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), QUERY_TIMEOUT));
                 const answer = await Promise.race([queryPromise, timeoutPromise]);
 
                 // Update Session State
-                const notebookId = client._parseNotebookUrl(targetUrl!) || "unknown";
-                setActiveNotebook(targetUrl!, notebookId);
+                const notebookId = client._parseNotebookUrl(targetUrl) || "unknown";
+                setActiveNotebook(targetUrl, notebookId);
 
                 if (answer === null) {
                     logToFile(`[MCP] Question timed out after ${QUERY_TIMEOUT / 1000}s`);
@@ -670,7 +674,7 @@ function registerTools(server: McpServer) {
 
             // Wait for completion (up to 10s)
             const MAX_WAIT = 10000; // 10 seconds (User requested fast feedback)
-            const POLL_INTERVAL = 20000; // 20 seconds
+            const POLL_INTERVAL = 2000; // 2 seconds — must be < MAX_WAIT!
             const startTime = Date.now();
             logToFile(`[Jobs] Waiting for job ${jobId} to complete (streaming mode)...`);
 
@@ -780,7 +784,7 @@ function startHttpServer(server: McpServer) {
 
     // Middleware
     expressApp.use((req, res, next) => {
-        logToFile(`[HTTP] ${req.method} ${req.url} - Headers: ${JSON.stringify(req.headers)}`);
+        logToFile(`[HTTP] ${req.method} ${req.url}`);
         next();
     });
 
@@ -911,7 +915,11 @@ function startHttpServer(server: McpServer) {
 
         // Cleanup on disconnect
         req.on('close', () => {
-            reauthSseClients.get(userToken)?.delete(res);
+            const clients = reauthSseClients.get(userToken);
+            clients?.delete(res);
+            if (clients && clients.size === 0) {
+                reauthSseClients.delete(userToken);
+            }
             logToFile(`[SSE] Extension disconnected for ${userToken}.`);
         });
 
@@ -1107,11 +1115,8 @@ function startHttpServer(server: McpServer) {
         res.json({ status: "ok", mode: "http", port: HTTP_PORT });
     });
 
-    // Dedicated SSE endpoint
-    expressApp.get("/sse", async (req, res) => {
-        logToFile(`[HTTP] GET /sse request -> Handling as SSE`);
-        await handleSseConnection(req, res);
-    });
+    // NOTE: /sse is already registered at line 985 via handleSseConnection
+    // Removed duplicate registration
 
     // Root info endpoint (Supports SSE auto-discovery)
     expressApp.get("/", async (req, res) => {
